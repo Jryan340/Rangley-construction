@@ -1,0 +1,20 @@
+.DS_Store
+
+# Original iPhone media (huge ~8GB) — never commit these.
+# Only the web-optimized copies in Switzerland/web/ are deployed.
+*.HEIC
+*.heic
+*.MOV
+*.mov
+Switzerland/Lucern/
+Switzerland/Interlaken/
+Switzerland/Lauterbrunnen and Murren/
+Switzerland/Grindelwald/
+Switzerland/Zurich/
+Switzerland/airport.heic
+
+# Revit model is 144MB — exceeds GitHub's 100MB file limit (needs Git LFS to include)
+Temple-street/*.rvt
+
+# Local-only scratch
+placeholder-cabin.jpg

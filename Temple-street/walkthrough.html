@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>33 Temple Street — First-Person Walkthrough</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden;background:#0a0e12;font-family:-apple-system,Helvetica,Arial,sans-serif}
+  #c{display:block;width:100%;height:100%}
+  #hud{position:fixed;left:14px;top:12px;color:#eaf2fa;font-size:12px;line-height:1.7;
+    background:rgba(10,16,22,.55);padding:10px 14px;border-radius:10px;backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,.12);pointer-events:none;z-index:5}
+  #hud b{color:#7ec8ff}
+  #floor{position:fixed;right:14px;top:12px;color:#fff;font-size:13px;font-weight:700;
+    background:rgba(213,43,30,.85);padding:8px 14px;border-radius:999px;z-index:5}
+  #cross{position:fixed;left:50%;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;z-index:5;
+    border:1px solid rgba(255,255,255,.7);border-radius:50%;pointer-events:none;opacity:0;transition:opacity .2s}
+  #cross.on{opacity:1}
+  #overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;
+    gap:18px;text-align:center;color:#fff;z-index:10;cursor:pointer;
+    background:radial-gradient(circle at 50% 40%,rgba(22,50,79,.92),rgba(8,12,17,.96))}
+  #overlay h1{font-size:30px;font-weight:800}
+  #overlay h1 span{color:#ff6b5e}
+  #overlay p{opacity:.85;font-size:15px;max-width:520px;line-height:1.7}
+  #overlay .key{display:inline-block;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);
+    border-radius:6px;padding:2px 9px;margin:0 2px;font-size:13px;font-weight:600}
+  #overlay .go{margin-top:8px;background:#d52b1e;padding:14px 36px;border-radius:999px;font-size:17px;font-weight:700;
+    box-shadow:0 10px 34px rgba(213,43,30,.5)}
+  #overlay.hide{display:none}
+  #err{position:fixed;left:14px;bottom:14px;right:14px;color:#ffb3ab;font-size:12px;font-family:monospace;
+    background:rgba(40,0,0,.7);padding:8px;border-radius:8px;z-index:20;display:none;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="cross"></div>
+<div id="hud">
+  <div><b>WASD</b> move &nbsp; <b>Mouse</b> look &nbsp; <b>Shift</b> run</div>
+  <div><b>1 2 3</b> jump to Basement / L1 / L2</div>
+  <div><b>F</b> fly &amp; no-clip &nbsp; (<b>Space</b>/<b>C</b> up/down in fly)</div>
+  <div><b>Esc</b> release mouse</div>
+</div>
+<div id="floor">Level 1</div>
+<div id="overlay">
+  <h1>🏠 33 <span>Temple Street</span> — Walkthrough</h1>
+  <p>A first-person model of the existing house (basement, main floor, upstairs).<br>
+     <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> to move,
+     move the <b>mouse</b> to look, <span class="key">Shift</span> to run.<br>
+     Use the stairs between floors, or press <span class="key">1</span><span class="key">2</span><span class="key">3</span> to jump levels.
+     Press <span class="key">F</span> anytime to fly through walls.</p>
+  <div class="go">▶ Click to enter</div>
+</div>
+<div id="err"></div>
+
+<script src="three.min.js"></script>
+<script>
+window.onerror = (m,s,l) => { const e=document.getElementById('err'); e.style.display='block'; e.textContent += `\n${m} (line ${l})`; };
+if (typeof THREE === 'undefined') {
+  const e=document.getElementById('err'); e.style.display='block';
+  e.textContent = "Three.js failed to load (three.min.js missing or blocked). Open this page via the local server URL, not the file directly.";
+  throw new Error("THREE not loaded");
+}
+
+// ---------- units: feet ----------
+const FT = 1;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x9fc6e8);
+scene.fog = new THREE.Fog(0x9fc6e8, 120, 400);
+
+const camera = new THREE.PerspectiveCamera(72, innerWidth/innerHeight, 0.08, 2000);
+camera.rotation.order = "YXZ";
+
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('c'), antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled = true;
+
+addEventListener('resize', ()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
+
+// ---------- lighting ----------
+scene.add(new THREE.HemisphereLight(0xeaf2ff, 0x55503f, 0.85));
+const sun = new THREE.DirectionalLight(0xfff3e0, 1.0);
+sun.position.set(60, 120, 40); sun.castShadow = true;
+sun.shadow.mapSize.set(2048,2048);
+sun.shadow.camera.left=-80; sun.shadow.camera.right=80; sun.shadow.camera.top=80; sun.shadow.camera.bottom=-80;
+sun.shadow.camera.far=400;
+scene.add(sun);
+
+// ---------- materials ----------
+const M = {
+  ext:   new THREE.MeshStandardMaterial({color:0xcdbfa6, roughness:.95}),   // shingle
+  intr:  new THREE.MeshStandardMaterial({color:0xf2efe9, roughness:1, side:THREE.DoubleSide}),
+  woodF: new THREE.MeshStandardMaterial({color:0x9a6b40, roughness:.85}),    // wood floor
+  conc:  new THREE.MeshStandardMaterial({color:0x9a9a98, roughness:1}),      // concrete
+  glass: new THREE.MeshStandardMaterial({color:0xaad4ef, roughness:.1, metalness:.1, transparent:true, opacity:.35}),
+  roof:  new THREE.MeshStandardMaterial({color:0x4f5560, roughness:.9, side:THREE.DoubleSide}),
+  brick: new THREE.MeshStandardMaterial({color:0x8a4b3a, roughness:1}),
+  deck:  new THREE.MeshStandardMaterial({color:0xb08b5e, roughness:.95}),
+  trim:  new THREE.MeshStandardMaterial({color:0xffffff, roughness:.8}),
+};
+
+// ---------- ground ----------
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(800,800), new THREE.MeshStandardMaterial({color:0x6f8a55, roughness:1}));
+ground.rotation.x = -Math.PI/2; ground.position.y = -7.95; ground.receiveShadow = true;
+scene.add(ground);
+
+// ---------- builders ----------
+const colliders = [];
+// walkable ground collider (so you don't fall into the void outside)
+colliders.push({minX:-400,maxX:400, minY:-8.6,maxY:-7.95, minZ:-400,maxZ:400});
+function addBox(cx,cy,cz, sx,sy,sz, mat, collide=true, cast=true){
+  const m = new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz), mat);
+  m.position.set(cx,cy,cz); m.castShadow=cast; m.receiveShadow=true;
+  scene.add(m);
+  if(collide) colliders.push({minX:cx-sx/2,maxX:cx+sx/2,minY:cy-sy/2,maxY:cy+sy/2,minZ:cz-sz/2,maxZ:cz+sz/2});
+  return m;
+}
+// a wall span between coords, vertical range [ylo,yhi]
+function seg(axis, fixed, s, e, ylo, yhi, th, mat, collide=true){
+  if(e<=s) return;
+  const len=e-s, cy=(ylo+yhi)/2, sy=yhi-ylo, mid=(s+e)/2;
+  if(axis==='x') addBox(mid,cy,fixed, len,sy,th, mat, collide);
+  else addBox(fixed,cy,mid, th,sy,len, mat, collide);
+}
+// wall with window/door openings. openings:[{from,to,sill,head}]
+function wall(axis, fixed, a, b, y0, h, th, mat, openings=[]){
+  openings = openings.slice().sort((p,q)=>p.from-q.from);
+  let cur=a;
+  for(const o of openings){
+    if(o.from>cur) seg(axis,fixed,cur,o.from,y0,y0+h,th,mat);          // pier
+    if(o.sill>0)   seg(axis,fixed,o.from,o.to,y0,y0+o.sill,th,mat);    // under window
+    if(o.head<h)   seg(axis,fixed,o.from,o.to,y0+o.head,y0+h,th,mat);  // above opening
+    // glass pane (non-collider)
+    if(o.sill>0){
+      const gy0=y0+o.sill, gy1=y0+o.head, gmid=(o.from+o.to)/2, gcy=(gy0+gy1)/2;
+      if(axis==='x') addBox(gmid,gcy,fixed,(o.to-o.from),(gy1-gy0),0.08,M.glass,false,false);
+      else addBox(fixed,gcy,gmid,0.08,(gy1-gy0),(o.to-o.from),M.glass,false,false);
+    }
+    cur=o.to;
+  }
+  if(cur<b) seg(axis,fixed,cur,b,y0,y0+h,th,mat);
+}
+// evenly spaced windows along [a,b]
+function wins(a,b,n,sill,head,w=3){
+  const out=[]; for(let i=0;i<n;i++){ const c=a+(i+0.5)*(b-a)/n; out.push({from:c-w/2,to:c+w/2,sill,head}); } return out;
+}
+// floor slab with rectangular holes (for stairwells)
+function slab(x0,x1,z0,z1, ytop, th, holes, mat){
+  const xs=[x0,x1], zs=[z0,z1];
+  holes.forEach(h=>{ [h.x0,h.x1].forEach(v=>{if(v>x0&&v<x1)xs.push(v)}); [h.z0,h.z1].forEach(v=>{if(v>z0&&v<z1)zs.push(v)});});
+  xs.sort((a,b)=>a-b); zs.sort((a,b)=>a-b);
+  for(let i=0;i<xs.length-1;i++) for(let j=0;j<zs.length-1;j++){
+    const cx=(xs[i]+xs[i+1])/2, cz=(zs[j]+zs[j+1])/2;
+    if(holes.some(h=>cx>h.x0&&cx<h.x1&&cz>h.z0&&cz<h.z1)) continue;
+    addBox(cx, ytop-th/2, cz, xs[i+1]-xs[i], th, zs[j+1]-zs[j], mat, true, false);
+  }
+}
+// straight stair flight climbing along +Z from (x,z0,y0) up to y1
+function stairs(xc, width, z0, y0, y1, mat){
+  const rise=0.72, n=Math.ceil((y1-y0)/rise), run=0.95;
+  for(let i=0;i<n;i++){
+    const ty=y0+(i+1)*((y1-y0)/n);
+    addBox(xc, ty-0.18, z0+i*run+run/2, width, 0.36, run, mat);
+  }
+}
+
+// ---------- dimensions ----------
+const W=30.25, D=32.75;                 // L1 footprint
+const X0=-W/2, X1=W/2, Z0=-D/2, Z1=D/2;
+const yB=-7.83, y1=0, y2=8.375, yT2=15.875; // floor tops
+const hB=7.5, h1=8.375, h2=7.5, te=0.7, ti=0.4;
+const Z2F=7.05;                          // L2 / 2-story block rear edge (front part only)
+
+// stair holes
+const upHole   = {x0:-1, x1:4,  z0:0, z1:Z2F};   // L1 -> L2 (east of center)
+const dnHole   = {x0:-6, x1:-1.5, z0:0, z1:9};   // L1 -> basement (west of center)
+
+// ---------- floor slabs ----------
+slab(X0,X1, Z0,Z1, yB, 0.4, [], M.conc);                 // basement floor
+slab(X0,X1, Z0,Z1, y1, 0.4, [dnHole], M.woodF);          // L1 floor (hole to basement)
+slab(X0,X1, Z0,Z2F, y2, 0.4, [upHole], M.woodF);         // L2 floor (front block, hole to L1)
+slab(X0,X1, Z0,Z2F, yT2,0.3, [], M.intr);                // L2 ceiling
+
+// ---------- stairs ----------
+stairs(1.5, 4.0, 0.5, y1, y2, M.woodF);   // up to L2
+stairs(-3.75, 3.5, 0.5, y1, yB, M.conc);  // down to basement (descending steps below L1)
+
+// ---------- BASEMENT exterior (concrete, small high windows) ----------
+wall('x', Z0, X0,X1, yB, hB, te, M.conc, wins(X0,X1,3,5.2,6.6,2.4));
+wall('x', Z1, X0,X1, yB, hB, te, M.conc, wins(X0,X1,3,5.2,6.6,2.4));
+wall('z', X0, Z0,Z1, yB, hB, te, M.conc, wins(Z0,Z1,3,5.2,6.6,2.4));
+wall('z', X1, Z0,Z1, yB, hB, te, M.conc, wins(Z0,Z1,3,5.2,6.6,2.4));
+// a mechanical room in basement
+seg('x', 6, X0+4, 0, yB, yB+hB, ti, M.intr);
+seg('z', X0+4, yB*0+ -16, 6, yB, yB+hB, ti, M.intr); // (clamped below)
+
+// ---------- LEVEL 1 exterior ----------
+wall('x', Z0, X0,X1, y1, h1, te, M.ext, [
+  {from:-12,to:-9,sill:2.5,head:7}, {from:-7,to:-4,sill:2.5,head:7},
+  {from:-1.6,to:1.6,sill:0,head:7},                       // front door
+  {from:4,to:7,sill:2.5,head:7}, {from:9,to:12,sill:2.5,head:7},
+]);
+wall('x', Z1, X0,X1, y1, h1, te, M.ext, [
+  {from:-12,to:-9,sill:2.5,head:7}, {from:-2,to:1.5,sill:0,head:7},  // rear door to deck
+  {from:6,to:9,sill:2.5,head:7},
+]);
+wall('z', X0, Z0,Z1, y1, h1, te, M.ext, wins(Z0,Z1,4,2.5,7));
+wall('z', X1, Z0,Z1, y1, h1, te, M.ext, wins(Z0,Z1,4,2.5,7));
+
+// LEVEL 1 interior partitions (gaps = doorways)
+seg('z', -1, Z0, -10, y1, y1+h1, ti, M.intr);  seg('z',-1,-7.5,-2, y1,y1+h1,ti,M.intr);   // front split
+seg('x', -2, X0, -9, y1, y1+h1, ti, M.intr);   seg('x',-2,-6.5,6, y1,y1+h1,ti,M.intr);  seg('x',-2,8.5,X1, y1,y1+h1,ti,M.intr); // front/back split
+// bathroom (NE)
+seg('z', 6, 2, 7, y1, y1+h1, ti, M.intr);
+seg('x', 7, 6, 14, y1, y1+h1, ti, M.intr);  // (door gap left at X<6)
+// stair guard walls around up-hole
+seg('z', 4, 0, Z2F, y1, y1+h1, ti, M.intr);
+seg('z', -1, 2.5, Z2F, y1, y1+h1, ti, M.intr);
+// fireplace (west wall)
+addBox(X0+0.9, y1+2.0, -6, 1.8, 4.0, 5.0, M.brick);
+
+// ---------- LEVEL 2 exterior (front block only) ----------
+wall('x', Z0, X0,X1, y2, h2, te, M.ext, wins(X0,X1,4,2.0,6.5));
+wall('x', Z2F, X0,X1, y2, h2, te, M.ext, wins(X0,X1,3,2.0,6.5));
+wall('z', X0, Z0,Z2F, y2, h2, te, M.ext, wins(Z0,Z2F,3,2.0,6.5));
+wall('z', X1, Z0,Z2F, y2, h2, te, M.ext, wins(Z0,Z2F,3,2.0,6.5));
+// LEVEL 2 interior: hall + bedrooms
+seg('x', -2, X0,-10, y2,y2+h2, ti,M.intr); seg('x',-2,-7.5,-1.5,y2,y2+h2,ti,M.intr); seg('x',-2,1,6,y2,y2+h2,ti,M.intr); seg('x',-2,8.5,X1,y2,y2+h2,ti,M.intr);
+seg('z', 0, Z0,-2, y2,y2+h2, ti,M.intr);   // front two bedrooms
+seg('z', 6, 2, Z2F, y2,y2+h2, ti,M.intr);  // bath
+seg('z', 4, 0, Z2F, y2, y2+h2, ti, M.intr);  seg('z',-1,2.5,Z2F,y2,y2+h2,ti,M.intr); // stair guards
+
+// ---------- REAR 1-story flat roof (over back of L1) ----------
+addBox(0, y2+0.2, (Z2F+Z1)/2, W, 0.4, Z1-Z2F, M.roof, false);
+
+// ---------- GABLE ROOF over the 2-story block ----------
+(function(){
+  const ye=yT2, yr=21, zr=(Z0+Z2F)/2;
+  const v=[
+    [X0,ye,Z0],[X1,ye,Z0],[X1,ye,Z2F],[X0,ye,Z2F],   // eave corners 0-3
+    [X0,yr,zr],[X1,yr,zr]                              // ridge 4-5
+  ];
+  const faces=[
+    [0,1,5],[0,5,4],   // north slope (Z0 side)
+    [3,5,2],[3,4,5],   // south slope (Z2F side)
+    [0,4,3],           // west gable
+    [1,2,5]            // east gable
+  ];
+  const pos=[];
+  faces.forEach(f=>f.forEach(i=>pos.push(...v[i])));
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos,3));
+  g.computeVertexNormals();
+  const roof=new THREE.Mesh(g, M.roof); roof.castShadow=true; scene.add(roof);
+})();
+// chimney
+addBox(X1-3.5, 22, zr_chim(), 2.2, 16, 2.2, M.brick, false);
+function zr_chim(){ return (Z0+Z2F)/2 + 1; }
+
+// ---------- REAR DECK + stairs ----------
+addBox(0, y1-0.25, Z1+5, 18, 0.4, 10, M.deck);          // deck surface
+for(let i=0;i<3;i++){ // posts
+  for(const sx of [-8,8]) addBox(sx, y1-4, Z1+9, 0.6, 8, 0.6, M.deck, false);
+}
+// deck rail
+seg('x', Z1+10, -9, 9, y1, y1+3, 0.25, M.deck);
+seg('z', -9, Z1, Z1+10, y1, y1+3, 0.25, M.deck);
+seg('z', 9, Z1, Z1+10, y1, y1+3, 0.25, M.deck);
+// deck stairs down to yard
+stairs(0, 4, Z1+10.5, y1-7.5, y1-0.3, M.deck);
+
+// front stoop + steps (so you can get back in the front door)
+addBox(0, y1-0.2, Z0-1.5, 6, 0.4, 3, M.deck);                 // landing at the door
+stairs(0, 5, Z0-9.5, y1-7.6, y1-0.3, M.conc);                 // steps up from grade to landing
+
+// ---------- interior point lights ----------
+[[0,y1+6,-6],[6,y1+6,8],[0,y2+6,-6],[0,yB+5,0]].forEach(p=>{
+  const l=new THREE.PointLight(0xfff1d6, 0.5, 60); l.position.set(...p); scene.add(l);
+});
+
+// ================= FIRST-PERSON CONTROLS =================
+const overlay=document.getElementById('overlay'), cross=document.getElementById('cross'), floorEl=document.getElementById('floor');
+const pos = new THREE.Vector3(0, y1+5.3, -12);
+const EYE=5.3, R=0.75, STEP=0.95, G=60;
+let yaw=Math.PI, pitch=0, vy=0, fly=false;
+const keys={};
+addEventListener('keydown',e=>{
+  keys[e.code]=true;
+  if(e.code==='KeyF'){ fly=!fly; vy=0; }
+  if(e.code==='Digit1') jumpFloor(yB);
+  if(e.code==='Digit2') jumpFloor(y1);
+  if(e.code==='Digit3') jumpFloor(y2);
+});
+addEventListener('keyup',e=>keys[e.code]=false);
+function jumpFloor(yt){ pos.set(0, yt+EYE, -10); vy=0; }
+
+overlay.addEventListener('click',()=>renderer.domElement.requestPointerLock());
+document.addEventListener('pointerlockchange',()=>{
+  const on=document.pointerLockElement===renderer.domElement;
+  overlay.classList.toggle('hide',on); cross.classList.toggle('on',on);
+});
+document.addEventListener('mousemove',e=>{
+  if(document.pointerLockElement!==renderer.domElement) return;
+  yaw -= e.movementX*0.0022; pitch -= e.movementY*0.0022;
+  pitch=Math.max(-1.5,Math.min(1.5,pitch));
+});
+
+// collision: block only colliders taller than a step; low ones we step onto
+function tryMove(ax, d){
+  if(!d) return;
+  const np={x:pos.x,y:pos.y,z:pos.z}; np[ax]+=d;
+  const feet=np.y-EYE, head=np.y+0.4;
+  for(const c of colliders){
+    if(np.x+R>c.minX&&np.x-R<c.maxX && np.z+R>c.minZ&&np.z-R<c.maxZ && head>c.minY&&feet<c.maxY){
+      if(c.maxY-feet<=STEP) continue;   // low → walk over (gravity lifts us)
+      return;                            // tall → blocked
+    }
+  }
+  pos[ax]=np[ax];
+}
+
+const clock=new THREE.Clock();
+function frame(){
+  requestAnimationFrame(frame);
+  const dt=Math.min(clock.getDelta(),0.05);
+
+  // desired horizontal direction
+  const fwd=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
+  const right=new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));
+  const wish=new THREE.Vector3();
+  if(keys['KeyW'])wish.add(fwd); if(keys['KeyS'])wish.sub(fwd);
+  if(keys['KeyD'])wish.add(right); if(keys['KeyA'])wish.sub(right);
+  const speed=(keys['ShiftLeft']||keys['ShiftRight']?17:9);
+  if(wish.lengthSq()>0){ wish.normalize().multiplyScalar(speed*dt); }
+
+  if(fly){
+    pos.x+=wish.x; pos.z+=wish.z;
+    if(keys['Space'])pos.y+=speed*dt; if(keys['KeyC'])pos.y-=speed*dt;
+  } else {
+    tryMove('x',wish.x); tryMove('z',wish.z);
+    // gravity + ground
+    vy-=G*dt; pos.y+=vy*dt;
+    const feet=pos.y-EYE;
+    let ground=-1e9;
+    for(const c of colliders){
+      if(pos.x+R>c.minX&&pos.x-R<c.maxX && pos.z+R>c.minZ&&pos.z-R<c.maxZ){
+        if(c.maxY<=feet+STEP && c.maxY>ground) ground=c.maxY;
+      }
+    }
+    if(feet<=ground){ pos.y=ground+EYE; vy=0; }
+  }
+
+  camera.position.copy(pos);
+  camera.rotation.set(pitch,yaw,0);
+
+  // floor label
+  let lbl='Outside';
+  if(pos.y-EYE>=y2-1) lbl='Level 2'; else if(pos.y-EYE>=y1-1) lbl='Level 1'; else if(pos.y-EYE>=yB-1) lbl='Basement';
+  floorEl.textContent = fly ? lbl+' · ✈ Fly' : lbl;
+
+  renderer.render(scene,camera);
+}
+frame();
+</script>
+</body>
+</html>
