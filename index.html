@@ -23,6 +23,7 @@
   #room .name { font-family: var(--label); font-weight: 700; font-size: 30px; line-height: 1; letter-spacing: .02em; margin-top: 4px; text-transform: uppercase; }
   #room .dims { font-size: 13px; margin-top: 6px; color: var(--ink); font-variant-numeric: tabular-nums; }
   #room .sub { font-size: 11px; margin-top: 4px; color: var(--dim); }
+  #room .ahead { font-size: 12px; margin-top: 8px; color: var(--accent); font-variant-numeric: tabular-nums; }
   #mini { bottom: 20px; left: 22px; width: 250px; height: 380px; background: var(--panel); border: 1px solid var(--line); pointer-events: auto; }
   #mini canvas { display: block; width: 100%; height: 100%; }
   #ctl { top: 20px; right: 22px; display: flex; flex-direction: column; gap: 6px; pointer-events: auto; align-items: flex-end; }
@@ -40,11 +41,16 @@
   #prompt .t { font-family: var(--label); font-weight: 700; font-size: 26px; letter-spacing: .06em; text-transform: uppercase; }
   #prompt .s { margin-top: 10px; font-size: 12px; color: var(--dim); line-height: 1.5; }
   #prompt.hidden { display: none; }
-  #legend { bottom: 20px; right: 22px; font-size: 11px; color: var(--dim); text-align: right; line-height: 1.5; }
-  #legend b { color: var(--ink); font-weight: 500; }
+  #scale { bottom: 20px; right: 22px; padding: 12px 14px; background: var(--panel); border: 1px solid var(--line); pointer-events: auto; width: 250px; }
+  #scale .k { font-family: var(--label); font-weight: 600; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+  #scale .row { display: grid; grid-template-columns: 1fr 26px 52px 26px; align-items: center; gap: 4px; font-size: 12px; margin-top: 4px; }
+  #scale .row b { text-align: center; font-weight: 500; font-variant-numeric: tabular-nums; }
+  #scale button { font-family: var(--data); font-size: 14px; line-height: 1; padding: 3px 0; background: transparent; color: var(--ink); border: 1px solid var(--line); cursor: pointer; }
+  #scale button:hover { border-color: var(--accent); color: var(--accent); }
+  #scale .note { font-size: 10px; color: var(--dim); margin-top: 8px; line-height: 1.45; }
   #touch { position: fixed; right: 18px; bottom: 90px; display: none; gap: 10px; }
   @media (pointer: coarse) { #help { display: none; } }
-  @media (max-width: 760px) { #mini { width: 160px; height: 240px; } #room .name { font-size: 22px; } #legend { display: none; } }
+  @media (max-width: 760px) { #mini { width: 160px; height: 240px; } #room .name { font-size: 22px; } #scale { display: none; } }
 </style>
 
 <div id="stage"><canvas id="view"></canvas><canvas id="overlay"></canvas></div>
@@ -54,6 +60,7 @@
   <div class="name" id="roomName">Entry</div>
   <div class="dims" id="roomDims">7'-0" × 8'-1"</div>
   <div class="sub" id="roomSub">first floor</div>
+  <div class="ahead" id="roomAhead"></div>
 </div>
 
 <div class="hud" id="mini"><canvas id="miniCv"></canvas></div>
@@ -67,7 +74,13 @@
 
 <div class="hud" id="help"><b>W A S D</b> walk &nbsp;·&nbsp; <b>mouse</b> look &nbsp;·&nbsp; <b>shift</b> hurry &nbsp;·&nbsp; <b>P</b> plan view &nbsp;·&nbsp; <b>esc</b> release mouse</div>
 
-<div class="hud" id="legend">Scale from PR-01, 3/16" = 1'-0" · 09/27/26<br>walls placed from the drawing's vectors · <b>ceilings assumed 9'-0"</b></div>
+<div class="hud" id="scale">
+  <div class="k">Scale</div>
+  <div class="row"><span>Lens</span><button id="lensM" type="button">−</button><b id="lensV">55°</b><button id="lensP" type="button">+</button></div>
+  <div class="row"><span>Eye height</span><button id="eyeM" type="button">−</button><b id="eyeV">5'-5"</b><button id="eyeP" type="button">+</button></div>
+  <div class="row"><span>Ceiling</span><button id="ceilM" type="button">−</button><b id="ceilV">9'-0"</b><button id="ceilP" type="button">+</button></div>
+  <div class="note">Walls from PR-01 at 3/16" = 1'-0". Heights are not on the sheet.<br>A screen at arm's length covers about 50° of your view.</div>
+</div>
 
 <div id="prompt">
   <div class="card">
@@ -96,10 +109,14 @@
   function fz(py) { return (py - Y0) * PT; }           // feet north is negative z, so the street is at z = 0
   function ft(v) { var f = Math.floor(v + 1e-6), i = Math.round((v - f) * 12); if (i === 12) { f++; i = 0; } return f + "'-" + i + '"'; }
 
-  var CEIL = 9.0;                                      // assumed; not on the sheet
-  var WIN = { sill: 2.6, head: 7.0 };                  // existing house
-  var AWIN = { sill: 3.0, head: 7.6 };                 // addition
-  var DOOR_H = 7.0;
+  // Heights are not on the sheet. Everything the eye uses as a ruler is set to
+  // the standard size: 6'-8" doors, window heads level with the door heads,
+  // 36" counters, 7-1/2" risers. Ceilings are a guess you can change on the page.
+  var CEIL = 9.0;
+  var WIN = { sill: 2.6, head: 6.667 };                // existing house
+  var AWIN = { sill: 3.0, head: 7.333 };               // addition, a taller sash under a 9' ceiling
+  var DOOR_H = 6.667;
+  try { var savedCeil = parseFloat(localStorage.getItem("ts_ceil")); if (savedCeil >= 7.5 && savedCeil <= 10.5) CEIL = savedCeil; } catch (e) {}
 
   // Wall rectangles in points [x1, x2, y1, y2], with the openings cut out of them.
   // "kind": ext (existing exterior, 6"), add (addition exterior, 9"), int (partition).
@@ -227,7 +244,18 @@
   scene.background = new T.Color(0xcfd9e3);
   scene.fog = new T.Fog(0xcfd9e3, 60, 220);
 
-  var camera = new T.PerspectiveCamera(70, 1, 0.1, 400);
+  // The lens is most of what makes a room feel big or small on a screen. Three's
+  // fov is vertical, so a fixed number means a different picture on every
+  // monitor; the horizontal angle is held instead and the vertical follows the
+  // window. A screen at arm's length covers roughly 50 degrees of your view, so
+  // 55 is close to standing there; wider shows more but pushes everything away.
+  var HFOV = 55;
+  try { var savedFov = parseFloat(localStorage.getItem("ts_fov")); if (savedFov >= 35 && savedFov <= 100) HFOV = savedFov; } catch (e) {}
+  var camera = new T.PerspectiveCamera(50, 1, 0.1, 400);
+  function applyLens() {
+    var h = 2 * Math.atan(Math.tan(HFOV * Math.PI / 360) / camera.aspect) * 180 / Math.PI;
+    camera.fov = h; camera.updateProjectionMatrix();
+  }
   var planCam = new T.OrthographicCamera(-1, 1, 1, -1, 0.1, 200);
 
   var sky = new T.HemisphereLight(0xdfe8f2, 0x8c7f6b, 0.75);
@@ -246,6 +274,45 @@
   var ambient = new T.AmbientLight(0xffffff, 0.35);
   scene.add(ambient);
   function lamp(x, z, y, i) { var p = new T.PointLight(0xfff2e0, i || 0.9, 26, 1.6); p.position.set(x, y || CEIL - 0.6, z); scene.add(p); }
+
+  // Procedural floor textures at true size, so the floor itself is a ruler:
+  // 5" oak planks in 4' lengths, 12" bathroom tile, 5-1/2" deck boards.
+  function plankTexture() {
+    var W = 320, H = 1024, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
+    var seed = 3; function rnd() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
+    var pw = W / 6;                                    // six 5" planks across 2'-6"
+    for (var i = 0; i < 6; i++) {
+      var y = -rnd() * H / 2;
+      while (y < H) {
+        var len = H / 2 * (0.6 + rnd() * 0.8);          // 2'-5" to 5'-7" lengths
+        var t = 0.86 + rnd() * 0.28;
+        c.fillStyle = "rgb(" + Math.round(176 * t) + "," + Math.round(134 * t) + "," + Math.round(92 * t) + ")";
+        c.fillRect(i * pw, y, pw, len);
+        c.fillStyle = "rgba(60,40,20,0.35)"; c.fillRect(i * pw, y, pw, 2); c.fillRect(i * pw, y, 2, len);
+        for (var g = 0; g < 6; g++) { c.fillStyle = "rgba(90,60,30," + (0.05 + rnd() * 0.08) + ")"; c.fillRect(i * pw + rnd() * pw, y, 1.5, len); }
+        y += len;
+      }
+    }
+    var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 8; return tex;
+  }
+  function tileTexture() {
+    var S = 256, cv = document.createElement("canvas"); cv.width = S; cv.height = S; var c = cv.getContext("2d");
+    c.fillStyle = "#b9b6ae"; c.fillRect(0, 0, S, S); c.fillStyle = "#d8d5ce"; c.fillRect(4, 4, S - 8, S - 8);
+    var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; return tex;
+  }
+  function deckTexture() {
+    var W = 256, H = 64, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
+    c.fillStyle = "#6f5741"; c.fillRect(0, 0, W, H); c.fillStyle = "#8f7355"; c.fillRect(0, 4, W, H - 8);
+    for (var i = 0; i < 40; i++) { c.fillStyle = "rgba(60,40,25," + (0.08 + (i % 5) * 0.03) + ")"; c.fillRect(0, 6 + (i * 37) % (H - 12), W, 1); }
+    var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; return tex;
+  }
+  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture() };
+  // tile sizes in feet: plank sheet is 2'-6" across by 8' along; tile is 1'; deck board 6" across by 8' along
+  var TEXSIZE = { plank: [2.5, 8], tile: [1, 1], deck: [8, 0.5] };
+  function floorMat(kind, w, d, base) {
+    var tex = TEX[kind].clone(); tex.needsUpdate = true; tex.repeat.set(w / TEXSIZE[kind][0], d / TEXSIZE[kind][1]);
+    return new T.MeshStandardMaterial({ map: tex, color: 0xffffff, roughness: base.roughness });
+  }
 
   var MAT = {
     ext: new T.MeshStandardMaterial({ color: 0xe8e2d6, roughness: 0.92 }),
@@ -269,6 +336,10 @@
     door: new T.MeshStandardMaterial({ color: 0xd9d2c4, roughness: 0.7 }),
     brick: new T.MeshStandardMaterial({ color: 0x8a5a48, roughness: 0.95 }),
     lawn: new T.MeshStandardMaterial({ color: 0x7d9a5c, roughness: 1 }),
+    trim: new T.MeshStandardMaterial({ color: 0xf7f4ee, roughness: 0.7 }),
+    skin: new T.MeshStandardMaterial({ color: 0xc9a78a, roughness: 0.8 }),
+    shirt: new T.MeshStandardMaterial({ color: 0x3f5a7a, roughness: 0.9 }),
+    pants: new T.MeshStandardMaterial({ color: 0x3a3634, roughness: 0.9 }),
     stoop: new T.MeshStandardMaterial({ color: 0xa8a49b, roughness: 0.9 }),
     fire: new T.MeshStandardMaterial({ color: 0x1a1512, roughness: 1 }),
     roof: new T.MeshStandardMaterial({ color: 0x4a4744, roughness: 1 }),
@@ -277,7 +348,14 @@
   };
 
   var colliders = [];                                  // [x1, x2, z1, z2] in feet, walls and furniture
+  var wallBoxes = [];                                  // the solid wall pieces only, for the range finder
   var ceilings = [];
+  var fixLabels = [];
+  var built = [];
+  var _sceneAdd = scene.add;
+  scene.add = function (o) { _sceneAdd.call(scene, o); built.push(o); return scene; };
+  function build() {
+  colliders.length = 0; wallBoxes.length = 0; ceilings.length = 0; fixLabels.length = 0;
   function box(r, y0, y1, mat, opts) {
     opts = opts || {};
     var x1 = fx(r[0]), x2 = fx(r[1]), z1 = fz(r[2]), z2 = fz(r[3]);
@@ -326,10 +404,17 @@
     var len = horiz ? x2 - x1 : z2 - z1;
     for (var d = 0.2; d < len; d += 0.4) { var b = new T.Mesh(new T.BoxGeometry(0.1, 2.95, 0.1), MAT.frame); b.position.set(horiz ? x1 + d : (x1 + x2) / 2, 1.5, horiz ? (z1 + z2) / 2 : z1 + d); scene.add(b); }
   }
+  // Baseboard: 4-1/2" tall and 3/4" proud, around every solid wall piece.
+  function baseboard(r) {
+    var e = 0.06 / PT;
+    box([r[0] - e, r[1] + e, r[2] - e, r[3] + e], 0, 0.375, MAT.trim, { solid: false, shadow: false });
+  }
   WALLS.forEach(function (w) {
     var mat = MAT[w.k], r = w.r;
+    if (!w.door && !w.slider) wallBoxes.push([fx(r[0]), fx(r[1]), fz(r[2]), fz(r[3])]);   // z grows with y, so this is ordered
     if (w.k === "screen") { if (w.screenDoor) screenDoor(r); else screenWall(r); return; }
     if (w.k === "rail") { deckRail(r); return; }
+    if (!w.door && !w.slider) baseboard(r);
     if (w.win) {
       box(r, 0, w.win.sill, mat); box(r, w.win.head, CEIL, mat);
       glassIn(r, w.win.sill, w.win.head);
@@ -416,10 +501,11 @@
     m.receiveShadow = true; m.castShadow = !!(opts && opts.shadow);
     scene.add(m); return m;
   }
-  slab([412.7, 822.0, 392.2, 691.8], 0, MAT.floor, 0.6);           // existing house floor
-  slab([422.4, 812.0, 167.0, 392.2], 0, MAT.floor, 0.6);           // addition floor
-  slab([692.9, 815.2, 399.5, 478.9], 0.02, MAT.tile, 0.02);        // bathroom tile
-  slab(DECK.r, 0, MAT.deck, 0.6);                                   // deck at floor level
+  function texSlab(r, y, kind, thick) { var w = (r[1] - r[0]) * PT, d = (r[3] - r[2]) * PT; return slab(r, y, floorMat(kind, w, d, MAT.floor), thick); }
+  texSlab([412.7, 822.0, 392.2, 691.8], 0, "plank", 0.6);          // existing house floor
+  texSlab([422.4, 812.0, 167.0, 392.2], 0, "plank", 0.6);          // addition floor
+  texSlab([692.9, 815.2, 399.5, 478.9], 0.02, "tile", 0.02);       // bathroom tile
+  texSlab(DECK.r, 0, "deck", 0.6);                                  // deck at floor level
   ceilings.push(slab([412.7, 822.0, 392.2, 691.8], CEIL + 0.5, MAT.ceil, 0.5));
   ceilings.push(slab([422.4, 812.0, 167.0, 392.2], CEIL + 0.5, MAT.ceil, 0.5));
   var roof1 = slab([412.7, 822.0, 392.2, 691.8], CEIL + 1.3, MAT.roof, 0.8, { shadow: true });
@@ -478,7 +564,6 @@
   })();
 
   // ---- furniture and fixtures ----
-  var fixLabels = [];
   function fixLabel(text, x, y, z) {
     var cv = document.createElement("canvas"); cv.width = 384; cv.height = 96; var c = cv.getContext("2d");
     c.fillStyle = "rgba(29,27,23,0.78)"; c.fillRect(0, 0, 384, 96);
@@ -580,6 +665,19 @@
     fixLabel("Island", fx(708.3), 7.6, fz(269.4));
   })();
 
+  // A 5'-10" person standing by the front window of the living room, for scale.
+  (function () {
+    var px = fx(462), pz = fz(655), H = 5.833;
+    function part(w, h, d, x, y, z, m) { var b = new T.Mesh(new T.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.castShadow = true; scene.add(b); }
+    part(0.55, 2.6, 0.7, px - 0.3, 1.3, pz, MAT.pants); part(0.55, 2.6, 0.7, px + 0.3, 1.3, pz, MAT.pants);   // legs to 2'-7"
+    part(1.5, 2.1, 0.8, px, 3.65, pz, MAT.shirt);                                                             // torso to 4'-8"
+    part(0.35, 2.0, 0.4, px - 0.95, 3.6, pz, MAT.shirt); part(0.35, 2.0, 0.4, px + 0.95, 3.6, pz, MAT.shirt); // arms
+    part(0.35, 0.3, 0.4, px, 4.85, pz, MAT.skin);                                                             // neck
+    var head = new T.Mesh(new T.SphereGeometry(0.4, 16, 12), MAT.skin); head.position.set(px, H - 0.4, pz); head.scale.set(0.85, 1, 0.9); head.castShadow = true; scene.add(head);
+    colliders.push([px - 0.8, px + 0.8, pz - 0.4, pz + 0.4]);
+    fixLabel("5'-10\" person", px, H + 0.9, pz);
+  })();
+
   // lamps
   lamp(fx(617), fz(285)); lamp(fx(715), fz(270), CEIL - 0.6, 0.8); lamp(fx(503), fz(542)); lamp(fx(640), fz(630), CEIL - 0.6, 0.7);
   lamp(fx(754), fz(440), CEIL - 0.6, 0.6); lamp(fx(754), fz(626), CEIL - 0.6, 0.6); lamp(fx(660), fz(470), CEIL - 0.6, 0.5);
@@ -598,11 +696,22 @@
     rm.w = w; rm.h = h; rm.dims = ft(w) + " × " + ft(h);
     var sp = labelSprite(rm.n, rm.dims); sp.position.set(fx((rm.r[0] + rm.r[1]) / 2), rm.outside ? 6.5 : CEIL - 1.0, fz((rm.r[2] + rm.r[3]) / 2)); scene.add(sp); rm.sprite = sp;
   });
+  }
+  function rebuild() {
+    built.forEach(function (o) { _sceneAdd.call(scene, o); scene.remove(o); if (o.geometry) o.geometry.dispose(); });
+    built.length = 0;
+    build();
+    applyCeil();
+  }
+  build();
 
   /* ================================================================
      Player
      ================================================================ */
-  var EYE = 5.5, RADIUS = 0.9;
+  // Eye height for a 5'-10" person is about 5'-5". The body radius is what stops
+  // you at a wall; 8" lets you get as close as you would in the real room.
+  var EYE = 5.42, RADIUS = 0.65;
+  try { var savedEye = parseFloat(localStorage.getItem("ts_eye")); if (savedEye >= 3.5 && savedEye <= 7) EYE = savedEye; } catch (e) {}
   var start = { x: fx(664), z: fz(640), yaw: 0 };   // in the entry, facing north up the hall
   var pl = { x: start.x, z: start.z, yaw: start.yaw, pitch: 0 };
   function insideAnyRoom(x, z) { for (var i = 0; i < ROOMS.length; i++) { var r = ROOMS[i]; if (x >= fx(r.r[0]) && x <= fx(r.r[1]) && z <= fz(r.r[3]) && z >= fz(r.r[2])) return r; } return null; }
@@ -657,6 +766,20 @@
   bDraw.addEventListener("click", function () { showDraw = !showDraw; bDraw.classList.toggle("on", showDraw); });
   bCeil.addEventListener("click", function () { showCeil = !showCeil; bCeil.classList.toggle("on", showCeil); applyCeil(); });
   document.getElementById("bReset").addEventListener("click", function () { pl.x = start.x; pl.z = start.z; pl.yaw = start.yaw; pl.pitch = 0; });
+  // scale controls
+  function save(k, v) { try { localStorage.setItem(k, String(v)); } catch (e) {} }
+  function showScale() {
+    document.getElementById("lensV").textContent = Math.round(HFOV) + "°";
+    document.getElementById("eyeV").textContent = ft(EYE);
+    document.getElementById("ceilV").textContent = ft(CEIL);
+  }
+  document.getElementById("lensM").addEventListener("click", function () { HFOV = Math.max(35, HFOV - 5); applyLens(); save("ts_fov", HFOV); showScale(); });
+  document.getElementById("lensP").addEventListener("click", function () { HFOV = Math.min(100, HFOV + 5); applyLens(); save("ts_fov", HFOV); showScale(); });
+  document.getElementById("eyeM").addEventListener("click", function () { EYE = Math.max(3.5, EYE - 1 / 6); save("ts_eye", EYE); showScale(); });
+  document.getElementById("eyeP").addEventListener("click", function () { EYE = Math.min(7, EYE + 1 / 6); save("ts_eye", EYE); showScale(); });
+  document.getElementById("ceilM").addEventListener("click", function () { CEIL = Math.max(7.5, CEIL - 0.5); save("ts_ceil", CEIL); rebuild(); showScale(); });
+  document.getElementById("ceilP").addEventListener("click", function () { CEIL = Math.min(10.5, CEIL + 0.5); save("ts_ceil", CEIL); rebuild(); showScale(); });
+  showScale();
   function applyCeil() { var vis = showCeil && !planMode; ceilings.forEach(function (c) { c.visible = vis; }); ROOMS.forEach(function (r) { r.sprite.visible = planMode; }); }
 
   /* ================================================================
@@ -715,10 +838,10 @@
   /* ================================================================
      Loop
      ================================================================ */
-  var hudName = document.getElementById("roomName"), hudDims = document.getElementById("roomDims"), hudSub = document.getElementById("roomSub");
+  var hudName = document.getElementById("roomName"), hudDims = document.getElementById("roomDims"), hudSub = document.getElementById("roomSub"), hudAhead = document.getElementById("roomAhead");
   var clock = new T.Clock(), moved = false, bobT = 0, camY = EYE;
   function resize() {
-    var w = window.innerWidth, h = window.innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+    var w = window.innerWidth, h = window.innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; applyLens();
     var pw = (PB.x2 - PB.x1) * PT, ph = (PB.y2 - PB.y1) * PT, ar = w / h; var hw = Math.max(pw / 2, ph / 2 * ar) * 1.04, hh = hw / ar;
     planCam.left = -hw; planCam.right = hw; planCam.top = hh; planCam.bottom = -hh; planCam.updateProjectionMatrix();
     var m = document.getElementById("mini"); miniCv.width = m.clientWidth * 2; miniCv.height = m.clientHeight * 2;
@@ -730,7 +853,7 @@
 
   function frame() { tick(Math.min(0.05, clock.getDelta())); requestAnimationFrame(frame); }
   function tick(dt) {
-    var speed = (keys.ShiftLeft || keys.ShiftRight) ? 9 : 4.5;   // ft/s: a walk, or a hurry
+    var speed = (keys.ShiftLeft || keys.ShiftRight) ? 6.5 : 3.2;  // ft/s: an indoor walk (about 2.2 mph), or a hurry
     var f = 0, r = 0;
     if (keys.KeyW || keys.ArrowUp) f += 1; if (keys.KeyS || keys.ArrowDown) f -= 1; if (keys.KeyD || keys.ArrowRight) r += 1; if (keys.KeyA || keys.ArrowLeft) r -= 1;
     if (keys.KeyQ) pl.yaw += 1.6 * dt; if (keys.KeyE) pl.yaw -= 1.6 * dt;
@@ -740,7 +863,7 @@
       moved = true;
       var fwd = { x: -Math.sin(pl.yaw), z: -Math.cos(pl.yaw) }, right = { x: Math.cos(pl.yaw), z: -Math.sin(pl.yaw) };
       move((fwd.x * f + right.x * r) * speed * dt, (fwd.z * f + right.z * r) * speed * dt);
-      bobT += dt * (speed > 5 ? 11 : 8);
+      bobT += dt * (speed > 5 ? 10 : 7);
     }
     var fy = floorY(pl.x, pl.z); camY += (fy + EYE - camY) * Math.min(1, 10 * dt);
     camera.position.set(pl.x, camY + (len > 0.01 ? Math.sin(bobT) * 0.06 : 0), pl.z);
@@ -749,6 +872,16 @@
     for (var li = 0; li < fixLabels.length; li++) { var L = fixLabels[li]; L.visible = !planMode && Math.hypot(L.position.x - pl.x, L.position.z - pl.z) < 18; }
     var rm = insideAnyRoom(pl.x, pl.z);
     hudName.textContent = rm ? rm.n : "Outside"; hudDims.textContent = rm ? rm.dims : "";
+    // Range finder: distance along your line of sight to the nearest wall, so you
+    // can stand in the real room, look at a wall, and compare the two numbers.
+    var dx = -Math.sin(pl.yaw), dz = -Math.cos(pl.yaw), best = 1e9;
+    for (var wi = 0; wi < wallBoxes.length; wi++) {
+      var b = wallBoxes[wi], tmin = -1e9, tmax = 1e9;
+      if (Math.abs(dx) < 1e-6) { if (pl.x < b[0] || pl.x > b[1]) continue; } else { var t1 = (b[0] - pl.x) / dx, t2 = (b[1] - pl.x) / dx; tmin = Math.max(tmin, Math.min(t1, t2)); tmax = Math.min(tmax, Math.max(t1, t2)); }
+      if (Math.abs(dz) < 1e-6) { if (pl.z < b[2] || pl.z > b[3]) continue; } else { var t3 = (b[2] - pl.z) / dz, t4 = (b[3] - pl.z) / dz; tmin = Math.max(tmin, Math.min(t3, t4)); tmax = Math.min(tmax, Math.max(t3, t4)); }
+      if (tmax >= Math.max(tmin, 0) && tmin < best) best = Math.max(tmin, 0);
+    }
+    hudAhead.textContent = best < 200 ? ft(best) + " to the wall ahead" : "";
     hudSub.textContent = rm ? (rm.label || (rm.outside ? "outside" : "clear inside dimensions")) : "grade is 2'-6\" below the floor, assumed";
     if (moved) help.classList.add("faded");
 
@@ -759,6 +892,6 @@
   applyCeil();
   requestAnimationFrame(frame);
 
-  window.__house = { pl: pl, colliders: colliders, ROOMS: ROOMS, WALLS: WALLS, fx: fx, fz: fz, PT: PT, togglePlan: togglePlan, setDraw: function (v) { showDraw = v; bDraw.classList.toggle("on", v); }, drawPlan: drawPlan, camera: camera, planCam: planCam, dismiss: function () { prompt.classList.add("hidden"); }, keys: keys, collide: collide, tick: tick };
+  window.__house = { pl: pl, colliders: colliders, ROOMS: ROOMS, WALLS: WALLS, fx: fx, fz: fz, PT: PT, togglePlan: togglePlan, setDraw: function (v) { showDraw = v; bDraw.classList.toggle("on", v); }, drawPlan: drawPlan, camera: camera, planCam: planCam, dismiss: function () { prompt.classList.add("hidden"); }, keys: keys, collide: collide, tick: tick, setLens: function (v) { HFOV = v; applyLens(); showScale(); }, setCeil: function (v) { CEIL = v; rebuild(); showScale(); }, get EYE() { return EYE; }, get HFOV() { return HFOV; }, get CEIL() { return CEIL; }, wallBoxes: wallBoxes };
 })();
 </script>

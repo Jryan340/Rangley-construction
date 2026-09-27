@@ -66,13 +66,37 @@ half, 12'-6" by 9'-5", with a rail. The split is at the sheet's middle deck
 post. The sheet's deck sofa sat just east of that post, which would put it
 behind the screen door, so it moves to the east rail.
 
+## Scale, and why a room can feel small on a screen
+
+The walls are the right size; what makes a rendered room feel small is almost
+always the lens. A camera's field of view decides how much of the world is
+squeezed onto the screen. A monitor at arm's length covers about 50° of what
+you see, so a render at 50° to 55° looks like standing there. The first
+version of this page used 70° vertical, which on a widescreen monitor is about
+100° across: twice the angle the screen really covers, so every wall was
+pushed away and every room read at about half its size. The lens is now held
+at 55° across regardless of window shape, and there is a **Scale** panel to
+change it. Wider shows more of the room at once; narrower is truer to life.
+
+The other things the eye uses as a ruler are set to the standard sizes, since
+the sheet has no heights: doors 6'-8", window heads level with the door heads,
+counters 36", risers 7-1/2", baseboards 4-1/2". The floor is 5" oak planks in
+random lengths, the bathroom 12" tile, the deck 5-1/2" boards, all at true
+size. A 5'-10" figure stands by the living room's front window. The eye is at
+5'-5", walking is 3.2 ft/s, about 2.2 mph, which is an indoor pace, and the
+body stops 8" from a wall rather than 11".
+
+The readout shows the distance along your line of sight to the wall you are
+facing. Stand in the real room, look at a wall, and compare.
+
 ## What was assumed
 
 The sheet is a plan. It has no heights on it, so:
 
-- **Ceilings are 9'-0"** throughout. Change `CEIL` at the top of the script.
-- **Window sills** are 2'-7" and heads 7'-0" in the existing house; 3'-0" and
-  7'-7" in the addition. Doors are 7'-0".
+- **Ceilings are 9'-0"** throughout. The Scale panel changes it in 6" steps
+  and rebuilds the model; the choice is remembered in the browser.
+- **Window sills** are 2'-7" and heads 6'-8" in the existing house; 3'-0" and
+  7'-4" in the addition. Doors are 6'-8".
 - **Grade** is 2'-6" below the first floor.
 - The **stair** is drawn as twelve risers going up from the entry toward the
   hall and cannot be climbed; the second floor is not built yet. The basement
@@ -108,7 +132,8 @@ Driven through the page's `window.__house` hook:
 | Sheet's wall vectors on the model's walls in plan view | every wall, opening and partition |
 | Every room reachable from the entry on a 6" grid | all, plus porch, deck, stoop and lawn |
 | Passable cells inside a solid wall | 0 |
-| Walking into the kitchen's rear wall stops at the face | 0.9 ft, the body radius |
+| Walking into the kitchen's rear wall stops at the face | 8", the body radius |
+| Range finder against known distances | matches to the inch |
 | Only way from inside to the lawn | the front door |
 
 ## The second floor and basement
