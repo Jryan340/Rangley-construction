@@ -35,7 +35,7 @@ Read back from the model, against the sheet's labels:
 | Hall | | 3'-6" wide beside the stair |
 | Vestibule to the study | | 9'-1" x 3'-6" |
 | Closet | | 4'-11" x 2'-0" |
-| Deck | | 27'-8" x 9'-5" |
+| Screened porch / deck | | 15'-2" x 9'-5" / 12'-6" x 9'-5" |
 | Existing exterior walls | | 6" |
 | Addition exterior walls | | 9-1/4" |
 | Partitions | | 4-1/2" to 5" |
@@ -48,7 +48,7 @@ bottom riser as the room's edge; the sheet's 8'-6" runs under the stair.
 The addition is the kitchen and dining room across the back, 27' wide, with
 three windows on the west wall, two on the east, a 12' four-panel slider onto
 the deck between two more windows, an 8' island with three stools, a 2' deep
-run of counters down the east wall with a double wall oven, and the fridge,
+run of counters down the east wall, and the fridge,
 pantry and a corner cabinet along the old rear wall. The old rear wall is
 opened across 17' between the living room and the hall.
 
@@ -58,6 +58,13 @@ beside the stair, and on the east side the bathroom, a short vestibule off the
 hall with the closet's double doors on one side and the study door on the
 other, and the study with a window front and side. The front door opens onto a
 stoop three steps above the lawn.
+
+The slider opens onto a **screened porch**: the west half of the deck, 15'-2"
+by 9'-5", with knee walls, screens to an 8' beam, a roof, and the sheet's round
+table. A 3' screen door in the partition leads to the **open deck** on the east
+half, 12'-6" by 9'-5", with a rail. The split is at the sheet's middle deck
+post. The sheet's deck sofa sat just east of that post, which would put it
+behind the screen door, so it moves to the east rail.
 
 ## What was assumed
 
@@ -80,9 +87,10 @@ down the hall and one down the east side of the study, are built as runner
 rugs.
 
 The kitchen's fixed pieces are built to read as what they are: a french-door
-fridge with a freezer drawer, a two-door pantry cabinet beside it, and the
-double wall oven in the counter run. Each carries a small floating label that
-shows when you are within about 18' of it.
+fridge with a freezer drawer and a two-door pantry cabinet beside it. Those,
+the island and the coffee bar carry a small floating label that shows when you
+are within about 18' of them. The sheet's double wall oven in the east counter
+run is left out on request; that stretch is counter.
 
 Furniture follows the sheet's placement but is blocks: it is there for scale
 and to keep you from walking through the dining table, not for looks.
@@ -94,7 +102,7 @@ Driven through the page's `window.__house` hook:
 | Check | Result |
 |---|---|
 | Sheet's wall vectors on the model's walls in plan view | every wall, opening and partition |
-| Every room reachable from the entry on a 6" grid | all, plus deck, stoop and lawn |
+| Every room reachable from the entry on a 6" grid | all, plus porch, deck, stoop and lawn |
 | Passable cells inside a solid wall | 0 |
 | Walking into the kitchen's rear wall stops at the face | 0.9 ft, the body radius |
 | Only way from inside to the lawn | the front door |
