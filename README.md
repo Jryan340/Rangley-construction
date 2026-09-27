@@ -71,12 +71,18 @@ The sheet is a plan. It has no heights on it, so:
   hall and cannot be climbed; the second floor is not built yet. The basement
   stair beneath it is not modelled.
 
-Two elements on the sheet are unlabelled and were read as follows. The U of
-wall-weight lines at the kitchen seam, 6'-11" wide and open to the kitchen, is
-built as a 3' bench with a back on the old wall line and two short returns.
-The two hairline rectangles 2'-7" wide, one down the hall and one down the
-east side of the study, are built as runner rugs. Both guesses are marked
-`flag` in the fixture list and are easy to change.
+Two elements on the sheet are unlabelled. The U of wall-weight lines at the
+kitchen seam, 6'-11" wide and open to the kitchen, is the coffee bar: a
+counter with base cabinets between two full-height returns, an espresso
+machine and grinder, a floating shelf, and a television on the back wall,
+which sits on the old wall line. The two hairline rectangles 2'-7" wide, one
+down the hall and one down the east side of the study, are built as runner
+rugs.
+
+The kitchen's fixed pieces are built to read as what they are: a french-door
+fridge with a freezer drawer, a two-door pantry cabinet beside it, and the
+double wall oven in the counter run. Each carries a small floating label that
+shows when you are within about 18' of it.
 
 Furniture follows the sheet's placement but is blocks: it is there for scale
 and to keep you from walking through the dining table, not for looks.
