@@ -455,6 +455,10 @@
     var s = FIREPLACE.surround; box(s, 0, 4.6, MAT.stone);
     var fb = new T.Mesh(new T.BoxGeometry(0.3, 2.6, 3.4), MAT.fire); fb.position.set(fx(s[1]) - 0.1, 1.5, fz((s[2] + s[3]) / 2)); scene.add(fb);
     var mantel = new T.Mesh(new T.BoxGeometry(0.9, 0.25, (s[3] - s[2]) * PT + 0.6), MAT.wood); mantel.position.set(fx(s[1]) + 0.2, 4.7, fz((s[2] + s[3]) / 2)); mantel.castShadow = true; scene.add(mantel);
+    // television on the chimney breast above the mantel, facing the couch
+    var wallX = fx(s[0]), tz = fz((s[2] + s[3]) / 2);
+    var tvB = new T.Mesh(new T.BoxGeometry(0.12, 2.6, 4.6), MAT.fire); tvB.position.set(wallX + 0.1, 6.5, tz); scene.add(tvB);
+    var tvS = new T.Mesh(new T.BoxGeometry(0.02, 2.4, 4.4), new T.MeshStandardMaterial({ color: 0x1c2a36, roughness: 0.2, metalness: 0.3, emissive: 0x0d1720 })); tvS.position.set(wallX + 0.17, 6.5, tz); scene.add(tvS);
   })();
 
   // ---- stair: rises from the entry north toward the hall ----
