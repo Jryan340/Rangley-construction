@@ -92,8 +92,11 @@ the island and the coffee bar carry a small floating label that shows when you
 are within about 18' of them. The sheet's double wall oven in the east counter
 run is left out on request; that stretch is counter.
 
-Furniture follows the sheet's placement but is blocks: it is there for scale
-and to keep you from walking through the dining table, not for looks.
+Furniture follows the sheet's placement and is mostly blocks, there for
+scale and to keep you from walking through the dining table. The living
+room keeps the one couch, built as a couch with cushions, back and arms,
+with the coffee table and side tables; the sheet's two armchairs and the
+media console are left out on request.
 
 ## Checks
 

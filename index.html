@@ -188,13 +188,10 @@
     { n: "table", r: [478.9, 607.2, 257.0, 300.1], h: 2.5, m: "wood", table: true },
     { n: "runner", r: [645.0, 680.0, 406.0, 569.0], h: 0.04, m: "rug", rug: true },
     { n: "runner", r: [766.9, 802.3, 487.3, 648.7], h: 0.04, m: "rug", rug: true },
-    { n: "sofa", r: [540.0, 586.0, 478.0, 602.0], h: 2.6, m: "cloth" },
+    { n: "couch", r: [540.0, 586.0, 478.0, 602.0], h: 2.6, m: "cloth", couch: true },
     { n: "side table", r: [542.5, 580.7, 455.9, 475.9], h: 2.0, m: "wood" },
     { n: "side table", r: [542.5, 580.7, 609.5, 629.5], h: 2.0, m: "wood" },
-    { n: "media", r: [423.6, 436.9, 414.8, 479.3], h: 2.0, m: "cab" },
-    { n: "chair", r: [461.0, 484.0, 432.0, 471.0], h: 2.4, m: "cloth" },
     { n: "coffee", r: [468.0, 517.0, 504.0, 582.0], h: 1.4, m: "wood", table: true },
-    { n: "chair", r: [447.0, 491.0, 628.0, 674.0], h: 2.4, m: "cloth" },
     { n: "bench", r: [640.7, 684.0, 658.4, 681.0], h: 1.6, m: "wood" },
     { n: "desk", r: [698.3, 738.2, 585.0, 670.1], h: 2.5, m: "wood", table: true },
     { n: "desk chair", r: [742.0, 764.0, 612.0, 640.0], h: 2.6, m: "cloth" },
@@ -263,6 +260,8 @@
     stone: new T.MeshStandardMaterial({ color: 0xe6e3dd, roughness: 0.3 }),
     steel: new T.MeshStandardMaterial({ color: 0x9aa0a6, roughness: 0.35, metalness: 0.7 }),
     cloth: new T.MeshStandardMaterial({ color: 0x7c8b7a, roughness: 0.95 }),
+    couch: new T.MeshStandardMaterial({ color: 0x8a7f70, roughness: 1 }),
+    cushion: new T.MeshStandardMaterial({ color: 0x9d9384, roughness: 1 }),
     rug: new T.MeshStandardMaterial({ color: 0x8b4a3c, roughness: 1 }),
     white: new T.MeshStandardMaterial({ color: 0xf4f4f2, roughness: 0.4 }),
     glass: new T.MeshStandardMaterial({ color: 0xcfe3f0, roughness: 0.08, metalness: 0.1, transparent: true, opacity: 0.28, side: T.DoubleSide, depthWrite: false }),
@@ -526,7 +525,23 @@
     fixLabel("Coffee bar", cx, 7.9, cz);
   }
 
+  // A couch with its back to the hall wall, facing the fireplace: a seat frame,
+  // three cushions, a back and two arms, plus the collision box of the whole.
+  function buildCouch(r) {
+    var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]), cx = (x1 + x2) / 2, cz = (zN + zS) / 2;
+    var len = zS - zN, dep = x2 - x1, arm = 0.55, back = 0.75;
+    plank(dep, 1.1, len, cx, 0.55, cz, MAT.couch);                                   // frame
+    var seatD = dep - back - 0.1, seatX = x1 + seatD / 2 + 0.05, inner = len - 2 * arm;
+    for (var i = 0; i < 3; i++) plank(seatD, 0.55, inner / 3 - 0.08, seatX, 1.38, zN + arm + inner * (i + 0.5) / 3, MAT.cushion);
+    plank(back, 1.7, inner, x2 - back / 2, 1.95, cz, MAT.couch);                     // back
+    for (var j = 0; j < 3; j++) plank(0.45, 1.25, inner / 3 - 0.1, x2 - back - 0.2, 2.15, zN + arm + inner * (j + 0.5) / 3, MAT.cushion);  // back cushions
+    plank(dep, 2.05, arm, cx, 1.03, zN + arm / 2, MAT.couch);                         // arms
+    plank(dep, 2.05, arm, cx, 1.03, zS - arm / 2, MAT.couch);
+    colliders.push([x1, x2, zN, zS]);
+  }
+
   STUFF.forEach(function (s) {
+    if (s.couch) { buildCouch(s.r); return; }
     if (s.fridge) { buildFridge(s.r); return; }
     if (s.pantry) { buildPantry(s.r); return; }
     if (s.coffee) { buildCoffee(s.r); return; }
