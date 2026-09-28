@@ -1029,6 +1029,11 @@
     plank(dep, 2.05, arm, cx, 1.03, zN + arm / 2, MAT.couch);                         // arms
     plank(dep, 2.05, arm, cx, 1.03, zS - arm / 2, MAT.couch);
     colliders.push([x1, x2, zN, zS]);
+    // a framed landscape on the wall behind the couch
+    var wallX = fx(587.5) - 0.02, artW = 4.2, artH = 2.9, artY = 5.4;
+    plank(0.1, artH + 0.3, artW + 0.3, wallX - 0.05, artY, cz, MAT.ironBlk);
+    plank(0.02, artH, artW, wallX - 0.11, artY, cz, MAT.white);
+    var pic = new T.Mesh(new T.BoxGeometry(0.02, artH - 0.5, artW - 0.5), new T.MeshStandardMaterial({ map: TEX.frameArt, roughness: 0.9 })); pic.position.set(wallX - 0.13, artY, cz); scene.add(pic);
   }
 
   // Shiplap on a wall face. `n` is the direction the face looks.
