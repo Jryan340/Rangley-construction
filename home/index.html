@@ -442,9 +442,7 @@
   var STUFF0 = [
     { n: "toilet", r: b0([471.0, 491.0, 458.0, 485.0]), toilet: true, face: "n" },
     { n: "vanity", r: b0([507.0, 540.0, 460.0, 485.0]), h: 2.8, m: "cab" },
-    { n: "sectional", r: b0([481.0, 520.0, 242.0, 393.0]), h: 2.4, m: "cloth" }, { n: "sectional", r: b0([520.0, 563.0, 355.0, 393.0]), h: 2.4, m: "cloth" },
-    { n: "ottoman", r: b0([550.0, 602.0, 262.0, 314.0]), h: 1.4, m: "leather" },
-    { n: "armchair", r: b0([586.0, 622.0, 209.0, 252.0]), h: 2.6, m: "cloth" },
+    { n: "couch", r: b0([476.0, 516.0, 258.0, 352.0]), recCouch: true },
     { n: "console", r: b0([645.0, 661.0, 229.0, 360.0]), h: 1.8, m: "cab" },
     { n: "treadmill", r: b0([782.0, 818.0, 203.0, 281.0]), h: 0.8, m: "fire" },
     { n: "bench", r: b0([694.0, 753.0, 229.0, 255.0]), h: 1.5, m: "fire" },
@@ -2080,7 +2078,23 @@
     var bowl = new T.Mesh(new T.CylinderGeometry(0.28, 0.18, 0.16, 14), MAT.stone); bowl.position.set(x2 - 0.55, 2.69, cz); scene.add(bowl);
   }
 
+  // The rec room's couch: a seven-foot sofa against the west wall facing the
+  // television, with arms, a back, three seat cushions and two pillows, and
+  // the rest of the floor left clear for the kids.
+  function buildRecCouch(r) {
+    var x1 = fx(r[0]), x2 = fx(r[1]), z1 = fz(r[2]), z2 = fz(r[3]), cx = (x1 + x2) / 2, cz = (z1 + z2) / 2, d = x2 - x1, len = z2 - z1;
+    var fab = new T.MeshStandardMaterial({ color: 0xd7cdbd, roughness: 1 });
+    plank(d, 0.9, len, cx, 0.75, cz, fab);                                                  // base
+    plank(0.5, 1.9, len, x1 + 0.25, 1.25, cz, fab);                                           // back
+    [z1 + 0.35, z2 - 0.35].forEach(function (az) { plank(d, 1.6, 0.7, cx, 1.1, az, fab); });  // arms
+    for (var i = 0; i < 3; i++) { var sz = z1 + 0.7 + (len - 1.4) * (i + 0.5) / 3; plank(d - 0.6, 0.45, (len - 1.4) / 3 - 0.08, cx + 0.2, 1.42, sz, fab); plank(0.5, 1.2, (len - 1.4) / 3 - 0.12, x1 + 0.6, 2.2, sz, fab); }
+    [[z1 + 1.5, MAT.pillowBlue], [z2 - 1.5, MAT.taupe]].forEach(function (pp) { var pl2 = plank(0.4, 1.0, 1.0, x1 + 0.95, 2.15, pp[0], pp[1]); pl2.rotation.z = -0.2; });
+    [[x1 + 0.3, z1 + 0.3], [x2 - 0.3, z1 + 0.3], [x1 + 0.3, z2 - 0.3], [x2 - 0.3, z2 - 0.3]].forEach(function (lp) { var lg = new T.Mesh(new T.CylinderGeometry(0.08, 0.06, 0.3, 8), MAT.walnut); lg.position.set(lp[0], 0.15, lp[1]); scene.add(lg); });
+    colliders.push([x1, x2, z1, z2]);
+  }
+
   STUFF.forEach(function (s) {
+    if (s.recCouch) { buildRecCouch(s.r); return; }
     if (s.console) { buildConsole(s.r); return; }
     if (s.laundry) { buildLaundry(s.r); return; }
     if (s.primaryCloset) { buildPrimaryCloset(s.r); return; }
