@@ -564,7 +564,7 @@
     c.fillStyle = "#8f7a5c"; for (var y = 50; y < H - 40; y += 56) for (var x = 50; x < W - 40; x += 56) { c.beginPath(); c.moveTo(x, y - 18); c.lineTo(x + 18, y); c.lineTo(x, y + 18); c.lineTo(x - 18, y); c.closePath(); c.fill(); }
     var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
   }
-  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), porchCeil: deckTexture("#8b8378", "#665f56"), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture(), greyRug: greyRugTexture(), art: artTexture(), marble: marbleTexture(), frameArt: frameArtTexture(), warmArt: warmArtTexture(), botanical: botanicalTexture(), mono: monoTexture(), stripe: stripeRugTexture(), persian: persianRugTexture(), slate: slateTileTexture(), shingle: shingleTexture(), concrete: concreteTexture(), darkSubway: subwayTexture("#3b3e42", "#25272a"), pebble: pebbleTexture() };
+  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), porchCeil: deckTexture("#8b8378", "#665f56"), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture(), greyRug: greyRugTexture(), art: artTexture(), marble: marbleTexture(), frameArt: frameArtTexture(), warmArt: warmArtTexture(), botanical: botanicalTexture(), mono: monoTexture(), stripe: stripeRugTexture(), persian: persianRugTexture(), slate: slateTileTexture(), shingle: shingleTexture(), concrete: concreteTexture(), lap: lapTexture(), darkSubway: subwayTexture("#3b3e42", "#25272a"), pebble: pebbleTexture() };
   function marbleTexture() {
     var S = 512, cv = document.createElement("canvas"); cv.width = S; cv.height = S; var c = cv.getContext("2d");
     c.fillStyle = "#efece6"; c.fillRect(0, 0, S, S);
@@ -640,6 +640,13 @@
     for (var row = 0; row < 8; row++) { var y = row * 32; for (var t = 0; t < 8; t++) { var x = ((t * 32) + (row % 2) * 16 + rnd() * 4) % W; var g = 60 + rnd() * 30 | 0; c.fillStyle = "rgb(" + g + "," + (g - 3) + "," + (g - 6) + ")"; c.fillRect(x, y, 30, 28); } c.fillStyle = "rgba(0,0,0,0.45)"; c.fillRect(0, y + 28, W, 4); }
     var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; return tex;
   }
+  function lapTexture() {
+    // vinyl lap siding: courses with a shadow line under each lap; only the vertical axis matters
+    var W = 64, H = 256, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
+    var g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#f2f0ec"); g.addColorStop(0.85, "#e4e0d9"); g.addColorStop(1, "#b9b4ab"); c.fillStyle = g; c.fillRect(0, 0, W, H);
+    c.fillStyle = "rgba(60,56,50,0.45)"; c.fillRect(0, H - 14, W, 14);
+    var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; return tex;
+  }
   function concreteTexture() {
     // poured foundation: mottled grey with faint form lines
     var W = 256, H = 256, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
@@ -709,7 +716,7 @@
     rug: new T.MeshStandardMaterial({ color: 0x8b4a3c, roughness: 1 }),
     white: new T.MeshStandardMaterial({ color: 0xf4f4f2, roughness: 0.4 }),
     glass: new T.MeshStandardMaterial({ color: 0xcfe3f0, roughness: 0.08, metalness: 0.1, transparent: true, opacity: 0.28, side: T.DoubleSide, depthWrite: false }),
-    frame: new T.MeshStandardMaterial({ color: 0x2d2a26, roughness: 0.6 }),
+    frame: new T.MeshStandardMaterial({ color: 0x111111, roughness: 0.45 }),   // black window frames
     door: new T.MeshStandardMaterial({ color: 0xb08b62, roughness: 0.65 }),   // oak, so a door never reads as wall
     brick: new T.MeshStandardMaterial({ color: 0x8a5a48, roughness: 0.95 }),
     lawn: new T.MeshStandardMaterial({ color: 0x7d9a5c, roughness: 1 }),
@@ -847,6 +854,7 @@
     if (w.k === "rail") { deckRail(r); return; }
     if (w.k === "guard") { box(r, 0, 3.0, MAT.int); var gx1 = fx(r[0]), gx2 = fx(r[1]), gz1 = fz(r[2]), gz2 = fz(r[3]); var cap = new T.Mesh(new T.BoxGeometry(gx2 - gx1 + 0.2, 0.2, gz2 - gz1 + 0.2), MAT.pull); cap.position.set((gx1 + gx2) / 2, 3.1, (gz1 + gz2) / 2); scene.add(cap); return; }
     if (!w.door && !w.slider) baseboard(r);
+    if (w.k === "ext" || w.k === "add") { if (w.win) { cladOut(w, 0, w.win.sill); cladOut(w, w.win.head, CEIL); } else if (w.door) cladOut(w, DOOR_H, CEIL); else if (!w.slider) cladOut(w, 0, CEIL); }
     if (w.win) {
       box(r, 0, w.win.sill, mat); box(r, w.win.head, CEIL, mat);
       glassIn(r, w.win.sill, w.win.head);
@@ -859,6 +867,19 @@
     } else box(r, 0, CEIL, mat);
   });
 
+  // Vinyl lap siding on the outside face of an exterior wall piece: a thin
+  // plank just proud of the wall, its courses 6-1/2" and aligned by height so
+  // the pieces above and below a window line up.
+  var HCX = fx(617.0), HCZ = fz(430.0), SIDING = 0xd8d3c8;
+  function cladOut(w, y0, y1) {
+    if (y1 - y0 < 0.05) return;
+    var r = w.r, x1 = fx(r[0]), x2 = fx(r[1]), z1 = fz(r[2]), z2 = fz(r[3]), cx = (x1 + x2) / 2, cz = (z1 + z2) / 2, thinX = (x2 - x1) < (z2 - z1);
+    var lt = TEX.lap.clone(); lt.needsUpdate = true; lt.repeat.set(1, (y1 - y0) / 0.55); lt.offset.set(0, (y0 / 0.55) % 1);
+    var m = new T.MeshStandardMaterial({ map: lt, color: SIDING, roughness: 0.85 }), pl;
+    if (thinX) { var nx = cx > HCX ? 1 : -1; pl = plank(0.08, y1 - y0, z2 - z1, (nx > 0 ? x2 : x1) + nx * 0.05, (y0 + y1) / 2, cz, m); }
+    else { var nz = cz > HCZ ? 1 : -1; pl = plank(x2 - x1, y1 - y0, 0.08, cx, (y0 + y1) / 2, (nz > 0 ? z2 : z1) + nz * 0.05, m); }
+    pl.castShadow = false;
+  }
   function glassIn(r, sill, head) {
     var horiz = (r[1] - r[0]) > (r[3] - r[2]);
     var x1 = fx(r[0]), x2 = fx(r[1]), z1 = fz(r[2]), z2 = fz(r[3]);
@@ -967,7 +988,10 @@
   }
   // A footprint rectangle with the stairwell cut out of it, as up to four pieces.
   function aroundWell(r, hole) {
-    var w = hole || STAIRWELL, out = [];
+    var h0 = hole || STAIRWELL, out = [];
+    // clip the hole to the rectangle; a hole that misses it leaves it whole
+    var w = [Math.max(h0[0], r[0]), Math.min(h0[1], r[1]), Math.max(h0[2], r[2]), Math.min(h0[3], r[3])];
+    if (w[0] >= w[1] || w[2] >= w[3]) return [r];
     if (w[0] > r[0]) out.push([r[0], w[0], r[2], r[3]]);
     if (w[1] < r[1]) out.push([w[1], r[1], r[2], r[3]]);
     if (w[2] > r[2]) out.push([w[0], w[1], r[2], w[2]]);
@@ -1061,6 +1085,24 @@
       colliders.push([x - r, x + r, z - r, z + r]);
     }
     tree(50.7, -49.6, 26); tree(-20.4, -84.8, 28); tree(-26.3, -93.4, 24); tree(72.2, -78.6, 24); tree(1.1, 36.8, 6); tree(-23.1, 37.0, 6);
+    // curb appeal: white corner boards, mulched foundation beds either side of the walk with boxwoods,
+    // hydrangeas at the corners, an arborvitae at each end, and a Japanese maple in the lawn
+    var topY = FLOOR2 + CEIL + 0.5;
+    [[fx(412.7) - 0.05, fz(691.8) + 0.05], [fx(822.0) + 0.05, fz(691.8) + 0.05], [fx(412.7) - 0.05, fz(392.2) - 0.3], [fx(822.0) + 0.05, fz(392.2) - 0.3], [fx(422.4) - 0.05, fz(167.0) - 0.05], [fx(812.0) + 0.05, fz(167.0) - 0.05]].forEach(function (c) { var g0 = grade(c[0], c[1]); var cb = new T.Mesh(new T.BoxGeometry(0.5, topY - g0, 0.5), MAT.trim); cb.position.set(c[0], (topY + g0) / 2, c[1]); scene.add(cb); });
+    var mulch = new T.MeshStandardMaterial({ color: 0x4a3324, roughness: 1 }), box2 = new T.MeshStandardMaterial({ color: 0x3f6b35, roughness: 1 }), hyd = new T.MeshStandardMaterial({ color: 0x5f8a4a, roughness: 1 }), arb = new T.MeshStandardMaterial({ color: 0x2f5a30, roughness: 1 });
+    var fz0 = fz(691.8), sx1 = fx(570.0) - 1.0, sx2 = fx(658.0) + 1.0;
+    ground(fx(412.7) - 0.6, sx1, fz0, fz0 + 3.6, mulch, 0.05); ground(sx2, fx(822.0) + 0.6, fz0, fz0 + 3.6, mulch, 0.05);
+    function shrub(x, z, rad, mat, blooms) { var g0 = grade(x, z), b = new T.Mesh(new T.SphereGeometry(rad, 10, 8), mat); b.position.set(x, g0 + rad * 0.85, z); b.scale.set(1, 0.85, 1); b.castShadow = true; scene.add(b);
+      if (blooms) for (var k = 0; k < 7; k++) { var bl = new T.Mesh(new T.SphereGeometry(0.28, 7, 5), MAT.bloom); bl.position.set(x + Math.cos(k * 0.9) * rad * 0.7, g0 + rad * 0.85 + Math.sin(k * 1.7) * rad * 0.4 + 0.3, z + Math.sin(k * 0.9) * rad * 0.7); scene.add(bl); }
+      colliders.push([x - rad, x + rad, z - rad, z + rad]); }
+    for (var bx = fx(412.7) + 2.6; bx < sx1 - 1.0; bx += 2.6) shrub(bx, fz0 + 1.7, 1.1, box2, false);
+    for (var bx2 = sx2 + 1.6; bx2 < fx(822.0) - 1.4; bx2 += 2.6) shrub(bx2, fz0 + 1.7, 1.1, box2, false);
+    shrub(sx1 - 2.0, fz0 + 2.2, 1.6, hyd, true); shrub(sx2 + 2.0, fz0 + 2.2, 1.6, hyd, true);
+    [[fx(412.7) + 1.2, fz0 + 1.8], [fx(822.0) - 1.2, fz0 + 1.8]].forEach(function (a) { var g0 = grade(a[0], a[1]), cone = new T.Mesh(new T.ConeGeometry(1.3, 7.0, 10), arb); cone.position.set(a[0], g0 + 3.5, a[1]); cone.castShadow = true; scene.add(cone); colliders.push([a[0] - 1.2, a[0] + 1.2, a[1] - 1.2, a[1] + 1.2]); });
+    (function () { var mx = fx(470.0), mz = fz0 + 13.0, g0 = grade(mx, mz), red = new T.MeshStandardMaterial({ color: 0x8a2c2c, roughness: 1 });
+      var tr = new T.Mesh(new T.CylinderGeometry(0.22, 0.32, 6.0, 8), MAT.walnut); tr.position.set(mx, g0 + 3.0, mz); tr.castShadow = true; scene.add(tr);
+      [[0, 7.5, 0, 4.2], [-2.6, 6.3, 1.2, 2.8], [2.4, 6.6, -1.4, 2.6], [0.8, 9.0, 1.8, 2.4]].forEach(function (c) { var cn = new T.Mesh(new T.SphereGeometry(c[3], 9, 7), red); cn.position.set(mx + c[0], g0 + c[1], mz + c[2]); cn.scale.set(1, 0.6, 1); cn.castShadow = true; scene.add(cn); });
+      colliders.push([mx - 0.4, mx + 0.4, mz - 0.4, mz + 0.4]); })();
     // a garden shed in the back-right corner of the lot, after the owner's photo but in the house's colours:
     // 8 by 10, gable roof with the ridge east-west, door on the side facing the house, a window either side of it with black shutters and flower boxes
     (function () {
@@ -1093,8 +1135,8 @@
       colliders.push([sx1 - 0.2, sx2 + 0.2, sz1 - 0.2, sz2 + 1.7]);
       fixLabel("Shed", cx, g0 + 1.0 + H + rise + 1.5, cz);
     })();
-    fixLabel("Front yard: 30' from the sidewalk to the house", 15.0, grade(15, 17) + 5.0, 17.0);
-    fixLabel("Back yard: 54' from the deck to the rear line", 15.0, grade(15, -75) + 5.0, -75.0);
+    fixLabel("Front yard: 30' from the sidewalk to the house", 15.0, grade(15, 17) + 9.0, 17.0);
+    fixLabel("Back yard: 54' from the deck to the rear line", 15.0, grade(15, -75) + 9.0, -75.0);
   })();
   // the rim of the first floor, between the basement walls and the floor above
   [[412.7, 822.0, 392.2, 691.8], [422.4, 812.0, 167.0, 392.2]].forEach(function (r) {
