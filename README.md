@@ -62,6 +62,20 @@ shower and a water closet; a vestibule between them; and the closet, 8'-4" x
 7'-1" against 8'6" x 7', with a window. Over the existing house, three
 bedrooms, a bath with a shower, the hall, the stairwell, and five closets.
 
+The stairwell in the second floor is cut over the upper part of the stair
+only, to where the sheet draws the stair's break line and its east wall
+stops; the lower third of the stair passes under the second floor, and the
+floor over it is part of the hall. A knee wall with a black rail guards the
+hole's open edges.
+
+The kids' bath is dressed after the powder-room reference: black shiplap on
+the vanity wall, white on the rest, the rustic open vanity, a round mirror,
+lanterns, a shelf over the toilet, a towel bar and a rug, with the sheet's
+shower in white subway tile and glass. Its east window, which the sheet puts
+inside the shower, is made small and high: 2' wide with a 5' sill, in place
+of the sheet's 3'-3" wide, 2'-7" sill. That and the dropped bedroom window
+are the two places the model departs from the sheet's openings.
+
 Heights are again assumed: floor to floor 10'-0", the 9' ceiling plus a foot
 of structure. The stair climbs that in sixteen risers over the sheet's run,
 which makes it steep; the sheet's stair is shorter than a straight run to a
@@ -168,8 +182,7 @@ bed, a large rug, a curved armchair in the corner from the sheet, curtains at
 the west and north windows, and a television on a console on the wall
 opposite the bed. That wall carries three of the sheet's windows; the middle
 one is dropped, on request, so the television hangs on solid wall between
-the other two. That is the one place the model departs from the sheet's
-openings.
+the other two.
 
 ## What was assumed
 
