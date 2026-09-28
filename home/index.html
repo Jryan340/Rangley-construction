@@ -240,9 +240,8 @@
     { n: "table", r: [478.9, 607.2, 257.0, 300.1], h: 2.5, m: "wood", dining: true },
     { n: "runner", r: [645.0, 680.0, 406.0, 569.0], h: 0.04, m: "rug", rug: true },
     { n: "couch", r: [540.0, 586.0, 478.0, 602.0], h: 2.6, m: "cloth", couch: true },
-    { n: "side table", r: [542.5, 580.7, 455.9, 475.9], h: 2.0, m: "wood" },
-    { n: "side table", r: [542.5, 580.7, 609.5, 629.5], h: 2.0, m: "wood" },
-    { n: "coffee", r: [476.0, 511.0, 515.0, 571.0], h: 1.4, m: "wood", table: true },   // smaller than the sheet's, to leave room to walk around it
+    { n: "living", r: [419.5, 587.5, 399.5, 685.1], living: true },
+
     { n: "bench", r: [640.7, 684.0, 658.4, 681.0], h: 1.6, m: "wood" },
     { n: "study", r: [692.9, 815.2, 568.6, 685.1], study: true },
     { n: "bath", r: [692.9, 815.2, 399.5, 478.9], bath: true },
@@ -546,8 +545,8 @@
     stone: new T.MeshStandardMaterial({ color: 0xe6e3dd, roughness: 0.3 }),
     steel: new T.MeshStandardMaterial({ color: 0x9aa0a6, roughness: 0.35, metalness: 0.7 }),
     cloth: new T.MeshStandardMaterial({ color: 0x7c8b7a, roughness: 0.95 }),
-    couch: new T.MeshStandardMaterial({ color: 0x8a7f70, roughness: 1 }),
-    cushion: new T.MeshStandardMaterial({ color: 0x9d9384, roughness: 1 }),
+    couch: new T.MeshStandardMaterial({ color: 0xd8cfc0, roughness: 1 }),      // cream linen
+    cushion: new T.MeshStandardMaterial({ color: 0xe4ddd0, roughness: 1 }),
     rug: new T.MeshStandardMaterial({ color: 0x8b4a3c, roughness: 1 }),
     white: new T.MeshStandardMaterial({ color: 0xf4f4f2, roughness: 0.4 }),
     glass: new T.MeshStandardMaterial({ color: 0xcfe3f0, roughness: 0.08, metalness: 0.1, transparent: true, opacity: 0.28, side: T.DoubleSide, depthWrite: false }),
@@ -830,7 +829,7 @@
   (function () {
     var s = FIREPLACE.surround; box(s, 0, 4.6, MAT.stone);
     var fb = new T.Mesh(new T.BoxGeometry(0.3, 2.6, 3.4), MAT.fire); fb.position.set(fx(s[1]) - 0.1, 1.5, fz((s[2] + s[3]) / 2)); scene.add(fb);
-    var mantel = new T.Mesh(new T.BoxGeometry(0.9, 0.25, (s[3] - s[2]) * PT + 0.6), MAT.wood); mantel.position.set(fx(s[1]) + 0.2, 4.7, fz((s[2] + s[3]) / 2)); mantel.castShadow = true; scene.add(mantel);
+    var mantel = new T.Mesh(new T.BoxGeometry(0.9, 0.25, (s[3] - s[2]) * PT + 0.6), MAT.seatWood); mantel.position.set(fx(s[1]) + 0.2, 4.7, fz((s[2] + s[3]) / 2)); mantel.castShadow = true; scene.add(mantel);
     // television on the chimney breast above the mantel, facing the couch
     var wallX = fx(s[0]), tz = fz((s[2] + s[3]) / 2);
     var tvB = new T.Mesh(new T.BoxGeometry(0.12, 2.6, 4.6), MAT.fire); tvB.position.set(wallX + 0.1, 6.5, tz); scene.add(tvB);
@@ -1069,6 +1068,9 @@
     plank(dep, 2.05, arm, cx, 1.03, zN + arm / 2, MAT.couch);                         // arms
     plank(dep, 2.05, arm, cx, 1.03, zS - arm / 2, MAT.couch);
     colliders.push([x1, x2, zN, zS]);
+    // pillows against the back, a throw over one end
+    [[zN + arm + 0.9, MAT.white], [zN + arm + 2.2, MAT.taupe], [zS - arm - 0.9, MAT.white], [zS - arm - 2.2, MAT.pillowBlue]].forEach(function (pw, i) { var pl = new T.Mesh(new T.BoxGeometry(0.35, 1.3, 1.3), pw[1]); pl.position.set(x2 - back - 0.35, 2.3, pw[0]); pl.rotation.x = (i % 2 ? 0.12 : -0.08); scene.add(pl); });
+    plank(dep - back, 0.12, 1.8, x1 + (dep - back) / 2, 1.72, zS - arm - 1.2, MAT.taupe);
     // a framed landscape on the wall behind the couch
     var wallX = fx(587.5) - 0.02, artW = 4.2, artH = 2.9, artY = 5.4;
     plank(0.1, artH + 0.3, artW + 0.3, wallX - 0.05, artY, cz, MAT.ironBlk);
@@ -1530,7 +1532,76 @@
     fixLabel("Kids' bath", cx, 7.9, cz);
   }
 
+  // The living room, after its reference: oak beams in a grid on the ceiling,
+  // a black wagon-wheel chandelier, white built-ins with oak open shelves
+  // flanking the fireplace under black picture lights, a chunky oak coffee
+  // table on a jute rug, an oak armchair and floor lamp by the front window,
+  // cream curtains on black rods, plants, and a fire in the firebox.
+  function buildLiving(r) {
+    var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]), cx = (W + E) / 2, cz = (N + S) / 2, len = S - N, wid = E - W;
+    // beams: four across the room and one down its length, with a perimeter beam
+    var bm = MAT.seatWood;
+    for (var b = 1; b <= 4; b++) { var bz = N + len * b / 5; plank(wid, 0.6, 0.45, cx, CEIL - 0.3, bz, bm); }
+    plank(0.45, 0.6, len, cx, CEIL - 0.3, cz, bm);
+    [[W, E, N, N], [W, E, S, S], [W, W, N, S], [E, E, N, S]].forEach(function (c) { var horiz = c[2] === c[3]; plank(horiz ? c[1] - c[0] : 0.45, 0.6, horiz ? 0.45 : c[3] - c[2], (c[0] + c[1]) / 2 + (horiz ? 0 : (c[0] === W ? 0.22 : -0.22)), CEIL - 0.3, (c[2] + c[3]) / 2 + (horiz ? (c[2] === N ? 0.22 : -0.22) : 0), bm); });
+    // recessed cans between the beams
+    for (var c2 = 0; c2 < 5; c2++) { var lz = N + len * (c2 + 0.5) / 5; [cx - 3.0, cx + 3.0].forEach(function (lx) { var can = new T.Mesh(new T.CylinderGeometry(0.26, 0.26, 0.02, 16), MAT.bulb); can.position.set(lx, CEIL - 0.615, lz); scene.add(can); }); }
+    // wagon-wheel chandelier over the coffee table
+    var fpz = fz((504.8 + 580.6) / 2), chx = fx(494), chz = fpz;
+    var chain = new T.Mesh(new T.CylinderGeometry(0.02, 0.02, 1.6, 6), MAT.ironBlk); chain.position.set(chx, CEIL - 1.4, chz); scene.add(chain);
+    var ring = new T.Mesh(new T.TorusGeometry(1.25, 0.06, 8, 36), MAT.ironBlk); ring.rotation.x = Math.PI / 2; ring.position.set(chx, CEIL - 2.2, chz); scene.add(ring);
+    var ring2 = new T.Mesh(new T.TorusGeometry(0.35, 0.05, 8, 20), MAT.ironBlk); ring2.rotation.x = Math.PI / 2; ring2.position.set(chx, CEIL - 2.2, chz); scene.add(ring2);
+    for (var k = 0; k < 8; k++) { var a = k * Math.PI / 4; plank(0.05, 0.05, 1.25, chx + Math.cos(a) * 0.62, CEIL - 2.2, chz + Math.sin(a) * 0.62, MAT.ironBlk).rotation.y = -a + Math.PI / 2; var cnd = new T.Mesh(new T.CylinderGeometry(0.04, 0.04, 0.5, 8), MAT.white); cnd.position.set(chx + Math.cos(a) * 1.25, CEIL - 1.95, chz + Math.sin(a) * 1.25); scene.add(cnd); var fl = new T.Mesh(new T.SphereGeometry(0.06, 6, 5), MAT.bulb); fl.position.set(chx + Math.cos(a) * 1.25, CEIL - 1.65, chz + Math.sin(a) * 1.25); scene.add(fl); }
+    var chL = new T.PointLight(0xffe0b8, 0.7, 16, 1.6); chL.position.set(chx, CEIL - 2.0, chz); scene.add(chL);
+    // built-ins between the fireplace surround and each window: white shaker base, oak shelves, a picture light
+    [[fz(472.1), fz(504.8)], [fz(580.6), fz(611.3)]].forEach(function (span) {
+      var z1 = span[0], z2 = span[1], zc = (z1 + z2) / 2, d = z2 - z1 - 0.1, dep = 1.2;
+      plank(dep, 2.6, d, W + dep / 2, 1.3, zc, MAT.shaker);
+      shakerDoor(W + dep, 1.35, zc, d - 0.1, 2.2, "e", MAT.shaker, MAT.shakerIn, { vert: false, y: 2.35 });
+      plank(dep + 0.05, 0.1, d + 0.05, W + dep / 2, 2.65, zc, MAT.seatWood);
+      colliders.push([W, W + dep, z1, z2]);
+      [4.2, 5.6, 7.0].forEach(function (y, i) { plank(dep - 0.2, 0.1, d, W + (dep - 0.2) / 2, y, zc, MAT.seatWood);
+        var items = [[MAT.stoneware, 0.22, 0.5], [MAT.leaf, 0.18, 0.35], [MAT.white, 0.16, 0.4]]; var it = items[(i + (z1 < fpz ? 0 : 1)) % 3];
+        var ob = new T.Mesh(new T.CylinderGeometry(it[1], it[1] * 0.85, it[2], 12), it[0]); ob.position.set(W + 0.5, y + 0.05 + it[2] / 2, zc + (i % 2 ? 0.4 : -0.4)); scene.add(ob);
+        for (var bk = 0; bk < 3; bk++) plank(0.6 + bk * 0.05, 0.7 + bk * 0.1, 0.12, W + 0.45, y + 0.4 + bk * 0.05, zc - 0.5 + bk * 0.15 + (i % 2 ? -0.6 : 0.6), new T.MeshStandardMaterial({ color: [0x6b4a3a, 0x3e4f5c, 0x8a7a5a][bk], roughness: 0.9 })); });
+      plank(0.55, 0.07, 0.9, W + 0.3, 7.9, zc, MAT.ironBlk); plank(0.1, 0.25, 0.1, W + 0.08, 8.05, zc, MAT.ironBlk);
+      var pl2 = new T.PointLight(0xffd9a8, 0.3, 6, 1.8); pl2.position.set(W + 0.5, 7.7, zc); scene.add(pl2);
+    });
+    // a fire in the firebox
+    var fire = new T.Mesh(new T.BoxGeometry(0.08, 1.2, 2.2), new T.MeshStandardMaterial({ color: 0xff9a3a, emissive: 0xff7a1a, emissiveIntensity: 1.3, roughness: 1 })); fire.position.set(fx(425.2) + 0.06, 1.0, fpz); scene.add(fire);   // just inside the opening, in front of the firebox
+    var fireL = new T.PointLight(0xffa050, 0.8, 9, 1.8); fireL.position.set(fx(425.2) + 0.5, 1.4, fpz); scene.add(fireL);
+    // jute rug, and a chunky oak coffee table with a tray, books and a bowl
+    plank(7.2, 0.03, 10.6, fx(487), 0.05, fpz, MAT.jute);
+    var tx1 = fx(476), tx2 = fx(511), tz1 = fz(515), tz2 = fz(571), tcx = (tx1 + tx2) / 2, tcz = (tz1 + tz2) / 2;
+    plank(tx2 - tx1, 0.3, tz2 - tz1, tcx, 1.3, tcz, MAT.seatWood);
+    plank(tx2 - tx1 - 0.5, 0.9, tz2 - tz1 - 1.2, tcx, 0.7, tcz, MAT.seatWood);
+    plank(1.6, 0.06, 1.2, tcx, 1.48, tcz + 0.9, MAT.frame); plank(1.0, 0.25, 0.7, tcx, 1.6, tcz + 0.9, MAT.white);
+    var bowl = new T.Mesh(new T.CylinderGeometry(0.45, 0.3, 0.2, 16), MAT.stoneware); bowl.position.set(tcx, 1.55, tcz - 0.9); scene.add(bowl);
+    colliders.push([tx1, tx2, tz1, tz2]);
+    // round black side tables at the couch's ends
+    [fz(466), fz(619.5)].forEach(function (sz) { var top = new T.Mesh(new T.CylinderGeometry(0.75, 0.75, 0.06, 20), MAT.ironBlk); top.position.set(fx(561.6), 2.0, sz); scene.add(top); var leg = new T.Mesh(new T.CylinderGeometry(0.06, 0.4, 1.95, 10), MAT.ironBlk); leg.position.set(fx(561.6), 1.0, sz); scene.add(leg); colliders.push([fx(561.6) - 0.75, fx(561.6) + 0.75, sz - 0.75, sz + 0.75]); });
+    var pot = new T.Mesh(new T.CylinderGeometry(0.3, 0.24, 0.6, 12), MAT.stoneware); pot.position.set(fx(561.6), 2.33, fz(466)); scene.add(pot);
+    for (var f = 0; f < 6; f++) { var lf = new T.Mesh(new T.SphereGeometry(0.1, 7, 5), MAT.leaf); lf.position.set(fx(561.6) + Math.cos(f) * 0.25, 2.75 + (f % 3) * 0.12, fz(466) + Math.sin(f) * 0.25); lf.scale.set(1.3, 0.5, 1); scene.add(lf); }
+    // an oak-frame armchair by the front window, from the sheet's chair spot, turned to the fireplace
+    var ax = fx(469), az = fz(651);
+    plank(2.2, 0.35, 2.2, ax, 1.45, az, MAT.cushion); plank(0.35, 1.6, 2.2, ax + 0.95, 2.2, az, MAT.cushion);
+    [[-0.95, -0.95], [0.95, -0.95], [-0.95, 0.95], [0.95, 0.95]].forEach(function (o) { plank(0.15, 2.6, 0.15, ax + o[0], 1.3, az + o[1], MAT.seatWood); });
+    plank(0.12, 0.12, 2.1, ax - 0.95, 2.1, az, MAT.seatWood); plank(2.0, 0.12, 0.12, ax, 2.1, az - 0.95, MAT.seatWood); plank(2.0, 0.12, 0.12, ax, 2.1, az + 0.95, MAT.seatWood);
+    colliders.push([ax - 1.1, ax + 1.1, az - 1.1, az + 1.1]);
+    var lampB = new T.Mesh(new T.CylinderGeometry(0.03, 0.35, 5.2, 10), MAT.ironBlk); lampB.position.set(ax - 1.6, 2.6, az - 1.0); scene.add(lampB);
+    var lampS = new T.Mesh(new T.CylinderGeometry(0.5, 0.6, 0.8, 16, 1, true), MAT.shadeLit); lampS.position.set(ax - 1.6, 5.5, az - 1.0); scene.add(lampS);
+    var lampL = new T.PointLight(0xffdcae, 0.45, 9, 1.8); lampL.position.set(ax - 1.6, 5.3, az - 1.0); scene.add(lampL);
+    // a tall plant and a basket in the corner by the entry opening
+    var stand = new T.Mesh(new T.CylinderGeometry(0.42, 0.34, 1.0, 12), MAT.stoneware); stand.position.set(E - 1.1, 0.5, S - 1.1); scene.add(stand);
+    for (var q = 0; q < 12; q++) { var a2 = q * 0.55, r2 = 0.3 + (q % 4) * 0.25; var pl3 = new T.Mesh(new T.SphereGeometry(0.2, 8, 6), MAT.leaf); pl3.position.set(E - 1.1 + Math.cos(a2) * r2, 1.5 + (q % 5) * 0.45, S - 1.1 + Math.sin(a2) * r2); pl3.scale.set(1.6, 0.4, 0.8); pl3.rotation.y = a2; scene.add(pl3); }
+    var bask = new T.Mesh(new T.CylinderGeometry(0.55, 0.45, 1.0, 14), MAT.wicker); bask.position.set(W + 1.0, 0.5, S - 1.0); scene.add(bask);
+    // cream curtains on black rods at the two west windows and the front window
+    function curtains(x1, x2, z1, z2, n) { var horiz = n === "n" || n === "s"; var L = horiz ? x2 - x1 : z2 - z1; var rod = new T.Mesh(new T.CylinderGeometry(0.04, 0.04, L + 1.6, 8), MAT.ironBlk); if (horiz) rod.rotation.z = Math.PI / 2; else rod.rotation.x = Math.PI / 2; var dx = n === "w" ? -0.25 : n === "e" ? 0.25 : 0, dz = n === "n" ? -0.25 : n === "s" ? 0.25 : 0; rod.position.set((x1 + x2) / 2 + dx, 7.6, (z1 + z2) / 2 + dz); scene.add(rod); [-1, 1].forEach(function (o) { var pnl = new T.Mesh(new T.BoxGeometry(horiz ? 0.8 : 0.25, 7.4, horiz ? 0.25 : 0.8), MAT.linen); pnl.position.set(horiz ? (o < 0 ? x1 - 0.3 : x2 + 0.3) : (x1 + x2) / 2 + dx, 3.8, horiz ? (z1 + z2) / 2 + dz : (o < 0 ? z1 - 0.3 : z2 + 0.3)); scene.add(pnl); }); }
+    curtains(W, W, fz(428.3), fz(472.1), "e"); curtains(W, W, fz(611.3), fz(655.0), "e"); curtains(fx(479.0), fx(523.0), S, S, "n");
+  }
+
   STUFF.forEach(function (s) {
+    if (s.living) { buildLiving(s.r); return; }
     if (s.kidsBath) { buildKidsBath(s.r); return; }
     if (s.masterBed) { buildMasterBed(s.r); return; }
     if (s.masterBath) { buildMasterBath(s.r); return; }
@@ -1589,7 +1660,7 @@
   [[470, 215], [560, 215], [470, 330], [560, 330], [650, 215], [650, 340], [760, 215], [760, 330]].forEach(function (p) {
     var can = new T.Mesh(new T.CylinderGeometry(0.28, 0.28, 0.02, 16), MAT.bulb); can.position.set(fx(p[0]), CEIL - 0.015, fz(p[1])); scene.add(can);
   });
-  lamp(fx(520), fz(280), CEIL - 0.5, 0.7); lamp(fx(503), fz(542)); lamp(fx(640), fz(630), CEIL - 0.6, 0.7);
+  lamp(fx(520), fz(280), CEIL - 0.5, 0.7); lamp(fx(640), fz(630), CEIL - 0.6, 0.7);
   lamp(fx(754), fz(440), CEIL - 0.6, 0.35); lamp(fx(754), fz(626), CEIL - 0.6, 0.6); lamp(fx(660), fz(470), CEIL - 0.6, 0.5);
 
   }   // end of first-floor lamps

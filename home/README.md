@@ -237,9 +237,15 @@ small floating label that shows when you are within about 18' of them.
 Furniture follows the sheet's placement and is mostly blocks, there for
 scale and to keep you from walking through the dining table. The living
 room keeps the one couch, built as a couch with cushions, back and arms,
-with the coffee table and side tables, and a television on the chimney
-breast above the mantel; the sheet's two armchairs and the media console are
-left out on request.
+and is dressed after a reference: oak beams in a grid on the ceiling with
+recessed cans between them, a black wagon-wheel chandelier over the coffee
+table, white shaker built-ins with oak open shelves of books, pots and plants
+between the fireplace surround and each window under black picture lights,
+an oak mantel with the television above it and a fire in the firebox, a
+chunky oak coffee table with a tray and bowl on a jute rug, round black side
+tables, an oak-frame armchair with a floor lamp by the front window, a tall
+plant and a basket, and cream curtains on black rods at all three windows.
+The walls stay in the sage from the palette.
 
 ## Checks
 
