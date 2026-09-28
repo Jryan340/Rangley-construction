@@ -90,6 +90,14 @@ body stops 8" from a wall rather than 11".
 The readout shows the distance along your line of sight to the wall you are
 facing. Stand in the real room, look at a wall, and compare.
 
+The bathroom is dressed after a second reference, a farmhouse powder room:
+black shiplap on the wall behind the vanity and white shiplap on the others,
+crown at the ceiling, an open rustic wood vanity with three drawers, a quartz
+top with an undermount sink and a bronze faucet, a round wood-framed mirror,
+lantern sconces, a shelf over the toilet, a plant, a towel bar, a basket and
+towels on the vanity's lower shelf, marble tile and a patterned rug. The
+sheet's shower stays, tiled in subway with a glass panel and a 2' opening.
+
 ## What was assumed
 
 The sheet is a plan. It has no heights on it, so:

@@ -212,9 +212,7 @@
     { n: "bench", r: [640.7, 684.0, 658.4, 681.0], h: 1.6, m: "wood" },
     { n: "desk", r: [698.3, 738.2, 585.0, 670.1], h: 2.5, m: "wood", table: true },
     { n: "desk chair", r: [742.0, 764.0, 612.0, 640.0], h: 2.6, m: "cloth" },
-    { n: "shower", r: [692.9, 732.6, 399.5, 440.5], h: 0.3, m: "tile", shower: true },
-    { n: "toilet", r: [743.0, 764.0, 399.5, 428.0], h: 1.4, m: "white" },
-    { n: "vanity", r: [780.0, 812.0, 399.5, 420.0], h: 2.9, m: "cab" },
+    { n: "bath", r: [692.9, 815.2, 399.5, 478.9], bath: true },
     { n: "deck table", r: [485.0, 540.0, 80.0, 135.0], h: 2.4, m: "wood", table: true, round: true },
     // the sheet's deck sofa sat just east of the split, which now puts it behind
     // the screen door, so it moves to the east rail
@@ -297,7 +295,9 @@
   }
   function tileTexture() {
     var S = 256, cv = document.createElement("canvas"); cv.width = S; cv.height = S; var c = cv.getContext("2d");
-    c.fillStyle = "#b9b6ae"; c.fillRect(0, 0, S, S); c.fillStyle = "#d8d5ce"; c.fillRect(4, 4, S - 8, S - 8);
+    c.fillStyle = "#cfccc5"; c.fillRect(0, 0, S, S); c.fillStyle = "#ece9e3"; c.fillRect(3, 3, S - 6, S - 6);
+    c.strokeStyle = "rgba(160,158,150,0.35)"; c.lineWidth = 2; c.beginPath(); c.moveTo(20, 200); c.bezierCurveTo(90, 150, 140, 90, 236, 40); c.stroke();
+    c.beginPath(); c.moveTo(60, 250); c.bezierCurveTo(120, 210, 150, 160, 210, 120); c.stroke();
     var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; return tex;
   }
   function deckTexture() {
@@ -313,7 +313,20 @@
     for (var row = 0; row < 4; row++) { var off = (row % 2) ? S / 4 : 0; for (var col = -1; col < 3; col++) { c.fillStyle = "#f4f2ee"; c.fillRect(col * S / 2 + off + 2, row * S / 4 + 2, S / 2 - 4, S / 4 - 4); } }
     var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; return tex;
   }
-  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture() };
+  function shiplapTexture(board, gap) {
+    // four 7" boards per repeat, a shadow line at each lap
+    var S = 256, cv = document.createElement("canvas"); cv.width = S; cv.height = S; var c = cv.getContext("2d");
+    c.fillStyle = gap; c.fillRect(0, 0, S, S);
+    for (var i = 0; i < 4; i++) { c.fillStyle = board; c.fillRect(0, i * 64 + 4, S, 60); c.fillStyle = "rgba(255,255,255,0.05)"; c.fillRect(0, i * 64 + 4, S, 3); }
+    var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; return tex;
+  }
+  function rugTexture() {
+    var W = 256, H = 384, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
+    c.fillStyle = "#b9a98d"; c.fillRect(0, 0, W, H); c.fillStyle = "#8f7a5c"; c.fillRect(10, 10, W - 20, H - 20); c.fillStyle = "#c9bca3"; c.fillRect(22, 22, W - 44, H - 44);
+    c.fillStyle = "#8f7a5c"; for (var y = 50; y < H - 40; y += 56) for (var x = 50; x < W - 40; x += 56) { c.beginPath(); c.moveTo(x, y - 18); c.lineTo(x + 18, y); c.lineTo(x, y + 18); c.lineTo(x - 18, y); c.closePath(); c.fill(); }
+    var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
+  }
+  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture() };
   // tile sizes in feet: plank sheet is 2'-6" across by 8' along; tile is 1'; deck board 6" across by 8' along
   var TEXSIZE = { plank: [3.5, 8], tile: [1, 1], deck: [8, 0.5] };
   function floorMat(kind, w, d, base) {
@@ -356,6 +369,12 @@
     plaster: new T.MeshStandardMaterial({ color: 0xf5f3ef, roughness: 0.9 }),
     bulb: new T.MeshStandardMaterial({ color: 0xfff1d6, emissive: 0xffd9a0, emissiveIntensity: 1.2 }),
     leaf: new T.MeshStandardMaterial({ color: 0x5f7a4a, roughness: 0.9 }),
+    vanityWood: new T.MeshStandardMaterial({ color: 0x8a5f3c, roughness: 0.75 }),
+    bronze: new T.MeshStandardMaterial({ color: 0x3a2a20, roughness: 0.35, metalness: 0.7 }),
+    mirror: new T.MeshStandardMaterial({ color: 0xd9e2e8, roughness: 0.08, metalness: 0.9 }),
+    wicker: new T.MeshStandardMaterial({ color: 0xb59a6a, roughness: 1 }),
+    porcelain: new T.MeshStandardMaterial({ color: 0xf6f6f3, roughness: 0.25 }),
+    lantern: new T.MeshStandardMaterial({ color: 0xffe6c2, transparent: true, opacity: 0.35, emissive: 0xffc27a, emissiveIntensity: 0.6 }),
     bloom: new T.MeshStandardMaterial({ color: 0xf1eadb, roughness: 0.9 }),
     skin: new T.MeshStandardMaterial({ color: 0xc9a78a, roughness: 0.8 }),
     shirt: new T.MeshStandardMaterial({ color: 0x3f5a7a, roughness: 0.9 }),
@@ -767,7 +786,93 @@
     colliders.push([x1, x2, zN, zS]);
   }
 
+  // Shiplap on a wall face. `n` is the direction the face looks.
+  function clad(tex, x1, x2, z1, z2, y0, y1, n) {
+    var horiz = n === "n" || n === "s", len = horiz ? x2 - x1 : z2 - z1, h = y1 - y0;
+    var t = tex.clone(); t.needsUpdate = true; t.repeat.set(len / 2.33, h / 2.33);
+    var m = new T.Mesh(new T.BoxGeometry(horiz ? len : 0.04, h, horiz ? 0.04 : len), new T.MeshStandardMaterial({ map: t, roughness: 0.85 }));
+    var dx = n === "w" ? -0.02 : n === "e" ? 0.02 : 0, dz = n === "n" ? -0.02 : n === "s" ? 0.02 : 0;
+    m.position.set((x1 + x2) / 2 + dx, (y0 + y1) / 2, (z1 + z2) / 2 + dz); m.receiveShadow = true; scene.add(m);
+  }
+  // The bathroom, after the reference: black shiplap behind the vanity, white
+  // shiplap on the other walls, an open rustic vanity, round mirror, lanterns.
+  function buildBath(r) {
+    var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]);       // clear faces of the room
+    var partE = fx(737.6), partS = fz(440.5);                           // the shower partition
+    var winN = fz(428.4), winS = fz(473.4);                             // the east window
+    // the shower stays: tiled floor, glass on its open side, tile on its walls
+    box([692.9, 732.6, 399.5, 440.5], 0, 0.3, MAT.tile, { solid: false });
+    // The partition closes the shower's east side; it opens south into the room.
+    // A fixed glass panel at the west end of that edge, and the opening beside it.
+    var glassLen = 1.0, gz = partS;
+    var gl = new T.Mesh(new T.BoxGeometry(glassLen, 7, 0.06), MAT.glass); gl.position.set(W + glassLen / 2, 3.5, gz); scene.add(gl);
+    var glTop = new T.Mesh(new T.BoxGeometry(glassLen, 0.1, 0.1), MAT.bronze); glTop.position.set(W + glassLen / 2, 7.0, gz); scene.add(glTop);
+    colliders.push([W, W + glassLen, gz - 0.05, gz + 0.05]);
+    var showerTile = function (x1, x2, z1, z2, n) { var t = TEX.subway.clone(); t.needsUpdate = true; var horiz = n === "n" || n === "s", len = horiz ? x2 - x1 : z2 - z1; t.repeat.set(len, 7); var m = new T.Mesh(new T.BoxGeometry(horiz ? len : 0.03, 7, horiz ? 0.03 : len), new T.MeshStandardMaterial({ map: t, roughness: 0.3 })); var dx = n === "w" ? -0.015 : n === "e" ? 0.015 : 0, dz = n === "n" ? -0.015 : n === "s" ? 0.015 : 0; m.position.set((x1 + x2) / 2 + dx, 3.5, (z1 + z2) / 2 + dz); scene.add(m); };
+    showerTile(W, fx(732.6), N, N, "s"); showerTile(W, W, N, partS, "e"); showerTile(fx(732.6), fx(732.6), N, partS, "w");
+    var head = new T.Mesh(new T.CylinderGeometry(0.3, 0.3, 0.05, 16), MAT.bronze); head.position.set(W + 1.5, 6.6, N + 0.5); scene.add(head);
+    var arm = new T.Mesh(new T.CylinderGeometry(0.04, 0.04, 0.6, 8), MAT.bronze); arm.rotation.x = Math.PI / 2; arm.position.set(W + 1.5, 6.6, N + 0.25); scene.add(arm);
+    // walls: black shiplap on the vanity wall, white on the rest, crown at the ceiling
+    clad(TEX.lapBlack, partE, E, N, N, 0, CEIL, "s");
+    clad(TEX.lapWhite, E, E, N, winN, 0, CEIL, "w"); clad(TEX.lapWhite, E, E, winS, S, 0, CEIL, "w");
+    clad(TEX.lapWhite, E, E, winN, winS, 0, WIN.sill, "w"); clad(TEX.lapWhite, E, E, winN, winS, WIN.head, CEIL, "w");
+    clad(TEX.lapWhite, W, E, S, S, 0, CEIL, "n");
+    clad(TEX.lapWhite, W, W, partS, S, 0, CEIL, "e");
+    clad(TEX.lapWhite, partE, partE, N, partS, 0, CEIL, "e"); clad(TEX.lapWhite, fx(732.6), partE, partS, partS, 0, CEIL, "s");
+    [[W, E, N, N], [W, E, S, S], [W, W, N, S], [E, E, N, S]].forEach(function (c) { var horiz = c[2] === c[3]; var m = new T.Mesh(new T.BoxGeometry(horiz ? c[1] - c[0] : 0.3, 0.3, horiz ? 0.3 : c[3] - c[2]), MAT.trim); m.position.set((c[0] + c[1]) / 2 + (horiz ? 0 : (c[0] === W ? 0.15 : -0.15)), CEIL - 0.15, (c[2] + c[3]) / 2 + (horiz ? (c[2] === N ? 0.15 : -0.15) : 0)); scene.add(m); });
+    // toilet: tank, bowl, seat
+    var tx = (fx(743) + fx(764)) / 2;
+    plank(1.5, 1.3, 0.6, tx, 1.95, N + 0.32, MAT.porcelain);
+    var bowl = new T.Mesh(new T.CylinderGeometry(0.62, 0.5, 1.2, 20), MAT.porcelain); bowl.scale.set(1, 1, 1.35); bowl.position.set(tx, 0.6, N + 1.35); scene.add(bowl);
+    var seat = new T.Mesh(new T.CylinderGeometry(0.66, 0.66, 0.08, 20), MAT.porcelain); seat.scale.set(1, 1, 1.35); seat.position.set(tx, 1.24, N + 1.35); scene.add(seat);
+    colliders.push([tx - 0.75, tx + 0.75, N, N + 2.2]);
+    // the vanity: open base, four legs, a drawer rail, a lower shelf, quartz top
+    var vx1 = fx(780), vx2 = fx(812), vz1 = N, vz2 = fz(420), vcx = (vx1 + vx2) / 2, vw = vx2 - vx1, vd = vz2 - vz1;
+    [[vx1 + 0.12, vz1 + 0.12], [vx2 - 0.12, vz1 + 0.12], [vx1 + 0.12, vz2 - 0.12], [vx2 - 0.12, vz2 - 0.12]].forEach(function (p) { plank(0.2, 2.75, 0.2, p[0], 1.375, p[1], MAT.vanityWood); });
+    plank(vw, 0.62, vd - 0.05, vcx, 2.42, (vz1 + vz2) / 2, MAT.vanityWood);                 // drawer rail
+    for (var d = 0; d < 3; d++) { var dw = (vw - 0.3) / 3, dx = vx1 + 0.15 + dw * (d + 0.5); plank(dw - 0.06, 0.5, 0.03, dx, 2.42, vz2 + 0.015, MAT.vanityWood); var kn = new T.Mesh(new T.SphereGeometry(0.05, 8, 6), MAT.pull); kn.position.set(dx, 2.42, vz2 + 0.06); scene.add(kn); }
+    plank(vw - 0.1, 0.1, vd - 0.15, vcx, 0.45, (vz1 + vz2) / 2, MAT.vanityWood);            // lower shelf
+    plank(vw + 0.15, 0.12, vd + 0.1, vcx, 2.79, (vz1 + vz2) / 2 + 0.05, MAT.quartz);        // top
+    plank(vw + 0.15, 0.3, 0.05, vcx, 3.0, vz1 + 0.025, MAT.quartz);                          // backsplash lip
+    colliders.push([vx1, vx2, vz1, vz2]);
+    var sink = new T.Mesh(new T.CylinderGeometry(0.55, 0.45, 0.12, 20), MAT.porcelain); sink.scale.set(1.25, 1, 1); sink.position.set(vcx, 2.8, vz1 + vd / 2 + 0.1); scene.add(sink);
+    var spout = new T.Mesh(new T.CylinderGeometry(0.035, 0.035, 0.7, 8), MAT.bronze); spout.position.set(vcx, 3.2, vz1 + 0.3); scene.add(spout);
+    var neck = new T.Mesh(new T.TorusGeometry(0.22, 0.03, 8, 12, Math.PI), MAT.bronze); neck.rotation.y = Math.PI / 2; neck.position.set(vcx, 3.55, vz1 + 0.52); scene.add(neck);
+    [-0.45, 0.45].forEach(function (o) { var hd = new T.Mesh(new T.CylinderGeometry(0.03, 0.03, 0.25, 8), MAT.bronze); hd.position.set(vcx + o, 2.98, vz1 + 0.3); scene.add(hd); var lv = new T.Mesh(new T.BoxGeometry(0.22, 0.04, 0.04), MAT.bronze); lv.position.set(vcx + o, 3.1, vz1 + 0.3); scene.add(lv); });
+    // below: a basket and folded towels
+    var basket = new T.Mesh(new T.CylinderGeometry(0.5, 0.42, 0.9, 14), MAT.wicker); basket.position.set(vx1 + 0.7, 0.95, (vz1 + vz2) / 2); scene.add(basket);
+    plank(0.9, 0.5, 0.9, vx2 - 0.7, 0.75, (vz1 + vz2) / 2, MAT.white);
+    // on the top: a plant, soap
+    var pot = new T.Mesh(new T.CylinderGeometry(0.22, 0.18, 0.4, 12), MAT.porcelain); pot.position.set(vx2 - 0.4, 3.05, vz1 + 0.5); scene.add(pot);
+    for (var f = 0; f < 7; f++) { var a = f * 0.9, rr = 0.15 + (f % 3) * 0.1; var lf = new T.Mesh(new T.SphereGeometry(0.12 + (f % 2) * 0.05, 8, 6), MAT.leaf); lf.position.set(vx2 - 0.4 + Math.cos(a) * rr, 3.4 + (f % 3) * 0.15, vz1 + 0.5 + Math.sin(a) * rr); lf.scale.set(1, 0.7, 1.2); scene.add(lf); }
+    var soap = new T.Mesh(new T.CylinderGeometry(0.09, 0.09, 0.45, 10), MAT.porcelain); soap.position.set(vx1 + 0.35, 3.08, vz1 + 0.45); scene.add(soap);
+    // round mirror in a wood frame, centred on the vanity
+    var mr = 0.95, my = 5.0;
+    var frame = new T.Mesh(new T.TorusGeometry(mr, 0.12, 10, 40), MAT.vanityWood); frame.position.set(vcx, my, N + 0.15); scene.add(frame);
+    var glass = new T.Mesh(new T.CylinderGeometry(mr - 0.05, mr - 0.05, 0.03, 40), MAT.mirror); glass.rotation.x = Math.PI / 2; glass.position.set(vcx, my, N + 0.1); scene.add(glass);
+    // lantern sconces: one left of the mirror, one on the east wall around the corner
+    function lanternAt(x, z, n) {
+      var dx = n === "s" ? 0 : -1, dz = n === "s" ? 1 : 0;
+      plank(n === "s" ? 0.5 : 0.12, 0.12, n === "s" ? 0.12 : 0.5, x + dx * 0.25, 5.3, z + dz * 0.25, MAT.ironBlk);          // arm
+      var cage = new T.Mesh(new T.CylinderGeometry(0.16, 0.2, 0.55, 8, 1, true), MAT.lantern); cage.position.set(x + dx * 0.5, 4.95, z + dz * 0.5); scene.add(cage);
+      var capL = new T.Mesh(new T.ConeGeometry(0.22, 0.15, 8), MAT.ironBlk); capL.position.set(x + dx * 0.5, 5.28, z + dz * 0.5); scene.add(capL);
+      var bulb = new T.Mesh(new T.SphereGeometry(0.07, 8, 6), MAT.bulb); bulb.position.set(x + dx * 0.5, 4.95, z + dz * 0.5); scene.add(bulb);
+      var pl = new T.PointLight(0xffd6a0, 0.45, 9, 1.8); pl.position.set(x + dx * 0.5, 5.0, z + dz * 0.5); scene.add(pl);
+    }
+    lanternAt(vcx - mr - 0.55, N, "s"); lanternAt(E, N + 1.0, "w");
+    // a small wood shelf over the toilet, with a jar
+    plank(1.1, 0.08, 0.35, tx, 4.8, N + 0.18, MAT.vanityWood);
+    var jar = new T.Mesh(new T.CylinderGeometry(0.1, 0.1, 0.35, 10), MAT.porcelain); jar.position.set(tx - 0.2, 5.02, N + 0.18); scene.add(jar);
+    // towel bar on the east wall by the vanity, with a white towel
+    var bar = new T.Mesh(new T.CylinderGeometry(0.03, 0.03, 1.3, 8), MAT.bronze); bar.rotation.x = Math.PI / 2; bar.position.set(E - 0.22, 4.3, vz2 + 0.7); scene.add(bar);
+    plank(0.08, 1.8, 1.1, E - 0.17, 3.4, vz2 + 0.7, MAT.white);
+    // patterned rug on marble tile in front of the vanity
+    var rugM = new T.Mesh(new T.BoxGeometry(2.0, 0.03, 3.0), new T.MeshStandardMaterial({ map: TEX.rug, roughness: 1 })); rugM.rotation.y = Math.PI / 2; rugM.position.set(vcx - 0.2, 0.05, vz2 + 1.2); scene.add(rugM);
+    fixLabel("Bath", (partE + E) / 2, 7.9, (N + S) / 2);
+  }
+
   STUFF.forEach(function (s) {
+    if (s.bath) { buildBath(s.r); return; }
     if (s.island) { buildIsland(s.r); return; }
     if (s.eastRun) { buildEastRun(s.r); return; }
     if (s.tallWhite) { buildTallWhite(s.r); return; }
@@ -812,7 +917,7 @@
     var can = new T.Mesh(new T.CylinderGeometry(0.28, 0.28, 0.02, 16), MAT.bulb); can.position.set(fx(p[0]), CEIL - 0.015, fz(p[1])); scene.add(can);
   });
   lamp(fx(520), fz(280), CEIL - 0.5, 0.7); lamp(fx(503), fz(542)); lamp(fx(640), fz(630), CEIL - 0.6, 0.7);
-  lamp(fx(754), fz(440), CEIL - 0.6, 0.6); lamp(fx(754), fz(626), CEIL - 0.6, 0.6); lamp(fx(660), fz(470), CEIL - 0.6, 0.5);
+  lamp(fx(754), fz(440), CEIL - 0.6, 0.35); lamp(fx(754), fz(626), CEIL - 0.6, 0.6); lamp(fx(660), fz(470), CEIL - 0.6, 0.5);
 
   // ---- room labels as sprites at the ceiling ----
   function labelSprite(text, sub) {
