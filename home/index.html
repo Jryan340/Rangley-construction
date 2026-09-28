@@ -444,12 +444,10 @@
     { n: "vanity", r: b0([507.0, 540.0, 460.0, 485.0]), h: 2.8, m: "cab" },
     { n: "couch", r: b0([476.0, 516.0, 258.0, 352.0]), recCouch: true },
     { n: "console", r: b0([645.0, 661.0, 229.0, 360.0]), h: 1.8, m: "cab" },
-    { n: "treadmill", r: b0([782.0, 818.0, 203.0, 281.0]), h: 0.8, m: "fire" },
-    { n: "bench", r: b0([694.0, 753.0, 229.0, 255.0]), h: 1.5, m: "fire" },
+    { n: "gym kit", r: b0([672.8, 832.3, 192.2, 327.6]), gymKit: true },
     { n: "bench", r: b0([690.0, 713.0, 474.0, 556.0]), h: 1.5, m: "cab" },
     { n: "laundry", r: b0([574.6, 671.4, 588.6, 677.9]), laundry: true },
     { n: "bench", r: b0([730.0, 830.0, 334.0, 350.0]), h: 1.5, m: "wood" },
-    { n: "rack", r: b0([760.0, 830.0, 305.0, 322.0]), h: 2.5, m: "fire" },
     { n: "furnace", r: b0([470.0, 505.0, 600.0, 640.0]), h: 5.5, m: "fnd" }, { n: "water heater", r: b0([470.0, 498.0, 645.0, 673.0]), h: 5.0, m: "fnd" },
     { n: "shelving", r: b0([470.0, 560.0, 495.0, 515.0]), h: 6.0, m: "wood" },
     { n: "shelving", r: b0([700.0, 830.0, 660.0, 680.0]), h: 6.0, m: "wood" }
@@ -2093,7 +2091,38 @@
     colliders.push([x1, x2, z1, z2]);
   }
 
+  // The gym's kit, after the owner's photos: a folding treadmill with a console
+  // along the east wall, a squat rack with a loaded bar on the west side, a
+  // yoga mat between them.
+  function buildGymKit(r) {
+    var blk = MAT.fire, steel = new T.MeshStandardMaterial({ color: 0xc9cbcf, roughness: 0.3, metalness: 0.8 });
+    // treadmill: deck, belt, motor hood, two uprights, a console with a screen, handrails
+    var tx = fx(832.3 - 36.2) - 1.55, tz1 = fz(200.0 - 9.2), tz2 = fz(292.0 - 9.2), tcz = (tz1 + tz2) / 2, tl = tz2 - tz1;
+    plank(2.8, 0.5, tl, tx, 0.3, tcz, blk); plank(1.9, 0.06, tl - 1.2, tx, 0.58, tcz + 0.4, new T.MeshStandardMaterial({ color: 0x232323, roughness: 1 }));
+    plank(2.8, 1.1, 1.3, tx, 0.85, tz1 + 0.65, blk);                                              // motor hood at the front
+    [tx - 1.2, tx + 1.2].forEach(function (ux) { var up = new T.Mesh(new T.BoxGeometry(0.2, 4.3, 0.2), blk); up.position.set(ux, 2.7, tz1 + 0.9); up.rotation.x = -0.3; scene.add(up); var hr = plank(0.15, 0.15, 1.6, ux, 3.5, tz1 + 1.9, blk); });
+    plank(2.6, 0.9, 0.35, tx, 4.9, tz1 + 0.35, blk); plank(1.4, 0.7, 0.05, tx, 5.0, tz1 + 0.15, new T.MeshStandardMaterial({ color: 0x2a4a6a, emissive: 0x1a3a5a, roughness: 0.3 }));
+    colliders.push([tx - 1.4, tx + 1.4, tz1, tz2]);
+    fixLabel("Treadmill", tx, 6.2, tcz);
+    // squat rack against the west wall, its bar running north-south: two uprights on splayed feet, a pull-up bar, j-hooks, the bar with two plates a side
+    var rx = fx(672.8 - 36.2) + 1.5, rz = fz(250.0 - 9.2);   // north enough to leave the doorway clear
+    [rz - 1.6, rz + 1.6].forEach(function (uz) {
+      plank(0.25, 7.6, 0.25, rx, 3.8, uz, blk);
+      plank(3.0, 0.15, 0.25, rx, 0.08, uz, blk); plank(0.25, 0.15, 0.9, rx - 1.4, 0.08, uz + (uz < rz ? -0.35 : 0.35), blk); plank(0.25, 0.15, 0.9, rx + 1.4, 0.08, uz + (uz < rz ? -0.35 : 0.35), blk);
+      plank(0.5, 0.2, 0.3, rx + 0.3, 4.45, uz + (uz < rz ? 0.25 : -0.25), blk);                  // j-hook
+      for (var h2 = 0.6; h2 < 7.4; h2 += 0.45) { var hole = new T.Mesh(new T.BoxGeometry(0.08, 0.08, 0.27), MAT.pull); hole.position.set(rx, h2, uz); scene.add(hole); }
+    });
+    var pu = new T.Mesh(new T.CylinderGeometry(0.06, 0.06, 3.5, 10), blk); pu.rotation.x = Math.PI / 2; pu.position.set(rx, 7.3, rz); scene.add(pu);
+    var bar = new T.Mesh(new T.CylinderGeometry(0.05, 0.05, 7.2, 10), steel); bar.rotation.x = Math.PI / 2; bar.position.set(rx + 0.3, 4.65, rz); scene.add(bar);
+    [-3.05, -3.3, 3.05, 3.3].forEach(function (pz) { var pl3 = new T.Mesh(new T.CylinderGeometry(0.75, 0.75, 0.22, 24), blk); pl3.rotation.x = Math.PI / 2; pl3.position.set(rx + 0.3, 4.65, rz + pz); scene.add(pl3); var rim = new T.Mesh(new T.TorusGeometry(0.75, 0.02, 6, 24), MAT.pull); rim.position.set(rx + 0.3, 4.65, rz + pz); scene.add(rim); });
+    colliders.push([rx - 1.6, rx + 1.6, rz - 3.6, rz + 3.6]);
+    fixLabel("Squat rack", rx, 8.2, rz);
+    // yoga mat between them
+    plank(2.0, 0.03, 6.0, fx(752.0 - 36.2), 0.06, fz(262.0 - 9.2), new T.MeshStandardMaterial({ color: 0x5a7d8c, roughness: 1 }));
+  }
+
   STUFF.forEach(function (s) {
+    if (s.gymKit) { buildGymKit(s.r); return; }
     if (s.recCouch) { buildRecCouch(s.r); return; }
     if (s.console) { buildConsole(s.r); return; }
     if (s.laundry) { buildLaundry(s.r); return; }

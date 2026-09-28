@@ -279,6 +279,13 @@ doors and a drawer), a hedge along the yard side at the west end, the
 middle open across from the slider; grasses in planters. A walkway runs along the yard
 side from the slider to the dining end and out to the lawn.
 
+## Gym
+
+After the owner's photos: a folding treadmill with a console and screen
+along the east wall, a squat rack with a loaded bar against the west wall
+with its bar running front to back so the doorway and the floor stay
+clear, and a yoga mat between them on the rubber floor.
+
 ## Primary closet
 
 Dressed after the owner's walk-in photo. The sheet's closet is 8'-4" by
