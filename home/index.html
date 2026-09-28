@@ -870,9 +870,10 @@
   // Vinyl lap siding on the outside face of an exterior wall piece: a thin
   // plank just proud of the wall, its courses 6-1/2" and aligned by height so
   // the pieces above and below a window line up.
-  var HCX = fx(617.0), HCZ = fz(430.0), SIDING = 0xd8d3c8;
+  var SIDING = 0xd8d3c8;
   function cladOut(w, y0, y1) {
     if (y1 - y0 < 0.05) return;
+    var HCX = fx(617.0), HCZ = fz(430.0);                 // the house's centre: the outside face is the one away from it
     var r = w.r, x1 = fx(r[0]), x2 = fx(r[1]), z1 = fz(r[2]), z2 = fz(r[3]), cx = (x1 + x2) / 2, cz = (z1 + z2) / 2, thinX = (x2 - x1) < (z2 - z1);
     var lt = TEX.lap.clone(); lt.needsUpdate = true; lt.repeat.set(1, (y1 - y0) / 0.55); lt.offset.set(0, (y0 / 0.55) % 1);
     var m = new T.MeshStandardMaterial({ map: lt, color: SIDING, roughness: 0.85 }), pl;
@@ -1227,7 +1228,7 @@
         var z = zTop + run * (i + 0.5), top = -BASE - rise * (i + 1);
         var t = new T.Mesh(new T.BoxGeometry(x2 - x1, top + 0.01, run), MAT.wood); t.position.set((x1 + x2) / 2, top / 2, z); t.castShadow = true; t.receiveShadow = true; scene.add(t);
       }
-      var rail = new T.Mesh(new T.BoxGeometry(0.15, 0.15, Math.hypot(zBot - zTop, -BASE)), MAT.pull); rail.position.set(x1 + 0.2, -BASE / 2 + 3.0, (zTop + zBot) / 2); rail.rotation.x = -Math.atan2(-BASE, zBot - zTop); scene.add(rail);
+      var rail = new T.Mesh(new T.BoxGeometry(0.15, 0.15, Math.hypot(zBot - zTop, -BASE)), MAT.pull); rail.position.set(x1 + 0.2, -BASE / 2 + 3.0, (zTop + zBot) / 2); rail.rotation.x = Math.atan2(-BASE, zBot - zTop); scene.add(rail);   // the south end is the low end
       // the black steel post at the foot, where the hall's wall ends
       var post = new T.Mesh(new T.CylinderGeometry(0.16, 0.16, BASE_H + 0.6, 12), MAT.ironBlk); post.position.set(fx(626.2 - 36.2), (BASE_H + 0.6) / 2, fz(588.6 - 9.2) + 0.2); scene.add(post);
     })();
