@@ -197,6 +197,15 @@ every wall face that bounds it painted, with its windows and doorways left
 open, so a wall shared by two rooms carries each room's colour on its own
 side.
 
+## Deck
+
+The open deck beyond the screened porch is dressed after the owner's deck
+photo: a dark wood dining table with a cushioned bench on the rail side,
+three wicker chairs on the house side and one at the far end, set with
+plates, glasses, candles and flowers, on a striped outdoor rug, with
+lanterns by the porch and planters of hydrangeas at the far rail. The set
+sits toward the rail so the walk from the screen door runs along the house.
+
 ## Art
 
 On walls that were blank: a round black mirror over the entry bench; a

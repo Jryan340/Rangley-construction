@@ -248,7 +248,7 @@
     { n: "porch", r: [431.6, 630.8, 43.7, 167.0], porch: true },
     // the sheet's deck sofa sat just east of the split, which now puts it behind
     // the screen door, so it moves to the east rail
-    { n: "deck sofa", r: [760.0, 797.6, 60.0, 150.0], h: 2.4, m: "cloth" }
+    { n: "deck dining", r: [634.8, 797.6, 43.7, 167.0], deckDining: true }
   ];
   var STAIR = { r: [593.2, 634.1, 457.4, 576.0], risers: 16 };   // 16 risers to the second floor over the sheet's run: steep, and noted
   var FIREPLACE = { chimney: [400.1, 412.7, 508.6, 574.7], surround: [419.5, 425.2, 504.8, 580.6] };
@@ -469,7 +469,7 @@
     c.fillStyle = "#8f7a5c"; for (var y = 50; y < H - 40; y += 56) for (var x = 50; x < W - 40; x += 56) { c.beginPath(); c.moveTo(x, y - 18); c.lineTo(x + 18, y); c.lineTo(x, y + 18); c.lineTo(x - 18, y); c.closePath(); c.fill(); }
     var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
   }
-  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), porchCeil: deckTexture("#8b8378", "#665f56"), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture(), greyRug: greyRugTexture(), art: artTexture(), marble: marbleTexture(), frameArt: frameArtTexture(), warmArt: warmArtTexture(), botanical: botanicalTexture(), mono: monoTexture(), darkSubway: subwayTexture("#3b3e42", "#25272a"), pebble: pebbleTexture() };
+  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), porchCeil: deckTexture("#8b8378", "#665f56"), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture(), greyRug: greyRugTexture(), art: artTexture(), marble: marbleTexture(), frameArt: frameArtTexture(), warmArt: warmArtTexture(), botanical: botanicalTexture(), mono: monoTexture(), stripe: stripeRugTexture(), darkSubway: subwayTexture("#3b3e42", "#25272a"), pebble: pebbleTexture() };
   function marbleTexture() {
     var S = 512, cv = document.createElement("canvas"); cv.width = S; cv.height = S; var c = cv.getContext("2d");
     c.fillStyle = "#efece6"; c.fillRect(0, 0, S, S);
@@ -524,6 +524,11 @@
     var seed = 23; function rnd() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
     for (var i = 0; i < 9; i++) { var g = 40 + Math.floor(rnd() * 120); c.fillStyle = "rgba(" + g + "," + g + "," + g + "," + (0.35 + rnd() * 0.4) + ")"; c.beginPath(); c.ellipse(40 + rnd() * 176, 40 + rnd() * 240, 25 + rnd() * 60, 12 + rnd() * 40, rnd() * 3, 0, Math.PI * 2); c.fill(); }
     var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
+  }
+  function stripeRugTexture() {
+    var W = 256, H = 256, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
+    for (var i = 0; i < 16; i++) { c.fillStyle = i % 2 ? "#c9c2b4" : "#6f6a62"; c.fillRect(0, i * 16, W, 16); }
+    var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; return tex;
   }
   function greyRugTexture() {
     var W = 256, H = 256, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
@@ -1592,7 +1597,49 @@
     curtains(W, W, fz(428.3), fz(472.1), "e"); curtains(W, W, fz(611.3), fz(655.0), "e"); curtains(fx(479.0), fx(523.0), S, S, "n");
   }
 
+  // The open deck, after its reference: a dark wood dining table with a bench
+  // on the rail side and wicker chairs on the house side, on a striped outdoor
+  // rug, lanterns by the porch, planters of hydrangeas at the far rail. The set
+  // sits toward the rail so the walk from the screen door runs along the house.
+  function buildDeckDining(r) {
+    var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]);
+    var tx1 = fx(680), tx2 = fx(768), tz1 = fz(70), tz2 = fz(110), tcx = (tx1 + tx2) / 2, tcz = (tz1 + tz2) / 2;
+    var st = TEX.stripe.clone(); st.needsUpdate = true; st.repeat.set(1, 6);
+    var rug = new T.Mesh(new T.BoxGeometry(fx(790) - fx(680), 0.03, fz(160) - fz(50)), new T.MeshStandardMaterial({ map: st, roughness: 1 })); rug.position.set((fx(680) + fx(790)) / 2, 0.05, (fz(50) + fz(160)) / 2); scene.add(rug);
+    plank(tx2 - tx1, 0.2, tz2 - tz1, tcx, 2.45, tcz, MAT.walnut);
+    [[tx1 + 0.4, tz1 + 0.3], [tx2 - 0.4, tz1 + 0.3], [tx1 + 0.4, tz2 - 0.3], [tx2 - 0.4, tz2 - 0.3]].forEach(function (pp) { plank(0.22, 2.35, 0.22, pp[0], 1.175, pp[1], MAT.walnut); });
+    plank(tx2 - tx1 - 1.0, 0.18, 0.18, tcx, 0.6, tcz, MAT.walnut);
+    colliders.push([tx1, tx2, tz1, tz2]);
+    // the bench on the rail side
+    var bz = tz1 - 1.05;
+    plank(tx2 - tx1 - 0.6, 0.15, 1.25, tcx, 1.5, bz, MAT.walnut); plank(tx2 - tx1 - 0.7, 0.2, 1.15, tcx, 1.68, bz, MAT.ironBlk);
+    [[tcx - (tx2 - tx1) / 2 + 0.6, bz], [tcx + (tx2 - tx1) / 2 - 0.6, bz]].forEach(function (pp) { plank(0.18, 1.45, 1.0, pp[0], 0.72, pp[1], MAT.walnut); });
+    colliders.push([tcx - (tx2 - tx1) / 2 + 0.3, tcx + (tx2 - tx1) / 2 - 0.3, bz - 0.65, bz + 0.65]);
+    // three wicker chairs on the house side, a chair at the far end
+    function chair(x, z, facing) {
+      plank(1.5, 1.4, 1.5, x, 0.7, z, MAT.wickerDk); plank(1.4, 0.3, 1.4, x, 1.55, z, MAT.cushionBeige);
+      var bx = x + (facing === "w" ? 0.6 : facing === "e" ? -0.6 : 0), bzc = z + (facing === "n" ? 0.6 : facing === "s" ? -0.6 : 0);
+      plank(facing === "n" || facing === "s" ? 1.5 : 0.3, 1.6, facing === "n" || facing === "s" ? 0.3 : 1.5, bx, 2.4, bzc, MAT.wickerDk);
+      colliders.push([x - 0.75, x + 0.75, z - 0.75, z + 0.75]);
+    }
+    for (var i = 0; i < 3; i++) chair(tx1 + (tx2 - tx1) * (i + 0.5) / 3, tz2 + 1.0, "n");
+    chair(tx2 + 1.1, tcz, "w");   // one end chair; the screen door is at the other end
+    // on the table: plates, glasses, a candle, flowers
+    for (var pl = 0; pl < 5; pl++) { var px = tx1 + (tx2 - tx1) * (pl % 3 + 0.5) / 3, pz = pl < 3 ? tz2 - 0.7 : tz1 + 0.7; if (pl >= 3) px = tx1 + (tx2 - tx1) * (pl - 3 + 0.9) / 3; var plate = new T.Mesh(new T.CylinderGeometry(0.42, 0.42, 0.03, 16), MAT.white); plate.position.set(px, 2.57, pz); scene.add(plate); var gl = new T.Mesh(new T.CylinderGeometry(0.1, 0.07, 0.45, 8), MAT.glass); gl.position.set(px + 0.5, 2.78, pz - 0.3); scene.add(gl); }
+    var vase = new T.Mesh(new T.CylinderGeometry(0.2, 0.15, 0.5, 10), MAT.glass); vase.position.set(tcx, 2.8, tcz); scene.add(vase);
+    for (var f = 0; f < 7; f++) { var bl = new T.Mesh(new T.SphereGeometry(0.13, 7, 5), f % 2 ? MAT.bloom : new T.MeshStandardMaterial({ color: 0xe8b14a, roughness: 1 })); bl.position.set(tcx + Math.cos(f * 0.9) * 0.28, 3.15 + (f % 3) * 0.1, tcz + Math.sin(f * 0.9) * 0.28); scene.add(bl); }
+    [[tcx - 1.6, tcz + 0.3], [tcx + 1.6, tcz - 0.3]].forEach(function (cp) { var cd = new T.Mesh(new T.CylinderGeometry(0.12, 0.12, 0.35, 10), MAT.white); cd.position.set(cp[0], 2.72, cp[1]); scene.add(cd); var fl2 = new T.PointLight(0xffc27a, 0.25, 5, 2); fl2.position.set(cp[0], 3.0, cp[1]); scene.add(fl2); });
+    // lanterns on the deck by the rail, planters in the corners
+    [[fx(645), fz(60)], [fx(645), fz(150)]].forEach(function (lp) { plank(0.6, 1.3, 0.6, lp[0], 0.65, lp[1], MAT.ironBlk); var lg = new T.Mesh(new T.BoxGeometry(0.45, 0.9, 0.45), MAT.lantern); lg.position.set(lp[0], 0.7, lp[1]); scene.add(lg); var ll = new T.PointLight(0xffc98a, 0.3, 6, 1.8); ll.position.set(lp[0], 1.1, lp[1]); scene.add(ll); });
+    [[fx(788), fz(150), 0x9cb86a], [fx(788), fz(60), 0xc9d7a6]].forEach(function (pt) {
+      plank(1.6, 1.7, 1.6, pt[0], 0.85, pt[1], MAT.concrete);
+      for (var q = 0; q < 10; q++) { var ang = q * 0.65, rr = 0.25 + (q % 3) * 0.25; var bloom = new T.Mesh(new T.SphereGeometry(0.28, 8, 6), new T.MeshStandardMaterial({ color: pt[2], roughness: 1 })); bloom.position.set(pt[0] + Math.cos(ang) * rr, 2.0 + (q % 3) * 0.3, pt[1] + Math.sin(ang) * rr); scene.add(bloom); }
+      colliders.push([pt[0] - 0.8, pt[0] + 0.8, pt[1] - 0.8, pt[1] + 0.8]);
+    });
+  }
+
   STUFF.forEach(function (s) {
+    if (s.deckDining) { buildDeckDining(s.r); return; }
     if (s.living) { buildLiving(s.r); return; }
     if (s.kidsBath) { buildKidsBath(s.r); return; }
     if (s.masterBed) { buildMasterBed(s.r); return; }
