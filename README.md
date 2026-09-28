@@ -98,6 +98,26 @@ lantern sconces, a shelf over the toilet, a plant, a towel bar, a basket and
 towels on the vanity's lower shelf, marble tile and a patterned rug. The
 sheet's shower stays, tiled in subway with a glass panel and a 2' opening.
 
+The study is dressed after a third reference, a dark library-style office:
+12"-deep charcoal built-ins down the west wall with shaker bases, three rows
+of lit shelves full of books and objects, and a painting bay in the middle
+with a framed abstract under a brass picture light. A walnut desk on a black
+frame floats in front of them with a laptop, a lamp, books and a plant, a
+leather chair on a five-star base faces it, a grey rug lies under both, a
+grey armchair and a round side table sit in the corner by the front window,
+curtains flank both windows, and a black ring chandelier with brass candles
+hangs from the centre. The sheet's desk was against the wall; it moves out
+just far enough to clear the built-ins.
+
+The screened porch is dressed after a fourth: a wicker sectional along the
+north and west screens with beige cushions and patterned pillows, a concrete
+coffee table with two plants on a jute rug, a lantern by the west screens,
+three runs of string lights with a bulb every foot and a half, and a bronze
+ceiling fan under a grey plank ceiling. The sheet's round table comes out to
+make room.
+
+The bathroom's door is left off, an open doorway, on request.
+
 ## What was assumed
 
 The sheet is a plan. It has no heights on it, so:

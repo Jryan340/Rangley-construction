@@ -156,7 +156,7 @@
     { r: [634.1, 640.3, 457.0, 558.0], k: "int" },                       // stair | hall
     { r: [687.8, 692.9, 361.9, 484.1], k: "int" },                       // hall | bath, runs up as the pantry end wall
     { r: [687.8, 692.9, 531.4, 685.1], k: "int" },                       // hall | closet and study
-    { r: [692.9, 770.2, 478.9, 484.1], k: "int" }, { r: [770.2, 815.2, 478.9, 484.1], k: "int", door: true, hinge: "e", swing: -1 },
+    { r: [692.9, 770.2, 478.9, 484.1], k: "int" }, { r: [770.2, 815.2, 478.9, 484.1], k: "int", door: true, hinge: "e", swing: -1, leaf: false },
     { r: [755.5, 770.2, 531.4, 536.4], k: "int" }, { r: [770.2, 815.2, 531.4, 536.4], k: "int", door: true, hinge: "e", swing: 1 },
     { r: [692.9, 755.5, 531.4, 536.4], k: "int", door: true, dbl: true, swing: -1 },     // closet double doors
     { r: [692.9, 758.9, 563.5, 568.6], k: "int" },                       // closet | study
@@ -204,16 +204,14 @@
     { n: "coffee bar", r: [552.4, 634.9, 364.0, 390.1], h: 3.0, m: "cab", coffee: true },
     { n: "table", r: [478.9, 607.2, 257.0, 300.1], h: 2.5, m: "wood", dining: true },
     { n: "runner", r: [645.0, 680.0, 406.0, 569.0], h: 0.04, m: "rug", rug: true },
-    { n: "runner", r: [766.9, 802.3, 487.3, 648.7], h: 0.04, m: "rug", rug: true },
     { n: "couch", r: [540.0, 586.0, 478.0, 602.0], h: 2.6, m: "cloth", couch: true },
     { n: "side table", r: [542.5, 580.7, 455.9, 475.9], h: 2.0, m: "wood" },
     { n: "side table", r: [542.5, 580.7, 609.5, 629.5], h: 2.0, m: "wood" },
     { n: "coffee", r: [468.0, 517.0, 504.0, 582.0], h: 1.4, m: "wood", table: true },
     { n: "bench", r: [640.7, 684.0, 658.4, 681.0], h: 1.6, m: "wood" },
-    { n: "desk", r: [698.3, 738.2, 585.0, 670.1], h: 2.5, m: "wood", table: true },
-    { n: "desk chair", r: [742.0, 764.0, 612.0, 640.0], h: 2.6, m: "cloth" },
+    { n: "study", r: [692.9, 815.2, 568.6, 685.1], study: true },
     { n: "bath", r: [692.9, 815.2, 399.5, 478.9], bath: true },
-    { n: "deck table", r: [485.0, 540.0, 80.0, 135.0], h: 2.4, m: "wood", table: true, round: true },
+    { n: "porch", r: [431.6, 630.8, 43.7, 167.0], porch: true },
     // the sheet's deck sofa sat just east of the split, which now puts it behind
     // the screen door, so it moves to the east rail
     { n: "deck sofa", r: [760.0, 797.6, 60.0, 150.0], h: 2.4, m: "cloth" }
@@ -300,9 +298,9 @@
     c.beginPath(); c.moveTo(60, 250); c.bezierCurveTo(120, 210, 150, 160, 210, 120); c.stroke();
     var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; return tex;
   }
-  function deckTexture() {
+  function deckTexture(boardCol, gapCol) {
     var W = 256, H = 64, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
-    c.fillStyle = "#6f5741"; c.fillRect(0, 0, W, H); c.fillStyle = "#8f7355"; c.fillRect(0, 4, W, H - 8);
+    c.fillStyle = gapCol || "#6f5741"; c.fillRect(0, 0, W, H); c.fillStyle = boardCol || "#8f7355"; c.fillRect(0, 4, W, H - 8);
     for (var i = 0; i < 40; i++) { c.fillStyle = "rgba(60,40,25," + (0.08 + (i % 5) * 0.03) + ")"; c.fillRect(0, 6 + (i * 37) % (H - 12), W, 1); }
     var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; return tex;
   }
@@ -326,9 +324,25 @@
     c.fillStyle = "#8f7a5c"; for (var y = 50; y < H - 40; y += 56) for (var x = 50; x < W - 40; x += 56) { c.beginPath(); c.moveTo(x, y - 18); c.lineTo(x + 18, y); c.lineTo(x, y + 18); c.lineTo(x - 18, y); c.closePath(); c.fill(); }
     var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
   }
-  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture() };
+  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), porchCeil: deckTexture("#8b8378", "#665f56"), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture(), greyRug: greyRugTexture(), art: artTexture() };
+  function greyRugTexture() {
+    var W = 256, H = 256, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
+    c.fillStyle = "#7d7a76"; c.fillRect(0, 0, W, H); c.fillStyle = "#a9a49c"; c.fillRect(12, 12, W - 24, H - 24);
+    var seed = 11; function rnd() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
+    for (var i = 0; i < 400; i++) { c.fillStyle = "rgba(90,86,82," + (0.08 + rnd() * 0.18) + ")"; c.fillRect(rnd() * W, rnd() * H, 4 + rnd() * 18, 2 + rnd() * 6); }
+    c.strokeStyle = "rgba(60,58,55,0.5)"; c.lineWidth = 3; c.strokeRect(22, 22, W - 44, H - 44);
+    var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
+  }
+  function artTexture() {
+    var W = 256, H = 320, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
+    c.fillStyle = "#e8e2d6"; c.fillRect(0, 0, W, H);
+    c.fillStyle = "#b99a72"; c.beginPath(); c.moveTo(20, 60); c.bezierCurveTo(120, 20, 180, 140, 240, 100); c.lineTo(240, 170); c.bezierCurveTo(150, 200, 90, 120, 20, 150); c.closePath(); c.fill();
+    c.fillStyle = "#2f3a48"; c.beginPath(); c.moveTo(140, 130); c.bezierCurveTo(200, 120, 230, 200, 200, 260); c.bezierCurveTo(170, 300, 120, 240, 140, 130); c.closePath(); c.fill();
+    c.fillStyle = "#6b5138"; c.beginPath(); c.moveTo(30, 200); c.bezierCurveTo(90, 180, 120, 260, 60, 300); c.bezierCurveTo(30, 300, 10, 240, 30, 200); c.closePath(); c.fill();
+    var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
+  }
   // tile sizes in feet: plank sheet is 2'-6" across by 8' along; tile is 1'; deck board 6" across by 8' along
-  var TEXSIZE = { plank: [3.5, 8], tile: [1, 1], deck: [8, 0.5] };
+  var TEXSIZE = { plank: [3.5, 8], tile: [1, 1], deck: [8, 0.5], porchCeil: [8, 0.42] };
   function floorMat(kind, w, d, base) {
     var tex = TEX[kind].clone(); tex.needsUpdate = true; tex.repeat.set(w / TEXSIZE[kind][0], d / TEXSIZE[kind][1]);
     return new T.MeshStandardMaterial({ map: tex, color: 0xffffff, roughness: base.roughness });
@@ -370,6 +384,20 @@
     bulb: new T.MeshStandardMaterial({ color: 0xfff1d6, emissive: 0xffd9a0, emissiveIntensity: 1.2 }),
     leaf: new T.MeshStandardMaterial({ color: 0x5f7a4a, roughness: 0.9 }),
     vanityWood: new T.MeshStandardMaterial({ color: 0x8a5f3c, roughness: 0.75 }),
+    charcoal: new T.MeshStandardMaterial({ color: 0x2b2e31, roughness: 0.7 }),
+    charcoalIn: new T.MeshStandardMaterial({ color: 0x35393d, roughness: 0.75 }),
+    walnut: new T.MeshStandardMaterial({ color: 0x5e3f2a, roughness: 0.55 }),
+    leather: new T.MeshStandardMaterial({ color: 0x8a5a3a, roughness: 0.6 }),
+    greyCloth: new T.MeshStandardMaterial({ color: 0x8e8b86, roughness: 1 }),
+    brass: new T.MeshStandardMaterial({ color: 0xb8924e, roughness: 0.35, metalness: 0.8 }),
+    curtain: new T.MeshStandardMaterial({ color: 0xb9ad9c, roughness: 1 }),
+    warmWall: new T.MeshStandardMaterial({ color: 0xe9e3d8, roughness: 0.95 }),
+    wickerDk: new T.MeshStandardMaterial({ color: 0x8c7150, roughness: 1 }),
+    cushionBeige: new T.MeshStandardMaterial({ color: 0xcfc3ad, roughness: 1 }),
+    pillowBlue: new T.MeshStandardMaterial({ color: 0x6e7f94, roughness: 1 }),
+    concrete: new T.MeshStandardMaterial({ color: 0x9c9b96, roughness: 0.9 }),
+    jute: new T.MeshStandardMaterial({ color: 0xc4ae88, roughness: 1 }),
+    bronzeDk: new T.MeshStandardMaterial({ color: 0x4a3a2c, roughness: 0.4, metalness: 0.6 }),
     bronze: new T.MeshStandardMaterial({ color: 0x3a2a20, roughness: 0.35, metalness: 0.7 }),
     mirror: new T.MeshStandardMaterial({ color: 0xd9e2e8, roughness: 0.08, metalness: 0.9 }),
     wicker: new T.MeshStandardMaterial({ color: 0xb59a6a, roughness: 1 }),
@@ -514,6 +542,7 @@
       colliders.push([x1, x2, Math.min(z1, z2), Math.max(z1, z2)]);
       return;
     }
+    if (w.leaf === false) return;                                // an open doorway: jambs and header only
     var hingeX = w.hinge === "e" ? x2 : x1, dir = w.hinge === "e" ? -1 : 1;
     var swing = w.swing || 1;                                   // +1 opens toward +z (south), -1 toward north
     var leaf = new T.Mesh(new T.BoxGeometry(0.15, DOOR_H - 0.1, wide - 0.2), MAT.door);
@@ -560,7 +589,7 @@
     post(fx(431.6) - 0.3, zS - 0.35, PORCH_H + 0.5); post(split, zS - 0.35, PORCH_H + 0.5);
     post(fx(796.5), zN + 0.35, 3.4);
     // the porch roof, and a ceiling under it
-    ceilings.push(slab([427.6, 634.8, 39.7, 167.0], PORCH_H + 0.6, MAT.ceil, 0.1));
+    ceilings.push(slab([427.6, 634.8, 39.7, 167.0], PORCH_H + 0.6, floorMat("porchCeil", (634.8 - 427.6) * PT, (167 - 39.7) * PT, MAT.roof), 0.1));
     ceilings.push(slab([427.6, 634.8, 39.7, 167.0], PORCH_H + 1.1, MAT.roof, 0.5, { shadow: true }));
   })();
 
@@ -816,7 +845,7 @@
     clad(TEX.lapBlack, partE, E, N, N, 0, CEIL, "s");
     clad(TEX.lapWhite, E, E, N, winN, 0, CEIL, "w"); clad(TEX.lapWhite, E, E, winS, S, 0, CEIL, "w");
     clad(TEX.lapWhite, E, E, winN, winS, 0, WIN.sill, "w"); clad(TEX.lapWhite, E, E, winN, winS, WIN.head, CEIL, "w");
-    clad(TEX.lapWhite, W, E, S, S, 0, CEIL, "n");
+    clad(TEX.lapWhite, W, fx(770.2), S, S, 0, CEIL, "n"); clad(TEX.lapWhite, fx(770.2), E, S, S, DOOR_H, CEIL, "n");   // stops at the doorway
     clad(TEX.lapWhite, W, W, partS, S, 0, CEIL, "e");
     clad(TEX.lapWhite, partE, partE, N, partS, 0, CEIL, "e"); clad(TEX.lapWhite, fx(732.6), partE, partS, partS, 0, CEIL, "s");
     [[W, E, N, N], [W, E, S, S], [W, W, N, S], [E, E, N, S]].forEach(function (c) { var horiz = c[2] === c[3]; var m = new T.Mesh(new T.BoxGeometry(horiz ? c[1] - c[0] : 0.3, 0.3, horiz ? 0.3 : c[3] - c[2]), MAT.trim); m.position.set((c[0] + c[1]) / 2 + (horiz ? 0 : (c[0] === W ? 0.15 : -0.15)), CEIL - 0.15, (c[2] + c[3]) / 2 + (horiz ? (c[2] === N ? 0.15 : -0.15) : 0)); scene.add(m); });
@@ -871,7 +900,131 @@
     fixLabel("Bath", (partE + E) / 2, 7.9, (N + S) / 2);
   }
 
+  // The study, after the reference: charcoal built-ins with lit shelves and a
+  // painting along the west wall, a walnut desk on a black frame floated in
+  // front of them, a leather chair, a grey rug, an armchair and side table by
+  // the front window, curtains, a chandelier.
+  function buildStudy(r) {
+    var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]), len = S - N, cx = (W + E) / 2, cz = (N + S) / 2;
+    var paint = function (x1, x2, z1, z2, n, mat, y0, y1) { var horiz = n === "n" || n === "s", L = horiz ? x2 - x1 : z2 - z1; var m = new T.Mesh(new T.BoxGeometry(horiz ? L : 0.03, y1 - y0, horiz ? 0.03 : L), mat); var dx = n === "w" ? -0.015 : n === "e" ? 0.015 : 0, dz = n === "n" ? -0.015 : n === "s" ? 0.015 : 0; m.position.set((x1 + x2) / 2 + dx, (y0 + y1) / 2, (z1 + z2) / 2 + dz); m.receiveShadow = true; scene.add(m); };
+    paint(W, E, N, N, "s", MAT.warmWall, 0, CEIL); paint(W, E, S, S, "n", MAT.warmWall, 0, CEIL);
+    [[W, E, N, N], [W, E, S, S], [W, W, N, S], [E, E, N, S]].forEach(function (c) { var horiz = c[2] === c[3]; var m = new T.Mesh(new T.BoxGeometry(horiz ? c[1] - c[0] : 0.3, 0.3, horiz ? 0.3 : c[3] - c[2]), MAT.trim); m.position.set((c[0] + c[1]) / 2 + (horiz ? 0 : (c[0] === W ? 0.15 : -0.15)), CEIL - 0.15, (c[2] + c[3]) / 2 + (horiz ? (c[2] === N ? 0.15 : -0.15) : 0)); scene.add(m); });
+    // built-ins on the west wall: 15" deep, base cabinets to 2'-10", shelves above, a painting bay in the middle
+    var dep = 1.0, bx = W + dep / 2, bay = 3.0, side = (len - bay) / 2;
+    plank(dep, 2.85, len, bx, 1.425, cz, MAT.charcoal);
+    var nd = Math.round(len / 1.5), dw = len / nd; for (var i = 0; i < nd; i++) shakerDoor(W + dep, 1.55, N + dw * (i + 0.5), dw - 0.08, 2.3, "e", MAT.charcoal, MAT.charcoalIn, { vert: false, y: 2.5 });
+    plank(dep + 0.1, 0.1, len, bx, 2.9, cz, MAT.charcoal);
+    plank(0.1, CEIL - 2.95, len, W + 0.05, 2.95 + (CEIL - 2.95) / 2, cz, MAT.charcoal);
+    [N + 0.06, S - 0.06, N + side, S - side].forEach(function (pz) { plank(dep, CEIL - 2.95, 0.12, bx, 2.95 + (CEIL - 2.95) / 2, pz, MAT.charcoal); });
+    plank(dep, 0.3, len, bx, CEIL - 0.15, cz, MAT.charcoal);
+    colliders.push([W, W + dep, N, S]);
+    var seed = 5; function rnd() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
+    function shelvesIn(z0, z1) {
+      var zc = (z0 + z1) / 2, L = z1 - z0 - 0.12;
+      [4.4, 5.8, 7.2].forEach(function (y) {
+        plank(dep - 0.1, 0.08, L, bx, y, zc, MAT.charcoal);
+        plank(dep - 0.4, 0.02, L - 0.2, bx, y - 0.05, zc, MAT.bulb);
+        var z = z0 + 0.15; while (z < z1 - 0.5) { var bw = 0.08 + rnd() * 0.12, bh = 0.6 + rnd() * 0.5; var cols = [0x6b4a3a, 0x3e4f5c, 0x8a7a5a, 0x2f2f2f, 0x9c6b4c, 0x5a6b4a]; plank(0.7 + rnd() * 0.3, bh, bw, W + 0.5 + rnd() * 0.15, y + 0.04 + bh / 2, z + bw / 2, new T.MeshStandardMaterial({ color: cols[Math.floor(rnd() * cols.length)], roughness: 0.9 })); z += bw + 0.01; if (rnd() < 0.3) z += 0.4 + rnd() * 0.6; }
+      });
+      var vase = new T.Mesh(new T.CylinderGeometry(0.12, 0.16, 0.5, 10), MAT.porcelain); vase.position.set(W + 0.65, 3.2, zc + 0.6); scene.add(vase);
+      var clock = new T.Mesh(new T.CylinderGeometry(0.28, 0.28, 0.06, 20), MAT.porcelain); clock.rotation.z = Math.PI / 2; clock.position.set(W + 0.6, 6.15, zc - 0.5); scene.add(clock);
+      var rim = new T.Mesh(new T.TorusGeometry(0.28, 0.03, 8, 24), MAT.ironBlk); rim.rotation.y = Math.PI / 2; rim.position.set(W + 0.63, 6.15, zc - 0.5); scene.add(rim);
+    }
+    shelvesIn(N + 0.12, N + side); shelvesIn(S - side, S - 0.12);
+    var artW = bay - 0.6, artH = artW * 1.25;
+    plank(0.08, artH + 0.16, artW + 0.16, W + 0.16, 5.6, cz, MAT.ironBlk);
+    var art = new T.Mesh(new T.BoxGeometry(0.04, artH, artW), new T.MeshStandardMaterial({ map: TEX.art, roughness: 0.9 })); art.position.set(W + 0.22, 5.6, cz); scene.add(art);
+    plank(0.5, 0.06, 1.2, W + 0.45, 5.6 + artH / 2 + 0.35, cz, MAT.brass);
+    var plight = new T.PointLight(0xffd9a8, 0.5, 6, 1.8); plight.position.set(W + 0.6, 5.6 + artH / 2 + 0.2, cz); scene.add(plight);
+    var plantW = new T.Mesh(new T.CylinderGeometry(0.2, 0.16, 0.4, 10), MAT.charcoal); plantW.position.set(W + 0.7, 3.15, cz - 1.0); scene.add(plantW);
+    for (var f = 0; f < 6; f++) { var lf = new T.Mesh(new T.SphereGeometry(0.13, 8, 6), MAT.leaf); lf.position.set(W + 0.7 + Math.cos(f) * 0.2, 3.45 + (f % 3) * 0.12, cz - 1.0 + Math.sin(f) * 0.2); lf.scale.set(1, 0.6, 1.3); scene.add(lf); }
+    var rug = new T.Mesh(new T.BoxGeometry(6.2, 0.03, 7.4), new T.MeshStandardMaterial({ map: TEX.greyRug, roughness: 1 })); rug.position.set(W + dep + 3.3, 0.05, cz); scene.add(rug);
+    var dx1 = W + dep + 1.3, dx2 = dx1 + 2.3, dz1 = cz - 2.75, dz2 = cz + 2.75, dcx = (dx1 + dx2) / 2;
+    plank(dx2 - dx1, 0.15, dz2 - dz1, dcx, 2.5, cz, MAT.walnut);
+    [[dx1 + 0.08, dz1 + 0.08], [dx2 - 0.08, dz1 + 0.08], [dx1 + 0.08, dz2 - 0.08], [dx2 - 0.08, dz2 - 0.08]].forEach(function (p) { plank(0.1, 2.42, 0.1, p[0], 1.21, p[1], MAT.ironBlk); });
+    plank(dx2 - dx1 - 0.16, 0.1, 0.1, dcx, 0.4, dz1 + 0.08, MAT.ironBlk); plank(dx2 - dx1 - 0.16, 0.1, 0.1, dcx, 0.4, dz2 - 0.08, MAT.ironBlk);
+    plank(0.1, 2.3, dz2 - dz1 - 0.3, dx2 - 0.35, 1.2, cz + 1.2, MAT.walnut);
+    colliders.push([dx1, dx2, dz1, dz2]);
+    plank(1.0, 0.04, 0.75, dcx - 0.2, 2.6, cz + 0.2, MAT.steel); var lid = new T.Mesh(new T.BoxGeometry(0.03, 0.7, 1.0), MAT.steel); lid.rotation.z = -0.35; lid.position.set(dcx - 0.65, 2.93, cz + 0.2); scene.add(lid);
+    var lampArm = new T.Mesh(new T.CylinderGeometry(0.025, 0.025, 1.5, 8), MAT.ironBlk); lampArm.rotation.z = 0.5; lampArm.position.set(dx1 + 0.55, 3.2, dz1 + 0.6); scene.add(lampArm);
+    var shade = new T.Mesh(new T.ConeGeometry(0.25, 0.35, 12, 1, true), new T.MeshStandardMaterial({ color: 0x1a1a1a, side: T.DoubleSide })); shade.rotation.z = 0.9; shade.position.set(dx1 + 0.95, 3.75, dz1 + 0.6); scene.add(shade);
+    var lampL = new T.PointLight(0xffe0b8, 0.35, 5, 1.8); lampL.position.set(dx1 + 1.0, 3.5, dz1 + 0.7); scene.add(lampL);
+    plank(0.9, 0.35, 0.7, dcx + 0.6, 2.75, dz2 - 0.8, MAT.leather);
+    var dpot = new T.Mesh(new T.CylinderGeometry(0.15, 0.12, 0.3, 10), MAT.porcelain); dpot.position.set(dcx + 0.7, 2.72, dz1 + 0.9); scene.add(dpot);
+    for (var g = 0; g < 4; g++) { var gl2 = new T.Mesh(new T.SphereGeometry(0.1, 8, 6), MAT.leaf); gl2.position.set(dcx + 0.7 + Math.cos(g * 1.6) * 0.14, 2.95 + (g % 2) * 0.1, dz1 + 0.9 + Math.sin(g * 1.6) * 0.14); scene.add(gl2); }
+    var chx = dx2 + 1.0, chz = cz;
+    plank(1.6, 0.35, 1.6, chx, 1.55, chz, MAT.leather);
+    plank(0.3, 1.9, 1.5, chx + 0.7, 2.7, chz, MAT.leather);
+    for (var k2 = 0; k2 < 5; k2++) { var a = k2 * Math.PI * 2 / 5; var spoke = new T.Mesh(new T.BoxGeometry(1.0, 0.08, 0.1), MAT.ironBlk); spoke.rotation.y = a; spoke.position.set(chx + Math.cos(a) * 0.5, 0.12, chz - Math.sin(a) * 0.5); scene.add(spoke); }
+    var lift = new T.Mesh(new T.CylinderGeometry(0.08, 0.08, 1.3, 8), MAT.ironBlk); lift.position.set(chx, 0.75, chz); scene.add(lift);
+    colliders.push([chx - 0.7, chx + 0.7, chz - 0.7, chz + 0.7]);
+    // armchair tucked into the south-east corner, a small round table beside it
+    var ax = E - 1.2, az = S - 1.2;
+    plank(2.1, 1.3, 2.1, ax, 0.65, az, MAT.greyCloth); plank(2.1, 1.4, 0.45, ax, 2.0, az + 0.82, MAT.greyCloth);
+    plank(0.4, 1.0, 2.1, ax - 0.85, 1.8, az, MAT.greyCloth); plank(0.4, 1.0, 2.1, ax + 0.85, 1.8, az, MAT.greyCloth);
+    plank(0.9, 0.45, 0.9, ax, 1.55, az + 0.35, MAT.white);
+    colliders.push([ax - 1.05, ax + 1.05, az - 1.05, az + 1.05]);
+    var stx = ax, stz = az - 1.75;
+    var stTop = new T.Mesh(new T.CylinderGeometry(0.55, 0.55, 0.06, 20), MAT.walnut); stTop.position.set(stx, 1.9, stz); scene.add(stTop);
+    var stLeg = new T.Mesh(new T.CylinderGeometry(0.07, 0.25, 1.9, 10), MAT.ironBlk); stLeg.position.set(stx, 0.95, stz); scene.add(stLeg);
+    plank(0.6, 0.06, 0.45, stx - 0.1, 1.96, stz, MAT.white); var mug = new T.Mesh(new T.CylinderGeometry(0.11, 0.09, 0.25, 10), MAT.charcoal); mug.position.set(stx + 0.3, 2.05, stz - 0.15); scene.add(mug);
+    // a tall plant in the north-east corner; foliage, so it does not block
+    var stand = new T.Mesh(new T.CylinderGeometry(0.32, 0.28, 0.9, 12), MAT.charcoal); stand.position.set(E - 0.8, 0.45, N + 0.8); scene.add(stand);
+    for (var q = 0; q < 12; q++) { var a2 = q * 0.55, r2 = 0.25 + (q % 4) * 0.22; var pl2 = new T.Mesh(new T.SphereGeometry(0.2, 8, 6), MAT.leaf); pl2.position.set(E - 0.8 + Math.cos(a2) * r2, 1.4 + (q % 5) * 0.45, N + 0.8 + Math.sin(a2) * r2); pl2.scale.set(1.6, 0.4, 0.8); pl2.rotation.y = a2; scene.add(pl2); }
+    function curtains(x1, x2, z1, z2, n) { var horiz = n === "n" || n === "s"; var L = horiz ? x2 - x1 : z2 - z1; var rod = new T.Mesh(new T.CylinderGeometry(0.04, 0.04, L + 1.6, 8), MAT.ironBlk); if (horiz) rod.rotation.z = Math.PI / 2; else rod.rotation.x = Math.PI / 2; var dx = n === "w" ? -0.25 : n === "e" ? 0.25 : 0, dz = n === "n" ? -0.25 : n === "s" ? 0.25 : 0; rod.position.set((x1 + x2) / 2 + dx, 7.6, (z1 + z2) / 2 + dz); scene.add(rod); [-1, 1].forEach(function (o) { var pnl = new T.Mesh(new T.BoxGeometry(horiz ? 0.9 : 0.25, 7.4, horiz ? 0.25 : 0.9), MAT.curtain); pnl.position.set(horiz ? (o < 0 ? x1 - 0.35 : x2 + 0.35) : (x1 + x2) / 2 + dx, 3.8, horiz ? (z1 + z2) / 2 + dz : (o < 0 ? z1 - 0.35 : z2 + 0.35)); scene.add(pnl); }); }
+    curtains(E, E, fz(578.3), fz(622.1), "w"); curtains(fx(711.2), fx(755.2), S, S, "n");
+    var chain = new T.Mesh(new T.CylinderGeometry(0.02, 0.02, 1.4, 6), MAT.ironBlk); chain.position.set(cx + 0.6, CEIL - 0.7, cz); scene.add(chain);
+    var ring = new T.Mesh(new T.TorusGeometry(1.1, 0.05, 8, 32), MAT.ironBlk); ring.rotation.x = Math.PI / 2; ring.position.set(cx + 0.6, CEIL - 1.4, cz); scene.add(ring);
+    for (var c2 = 0; c2 < 8; c2++) { var a3 = c2 * Math.PI / 4; var cnd = new T.Mesh(new T.CylinderGeometry(0.04, 0.04, 0.45, 8), MAT.brass); cnd.position.set(cx + 0.6 + Math.cos(a3) * 1.1, CEIL - 1.15, cz + Math.sin(a3) * 1.1); scene.add(cnd); var fl = new T.Mesh(new T.SphereGeometry(0.05, 6, 5), MAT.bulb); fl.position.set(cx + 0.6 + Math.cos(a3) * 1.1, CEIL - 0.9, cz + Math.sin(a3) * 1.1); scene.add(fl); }
+    var chL = new T.PointLight(0xffe0b8, 0.7, 14, 1.6); chL.position.set(cx + 0.6, CEIL - 1.3, cz); scene.add(chL);
+    fixLabel("Study", cx, 7.9, cz + 2.5);
+  }
+
+  // The screened porch, after the reference: a wicker sectional along the
+  // screens, a concrete coffee table with plants on a jute rug, string lights
+  // under a plank ceiling, a ceiling fan, a lantern.
+  function buildPorch(r) {
+    var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]), cx = (W + E) / 2, cz = (N + S) / 2;
+    // rug
+    plank(11.0, 0.03, 7.0, W + 7.2, 0.05, N + 4.3, MAT.jute);
+    // sectional: a long run along the north screens and a return down the west
+    function seat(x1, x2, z1, z2, backSide) {
+      var cxs = (x1 + x2) / 2, czs = (z1 + z2) / 2, w = x2 - x1, d = z2 - z1;
+      plank(w, 1.25, d, cxs, 0.625, czs, MAT.wickerDk);
+      plank(w - 0.1, 0.5, d - 0.1, cxs, 1.5, czs, MAT.cushionBeige);
+      if (backSide === "n") { plank(w, 1.5, 0.35, cxs, 1.9, z1 + 0.18, MAT.wickerDk); plank(w - 0.2, 1.1, 0.4, cxs, 2.1, z1 + 0.55, MAT.cushionBeige); }
+      if (backSide === "w") { plank(0.35, 1.5, d, x1 + 0.18, 1.9, czs, MAT.wickerDk); plank(0.4, 1.1, d - 0.2, x1 + 0.55, 2.1, czs, MAT.cushionBeige); }
+      colliders.push([x1, x2, z1, z2]);
+    }
+    seat(W + 0.3, W + 11.3, N + 0.3, N + 3.0, "n");
+    seat(W + 0.3, W + 3.0, N + 3.0, N + 6.3, "w");
+    plank(0.9, 1.5, 3.0, W + 11.75, 1.0, N + 1.65, MAT.wickerDk);                          // an arm at the east end
+    colliders.push([W + 11.3, W + 12.2, N + 0.3, N + 3.0]);
+    // pillows
+    [[W + 1.6, N + 1.0, MAT.pillowBlue], [W + 4.2, N + 1.0, MAT.white], [W + 7.0, N + 1.0, MAT.pillowBlue], [W + 9.8, N + 1.0, MAT.white], [W + 1.0, N + 4.6, MAT.white]].forEach(function (pw) { var pl = new T.Mesh(new T.BoxGeometry(1.4, 1.3, 0.35), pw[2]); pl.position.set(pw[0], 2.3, pw[1]); if (pw[1] > N + 3) pl.rotation.y = Math.PI / 2; pl.rotation.z = 0.05; scene.add(pl); });
+    // concrete coffee table with two plants
+    var tx = W + 7.0, tz = N + 5.1;
+    plank(4.2, 1.25, 2.4, tx, 0.625, tz, MAT.concrete); colliders.push([tx - 2.1, tx + 2.1, tz - 1.2, tz + 1.2]);
+    [[tx - 0.9, MAT.wicker], [tx + 0.4, MAT.concrete]].forEach(function (pp) { var pot = new T.Mesh(new T.CylinderGeometry(0.42, 0.34, 0.6, 12), pp[1]); pot.position.set(pp[0], 1.55, tz); scene.add(pot); for (var f = 0; f < 7; f++) { var lf = new T.Mesh(new T.SphereGeometry(0.16, 8, 6), MAT.leaf); lf.position.set(pp[0] + Math.cos(f * 0.9) * 0.28, 1.95 + (f % 3) * 0.14, tz + Math.sin(f * 0.9) * 0.28); lf.scale.set(1, 0.6, 1.2); scene.add(lf); } });
+    // lantern on the floor by the west screens
+    plank(0.7, 1.4, 0.7, W + 1.0, 0.7, S - 1.2, MAT.ironBlk);
+    var lantG = new T.Mesh(new T.BoxGeometry(0.5, 1.0, 0.5), MAT.lantern); lantG.position.set(W + 1.0, 0.75, S - 1.2); scene.add(lantG);
+    var lantL = new T.PointLight(0xffc98a, 0.3, 6, 1.8); lantL.position.set(W + 1.0, 1.2, S - 1.2); scene.add(lantL);
+    // ceiling fan at the centre
+    var rod = new T.Mesh(new T.CylinderGeometry(0.05, 0.05, 1.0, 8), MAT.bronzeDk); rod.position.set(cx, PORCH_H + 0.1, cz); scene.add(rod);
+    var motor = new T.Mesh(new T.CylinderGeometry(0.5, 0.45, 0.5, 16), MAT.bronzeDk); motor.position.set(cx, PORCH_H - 0.5, cz); scene.add(motor);
+    for (var b = 0; b < 5; b++) { var bl = new T.Mesh(new T.BoxGeometry(2.4, 0.04, 0.5), MAT.walnut); bl.rotation.y = b * Math.PI * 2 / 5; bl.position.set(cx + Math.cos(b * Math.PI * 2 / 5) * 1.5, PORCH_H - 0.72, cz - Math.sin(b * Math.PI * 2 / 5) * 1.5); scene.add(bl); }
+    // string lights: three runs from the house wall to the north screens, a bulb every foot and a half
+    [W + 3.2, W + 7.4, W + 11.6].forEach(function (x, i) {
+      var wire = new T.Mesh(new T.CylinderGeometry(0.012, 0.012, S - N - 0.6, 5), MAT.ironBlk); wire.rotation.x = Math.PI / 2; wire.position.set(x, PORCH_H - 0.35, cz); scene.add(wire);
+      for (var z = N + 0.8; z < S - 0.6; z += 1.5) { var drop = new T.Mesh(new T.CylinderGeometry(0.01, 0.01, 0.35, 4), MAT.ironBlk); drop.position.set(x, PORCH_H - 0.55, z); scene.add(drop); var bulb = new T.Mesh(new T.SphereGeometry(0.11, 10, 8), MAT.bulb); bulb.position.set(x, PORCH_H - 0.82, z); scene.add(bulb); }
+      var sl = new T.PointLight(0xffd39a, 0.35, 11, 1.7); sl.position.set(x, PORCH_H - 1.0, cz); scene.add(sl);
+    });
+  }
+
   STUFF.forEach(function (s) {
+    if (s.porch) { buildPorch(s.r); return; }
+    if (s.study) { buildStudy(s.r); return; }
     if (s.bath) { buildBath(s.r); return; }
     if (s.island) { buildIsland(s.r); return; }
     if (s.eastRun) { buildEastRun(s.r); return; }
