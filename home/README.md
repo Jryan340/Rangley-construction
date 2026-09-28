@@ -197,6 +197,16 @@ every wall face that bounds it painted, with its windows and doorways left
 open, so a wall shared by two rooms carries each room's colour on its own
 side.
 
+## Primary closet
+
+Dressed after the owner's walk-in photo. The sheet's closet is 8'-4" by
+7'-1" with the door on the west and the window opposite on the east, so the
+photo's layout fits as drawn: cream built-ins down both long walls, two
+drawers deep below a counter, a hanging bay at each end and shelves of
+folded stacks in the middle, baskets on the top shelf; a window seat with
+drawers, a cushion and pillows under the east window, with a roman shade
+drawn up; a cream and slate-blue runner down the aisle.
+
 ## Deck
 
 The open deck beyond the screened porch is dressed after the owner's deck
