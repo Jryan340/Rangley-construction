@@ -50,7 +50,28 @@
   #scale .note { font-size: 10px; color: var(--dim); margin-top: 8px; line-height: 1.45; }
   #touch { position: fixed; right: 18px; bottom: 90px; display: none; gap: 10px; }
   @media (pointer: coarse) { #help { display: none; } }
-  @media (max-width: 760px) { #mini { width: 160px; height: 240px; } #room .name { font-size: 22px; } #scale { display: none; } }
+  /* Mobile: everything but a room pill and a menu button is tucked away, and a
+     directional pad walks. Switched on by a class so it can be tested anywhere. */
+  #mRoom, #menuBtn, #dpad, #menuBack { display: none; }
+  body.mobile #room, body.mobile #ctl, body.mobile #mini, body.mobile #scale, body.mobile #help { display: none; }
+  body.mobile #mRoom { display: block; position: fixed; top: max(10px, env(safe-area-inset-top)); left: 12px; right: 74px; padding: 9px 12px; background: var(--panel); border: 1px solid var(--line); pointer-events: none; }
+  body.mobile #mRoom .n { font-family: var(--label); font-weight: 700; font-size: 20px; line-height: 1; letter-spacing: .02em; text-transform: uppercase; }
+  body.mobile #mRoom .d { font-size: 11px; margin-top: 4px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  body.mobile #menuBtn { display: block; position: fixed; top: max(10px, env(safe-area-inset-top)); right: 12px; width: 52px; height: 52px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); font-size: 22px; line-height: 1; cursor: pointer; }
+  body.mobile.menu-open #menuBack { display: block; position: fixed; inset: 0; background: rgba(29,27,23,.45); }
+  body.mobile.menu-open #ctl { display: flex; top: max(74px, calc(env(safe-area-inset-top) + 64px)); right: 12px; }
+  body.mobile.menu-open #ctl button { font-size: 13px; padding: 12px 14px; min-width: 150px; text-align: left; }
+  body.mobile.menu-open #scale { display: block; bottom: auto; top: max(74px, calc(env(safe-area-inset-top) + 64px)); left: 12px; right: auto; width: min(250px, calc(100vw - 190px)); }
+  body.mobile.menu-open #scale button { padding: 8px 0; font-size: 16px; }
+  body.mobile.menu-open #mini { display: block; left: 12px; bottom: max(14px, env(safe-area-inset-bottom)); width: 44vw; max-width: 220px; height: 60vw; max-height: 330px; }
+  body.mobile.menu-open #room { display: block; top: auto; bottom: max(14px, env(safe-area-inset-bottom)); left: auto; right: 12px; width: calc(100vw - 44vw - 36px); max-width: 300px; }
+  body.mobile #dpad { display: grid; position: fixed; left: 14px; bottom: max(14px, env(safe-area-inset-bottom)); grid-template-columns: repeat(3, 62px); grid-template-rows: repeat(3, 62px); gap: 6px; }
+  body.mobile.menu-open #dpad { display: none; }
+  #dpad button { border: 1px solid var(--line); background: var(--panel); color: var(--ink); font-size: 24px; line-height: 1; touch-action: none; user-select: none; -webkit-user-select: none; cursor: pointer; }
+  #dpad button:active, #dpad button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  #dpad .up { grid-column: 2; grid-row: 1; } #dpad .left { grid-column: 1; grid-row: 2; } #dpad .down { grid-column: 2; grid-row: 2; } #dpad .right { grid-column: 3; grid-row: 2; }
+  body.mobile #dpad .hint { grid-column: 1 / 4; grid-row: 3; align-self: end; font-family: var(--label); font-weight: 600; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); text-align: center; padding-bottom: 4px; }
+  @media (max-width: 760px) { body:not(.mobile) #mini { width: 160px; height: 240px; } body:not(.mobile) #room .name { font-size: 22px; } body:not(.mobile) #scale { display: none; } }
 </style>
 
 <div id="stage"><canvas id="view"></canvas><canvas id="overlay"></canvas></div>
@@ -64,6 +85,17 @@
 </div>
 
 <div class="hud" id="mini"><canvas id="miniCv"></canvas></div>
+
+<div id="mRoom"><div class="n" id="mRoomName">Entry</div><div class="d" id="mRoomDims"></div></div>
+<button id="menuBtn" type="button" aria-label="Menu">☰</button>
+<div id="menuBack"></div>
+<div id="dpad">
+  <button class="up" type="button" data-key="KeyW" aria-label="Walk forward">▲</button>
+  <button class="left" type="button" data-key="KeyA" aria-label="Step left">◀</button>
+  <button class="down" type="button" data-key="KeyS" aria-label="Walk back">▼</button>
+  <button class="right" type="button" data-key="KeyD" aria-label="Step right">▶</button>
+  <div class="hint">hold to walk · drag the view to look</div>
+</div>
 
 <div class="hud" id="ctl">
   <button id="bPlan" type="button">Plan view</button>
@@ -87,7 +119,7 @@
 <div id="prompt">
   <div class="card">
     <div class="t">Home · walkthrough</div>
-    <div class="s">Click to walk through. Mouse looks, W A S D moves. Press P for a top-down plan view with the architect's drawing underneath.</div>
+    <div class="s" id="promptText">Click to walk through. Mouse looks, W A S D moves. Press P for a top-down plan view with the architect's drawing underneath.</div>
   </div>
 </div>
 
@@ -1685,12 +1717,28 @@
     if (!locked || planMode) return;
     pl.yaw -= e.movementX * 0.0022; pl.pitch = Math.max(-1.2, Math.min(1.2, pl.pitch - e.movementY * 0.0022));
   });
-  // touch: left half is a stick, right half looks
+  // Mobile: a directional pad walks, and a drag anywhere on the view looks.
+  var isMobile = false;
+  try { isMobile = window.matchMedia("(pointer: coarse)").matches; } catch (e) {}
+  if (isMobile) { document.body.classList.add("mobile"); document.getElementById("promptText").textContent = "Tap to start. Hold the arrows to walk, drag the view to look, and use the menu for plan view, floors and settings."; }
   var touches = {};
-  canvas.addEventListener("touchstart", function (e) { for (var i = 0; i < e.changedTouches.length; i++) { var t = e.changedTouches[i]; touches[t.identifier] = { x0: t.clientX, y0: t.clientY, x: t.clientX, y: t.clientY, side: t.clientX < window.innerWidth / 2 ? "L" : "R" }; } prompt.classList.add("hidden"); e.preventDefault(); }, { passive: false });
-  canvas.addEventListener("touchmove", function (e) { for (var i = 0; i < e.changedTouches.length; i++) { var t = e.changedTouches[i], o = touches[t.identifier]; if (!o) continue; if (o.side === "R") { pl.yaw -= (t.clientX - o.x) * 0.006; pl.pitch = Math.max(-1.2, Math.min(1.2, pl.pitch - (t.clientY - o.y) * 0.006)); } o.x = t.clientX; o.y = t.clientY; } e.preventDefault(); }, { passive: false });
+  canvas.addEventListener("touchstart", function (e) { for (var i = 0; i < e.changedTouches.length; i++) { var t = e.changedTouches[i]; touches[t.identifier] = { x: t.clientX, y: t.clientY }; } prompt.classList.add("hidden"); e.preventDefault(); }, { passive: false });
+  canvas.addEventListener("touchmove", function (e) { for (var i = 0; i < e.changedTouches.length; i++) { var t = e.changedTouches[i], o = touches[t.identifier]; if (!o) continue; if (!planMode) { pl.yaw -= (t.clientX - o.x) * 0.006; pl.pitch = Math.max(-1.2, Math.min(1.2, pl.pitch - (t.clientY - o.y) * 0.006)); } o.x = t.clientX; o.y = t.clientY; } e.preventDefault(); }, { passive: false });
   canvas.addEventListener("touchend", function (e) { for (var i = 0; i < e.changedTouches.length; i++) delete touches[e.changedTouches[i].identifier]; });
-  function stick() { for (var id in touches) { var o = touches[id]; if (o.side === "L") return { x: Math.max(-1, Math.min(1, (o.x - o.x0) / 60)), y: Math.max(-1, Math.min(1, (o.y - o.y0) / 60)) }; } return null; }
+  function stick() { return null; }
+  Array.prototype.forEach.call(document.querySelectorAll("#dpad button"), function (b) {
+    var k = b.getAttribute("data-key");
+    function on(e) { keys[k] = true; b.classList.add("on"); moved = true; if (e.cancelable) e.preventDefault(); }
+    function off() { keys[k] = false; b.classList.remove("on"); }
+    b.addEventListener("pointerdown", on); b.addEventListener("pointerup", off); b.addEventListener("pointercancel", off); b.addEventListener("pointerleave", off);
+    b.addEventListener("touchstart", function (e) { e.preventDefault(); }, { passive: false });
+    b.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+  });
+  var menuBtn = document.getElementById("menuBtn"), menuBack = document.getElementById("menuBack");
+  function setMenu(open) { document.body.classList.toggle("menu-open", open); menuBtn.textContent = open ? "✕" : "☰"; if (open && document.exitPointerLock) document.exitPointerLock(); }
+  menuBtn.addEventListener("click", function () { setMenu(!document.body.classList.contains("menu-open")); });
+  menuBack.addEventListener("click", function () { setMenu(false); });
+  Array.prototype.forEach.call(document.querySelectorAll("#ctl button"), function (b) { b.addEventListener("click", function () { if (document.body.classList.contains("mobile") && b.id !== "bCeil" && b.id !== "bDraw") setMenu(false); }); });
 
   var bPlan = document.getElementById("bPlan"), bDraw = document.getElementById("bDraw"), bCeil = document.getElementById("bCeil");
   function togglePlan() { planMode = !planMode; bPlan.classList.toggle("on", planMode); if (planMode && document.exitPointerLock) document.exitPointerLock(); applyCeil(); }
@@ -1780,6 +1828,7 @@
   /* ================================================================
      Loop
      ================================================================ */
+  var mRoomName = document.getElementById("mRoomName"), mRoomDims = document.getElementById("mRoomDims");
   var hudName = document.getElementById("roomName"), hudDims = document.getElementById("roomDims"), hudSub = document.getElementById("roomSub"), hudAhead = document.getElementById("roomAhead");
   var clock = new T.Clock(), moved = false, bobT = 0, camY = EYE, lastRoom = null;
   function resize() {
@@ -1817,6 +1866,7 @@
     var rm = insideAnyRoom(pl.x, pl.z);
     if (!rm && inFootprint(pl.x, pl.z)) rm = lastRoom; else lastRoom = rm;
     hudName.textContent = rm ? rm.n : "Outside"; hudDims.textContent = rm ? rm.dims : "";
+    mRoomName.textContent = rm ? rm.n : "Outside"; mRoomDims.textContent = (rm ? rm.dims + " · " : "") + FL().name.toLowerCase();
     // Range finder: distance along your line of sight to the nearest wall, so you
     // can stand in the real room, look at a wall, and compare the two numbers.
     var dx = -Math.sin(pl.yaw), dz = -Math.cos(pl.yaw), best = 1e9;
@@ -1838,6 +1888,6 @@
   applyCeil();
   requestAnimationFrame(frame);
 
-  window.__house = { pl: pl, get colliders() { return FL().colliders; }, get ROOMS() { return FL().rooms; }, get WALLS() { return FL().walls; }, FLOORS: FLOORS, get curFloor() { return curFloor; }, goToFloor: goToFloor, STAIR: STAIR, FLOOR2: FLOOR2, fx: fx, fz: fz, PT: PT, togglePlan: togglePlan, setDraw: function (v) { showDraw = v; bDraw.classList.toggle("on", v); }, drawPlan: drawPlan, camera: camera, planCam: planCam, dismiss: function () { prompt.classList.add("hidden"); }, keys: keys, collide: collide, tick: tick, setLens: function (v) { HFOV = v; applyLens(); showScale(); }, setCeil: function (v) { CEIL = v; rebuild(); showScale(); }, get EYE() { return EYE; }, get HFOV() { return HFOV; }, get CEIL() { return CEIL; }, get wallBoxes() { return FL().wallBoxes; } };
+  window.__house = { pl: pl, get colliders() { return FL().colliders; }, get ROOMS() { return FL().rooms; }, get WALLS() { return FL().walls; }, FLOORS: FLOORS, get curFloor() { return curFloor; }, goToFloor: goToFloor, STAIR: STAIR, FLOOR2: FLOOR2, fx: fx, fz: fz, PT: PT, togglePlan: togglePlan, setDraw: function (v) { showDraw = v; bDraw.classList.toggle("on", v); }, drawPlan: drawPlan, camera: camera, planCam: planCam, dismiss: function () { prompt.classList.add("hidden"); }, keys: keys, collide: collide, tick: tick, setMobile: function (v) { document.body.classList.toggle("mobile", v); }, setMenu: setMenu, setLens: function (v) { HFOV = v; applyLens(); showScale(); }, setCeil: function (v) { CEIL = v; rebuild(); showScale(); }, get EYE() { return EYE; }, get HFOV() { return HFOV; }, get CEIL() { return CEIL; }, get wallBoxes() { return FL().wallBoxes; } };
 })();
 </script>
