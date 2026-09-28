@@ -216,11 +216,15 @@ stair wall, conduit and a shop light. And the **existing mechanical room**
 keeps the whole west side, rear wall to front wall, exactly as it is: the
 owner does not want it gutted. That is where the sheet put the new powder
 room, so the powder room moves to the front-right room off the mudroom,
-with the laundry, a stacked washer and dryer beside a utility sink, in the
-other half of that room; each has its own door from the mudroom. The
+taking the east half with the existing window, and the laundry, a stacked
+washer and dryer beside a utility sink, takes the west half; each has its
+own door from the mudroom. The mechanical room itself is shown as it is:
+a bare slab, the blue boiler with its flue, the grey water tank by the
+window with copper pipes up the wall, and nothing else. The nook at the
+foot of the stair is left as the unfinished space it is. The
 vestibule narrows to the hall's width and opens to the rec room through a
 3' doorway; the mechanical room's two existing doors open to the vestibule
-and the hall. The nook at the foot of the stair keeps its desk.
+and the hall.
 
 The basement floor is 7'-10" below the first floor, from the existing set,
 with 6'-8" under the joists everywhere; the addition's basement is assumed
