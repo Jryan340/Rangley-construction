@@ -1022,7 +1022,7 @@
     ground(D[0], D[1], D[2], D[3], MAT.asphalt, 0.06);
     // a basketball hoop at the top of the driveway: pole, backboard facing down the drive, rim and net
     (function () {
-      var hx = D[1] - 1.0, hz = D[2] - 1.2, g0 = grade(hx, hz);
+      var hx = (D[0] + D[1]) / 2, hz = D[2] - 1.2, g0 = grade(hx, hz);   // centred on the driveway
       var pole = new T.Mesh(new T.CylinderGeometry(0.18, 0.18, 12.8, 12), MAT.ironBlk); pole.position.set(hx, g0 + 6.4, hz); pole.castShadow = true; scene.add(pole);
       var arm = new T.Mesh(new T.BoxGeometry(0.15, 0.15, 2.6), MAT.ironBlk); arm.position.set(hx, g0 + 11.6, hz + 1.3); scene.add(arm);
       var bb = new T.Mesh(new T.BoxGeometry(6.0, 3.6, 0.12), new T.MeshStandardMaterial({ color: 0xe9eef2, roughness: 0.2, transparent: true, opacity: 0.75 })); bb.position.set(hx, g0 + 11.9, hz + 2.6); scene.add(bb);
