@@ -207,19 +207,20 @@ three windows; the side entry on the driveway side; mudroom with two closets,
 powder room and vestibule in the middle; storage and mechanical rooms either
 side of the stair at the front.
 
-Two things follow the existing-conditions set and the owner rather than
+Three things follow the existing-conditions set and the owner rather than
 PR-00. The stair comes **down toward the front of the house**, under the
 stair that goes up, landing in the existing nook at the front (the sheet's
-arrow points the other way). And the **existing hallway** west of the stair
-is kept as it is, with its joists exposed and painted black, a beam along
-the stair wall, conduit and a shop light, so the west storage room's east
-wall stays where it is instead of taking in the hall. The hall meets the new
-vestibule, powder room and mudroom at its north end.
-
-The nook at the foot of the stair is the laundry: a front-loading washer
-and dryer under a butcher-block folding counter along the front wall, a
-shelf of baskets above, a hanging rod, a utility sink at the end, under the
-exposed joists.
+arrow points the other way). The **existing hallway** west of the stair is
+kept as it is, with its joists exposed and painted black, a beam along the
+stair wall, conduit and a shop light. And the **existing mechanical room**
+keeps the whole west side, rear wall to front wall, exactly as it is: the
+owner does not want it gutted. That is where the sheet put the new powder
+room, so the powder room moves to the front-right room off the mudroom,
+with the laundry, a stacked washer and dryer beside a utility sink, in the
+other half of that room; each has its own door from the mudroom. The
+vestibule narrows to the hall's width and opens to the rec room through a
+3' doorway; the mechanical room's two existing doors open to the vestibule
+and the hall. The nook at the foot of the stair keeps its desk.
 
 The basement floor is 7'-10" below the first floor, from the existing set,
 with 6'-8" under the joists everywhere; the addition's basement is assumed
