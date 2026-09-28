@@ -151,9 +151,13 @@ doors at each end and three drawers between, an open shelf below with
 baskets and towels, a marble top, two white vessel sinks with black
 wall-mounted taps, a black-framed mirror over each, three brass sconces, a
 plant and bottles between the sinks, a towel ring by the door, a runner
-along the vanity, recessed lights, and the sheet's shower in marble with a
-short glass panel at its opening and a rain head. The water closet keeps its
-toilet.
+along the vanity, recessed lights. The shower follows its own reference:
+charcoal subway tile on every wall, cut around the window the sheet puts
+inside it, a pebble floor on a low curb, a tiled bench along the east wall,
+a fixed glass panel with a thin black frame at the entry, a black rain head
+from the ceiling, and a black hand shower on a slide bar with its mixer on
+the partition. The reference's freestanding tub is not on the sheet and is
+left out. The water closet keeps its toilet.
 
 The primary bedroom is dressed after its reference: greige walls with panel
 moulding on the bed wall and the south wall, a lit cove under the crown, an

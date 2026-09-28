@@ -414,11 +414,11 @@
     for (var i = 0; i < 40; i++) { c.fillStyle = "rgba(60,40,25," + (0.08 + (i % 5) * 0.03) + ")"; c.fillRect(0, 6 + (i * 37) % (H - 12), W, 1); }
     var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; return tex;
   }
-  function subwayTexture() {
+  function subwayTexture(tile, grout) {
     // 3" x 6" tiles in a running bond, one foot square per repeat
     var S = 256, cv = document.createElement("canvas"); cv.width = S; cv.height = S; var c = cv.getContext("2d");
-    c.fillStyle = "#cfcac0"; c.fillRect(0, 0, S, S);
-    for (var row = 0; row < 4; row++) { var off = (row % 2) ? S / 4 : 0; for (var col = -1; col < 3; col++) { c.fillStyle = "#f4f2ee"; c.fillRect(col * S / 2 + off + 2, row * S / 4 + 2, S / 2 - 4, S / 4 - 4); } }
+    c.fillStyle = grout || "#cfcac0"; c.fillRect(0, 0, S, S);
+    for (var row = 0; row < 4; row++) { var off = (row % 2) ? S / 4 : 0; for (var col = -1; col < 3; col++) { c.fillStyle = tile || "#f4f2ee"; c.fillRect(col * S / 2 + off + 2, row * S / 4 + 2, S / 2 - 4, S / 4 - 4); } }
     var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; return tex;
   }
   function shiplapTexture(board, gap) {
@@ -434,7 +434,7 @@
     c.fillStyle = "#8f7a5c"; for (var y = 50; y < H - 40; y += 56) for (var x = 50; x < W - 40; x += 56) { c.beginPath(); c.moveTo(x, y - 18); c.lineTo(x + 18, y); c.lineTo(x, y + 18); c.lineTo(x - 18, y); c.closePath(); c.fill(); }
     var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
   }
-  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), porchCeil: deckTexture("#8b8378", "#665f56"), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture(), greyRug: greyRugTexture(), art: artTexture(), marble: marbleTexture(), frameArt: frameArtTexture(), warmArt: warmArtTexture() };
+  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), porchCeil: deckTexture("#8b8378", "#665f56"), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture(), greyRug: greyRugTexture(), art: artTexture(), marble: marbleTexture(), frameArt: frameArtTexture(), warmArt: warmArtTexture(), darkSubway: subwayTexture("#3b3e42", "#25272a"), pebble: pebbleTexture() };
   function marbleTexture() {
     var S = 512, cv = document.createElement("canvas"); cv.width = S; cv.height = S; var c = cv.getContext("2d");
     c.fillStyle = "#efece6"; c.fillRect(0, 0, S, S);
@@ -464,6 +464,13 @@
     var cols = ["rgba(150,110,75,0.5)", "rgba(110,80,55,0.55)", "rgba(200,180,150,0.6)", "rgba(90,70,55,0.45)"];
     for (var i = 0; i < 40; i++) { c.fillStyle = cols[i % 4]; var x = 40 + rnd() * 220, y = 40 + rnd() * 130; c.beginPath(); c.ellipse(x, y, 20 + rnd() * 60, 8 + rnd() * 30, rnd() * 3, 0, Math.PI * 2); c.fill(); }
     var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
+  }
+  function pebbleTexture() {
+    var S = 256, cv = document.createElement("canvas"); cv.width = S; cv.height = S; var c = cv.getContext("2d");
+    c.fillStyle = "#3a3c3f"; c.fillRect(0, 0, S, S);
+    var seed = 31; function rnd() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
+    for (var i = 0; i < 260; i++) { var g = 70 + Math.floor(rnd() * 50); c.fillStyle = "rgb(" + g + "," + (g + 2) + "," + (g + 5) + ")"; c.beginPath(); c.ellipse(rnd() * S, rnd() * S, 6 + rnd() * 9, 4 + rnd() * 7, rnd() * 3, 0, Math.PI * 2); c.fill(); }
+    var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; return tex;
   }
   function greyRugTexture() {
     var W = 256, H = 256, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
@@ -1309,14 +1316,38 @@
     // towel ring with a towel, on the south wall by the door
     var ring = new T.Mesh(new T.TorusGeometry(0.28, 0.03, 8, 20), MAT.pull); ring.position.set(fx(622), 4.3, S - 0.1); scene.add(ring);
     plank(0.9, 1.6, 0.1, fx(622), 3.5, S - 0.12, MAT.white);
-    // shower: marble on its walls, tiled floor, a short glass panel at the entry, a rain head
-    function marbleWall(x1, x2, z1, z2, n) { var horiz = n === "n" || n === "s", L = horiz ? x2 - x1 : z2 - z1; var t = TEX.marble.clone(); t.needsUpdate = true; t.repeat.set(L / 4, 2); var m = new T.Mesh(new T.BoxGeometry(horiz ? L : 0.03, CEIL - 0.3, horiz ? 0.03 : L), new T.MeshStandardMaterial({ map: t, roughness: 0.3 })); var dx = n === "w" ? -0.015 : n === "e" ? 0.015 : 0, dz = n === "n" ? -0.015 : n === "s" ? 0.015 : 0; m.position.set((x1 + x2) / 2 + dx, (CEIL - 0.3) / 2, (z1 + z2) / 2 + dz); scene.add(m); }
-    marbleWall(shW, E, N, N, "s"); marbleWall(E, E, N, shS, "w"); marbleWall(shW, E, shS, shS, "n"); marbleWall(partW + (fx(719.1) - partW), shW, N, shS, "e");
-    box([719.1, 801.6, 176.9, 244.2], 0, 0.3, MAT.tile, { solid: false });
-    var gl = new T.Mesh(new T.BoxGeometry(0.06, 7, fz(187.0) - N), MAT.glass); gl.position.set(shW - 0.2, 3.5, (N + fz(187.0)) / 2); scene.add(gl);
+    // The shower, after its own reference: charcoal subway tile on every wall,
+    // painted around its window, a pebble floor on a low curb, a tiled bench,
+    // black glass with a thin black frame, a black rain head and a hand shower
+    // on a slide bar.
+    var winA = fx(721.6), winB = fx(755.4);
+    function darkWall(x1, x2, z1, z2, n, y0, y1) { var horiz = n === "n" || n === "s", L = horiz ? x2 - x1 : z2 - z1; if (L <= 0 || y1 <= y0) return; var t = TEX.darkSubway.clone(); t.needsUpdate = true; t.repeat.set(L, y1 - y0); var m = new T.Mesh(new T.BoxGeometry(horiz ? L : 0.03, y1 - y0, horiz ? 0.03 : L), new T.MeshStandardMaterial({ map: t, roughness: 0.35 })); var dx = n === "w" ? -0.015 : n === "e" ? 0.015 : 0, dz = n === "n" ? -0.015 : n === "s" ? 0.015 : 0; m.position.set((x1 + x2) / 2 + dx, (y0 + y1) / 2, (z1 + z2) / 2 + dz); scene.add(m); }
+    darkWall(shW, winA, N, N, "s", 0, CEIL - 0.3); darkWall(winB, E, N, N, "s", 0, CEIL - 0.3);
+    darkWall(winA, winB, N, N, "s", 0, AWIN.sill); darkWall(winA, winB, N, N, "s", AWIN.head, CEIL - 0.3);
+    darkWall(E, E, N, shS, "w", 0, CEIL - 0.3); darkWall(shW, E, shS, shS, "n", 0, CEIL - 0.3); darkWall(shW, shW, N, shS, "e", 0, CEIL - 0.3);
+    var pt = TEX.pebble.clone(); pt.needsUpdate = true; pt.repeat.set((E - shW) / 1.5, (shS - N) / 1.5);
+    var floorP = new T.Mesh(new T.BoxGeometry(E - shW, 0.3, shS - N), new T.MeshStandardMaterial({ map: pt, roughness: 0.9 })); floorP.position.set((shW + E) / 2, 0.15, (N + shS) / 2); scene.add(floorP);
+    plank(0.35, 0.35, shS - N, shW - 0.17, 0.175, (N + shS) / 2, MAT.charcoal);                  // the curb at the entry
+    // a tiled bench along the east wall
+    var bt = TEX.darkSubway.clone(); bt.needsUpdate = true; bt.repeat.set(2, 1.5);
+    var bench = new T.Mesh(new T.BoxGeometry(1.4, 1.5, shS - N - 0.2), new T.MeshStandardMaterial({ map: bt, roughness: 0.35 })); bench.position.set(E - 0.7, 0.75, (N + shS) / 2); scene.add(bench);
+    colliders.push([E - 1.4, E, N, shS]);
+    // glass on the open side: a fixed panel at the north end, a thin black frame top and bottom
+    var glLen = fz(187.0) - N;
+    var gl = new T.Mesh(new T.BoxGeometry(0.06, 7, glLen), MAT.glass); gl.position.set(shW - 0.2, 3.5, N + glLen / 2); scene.add(gl);
+    plank(0.1, 0.1, glLen, shW - 0.2, 7.0, N + glLen / 2, MAT.pull); plank(0.1, 0.1, glLen, shW - 0.2, 0.35, N + glLen / 2, MAT.pull);
+    plank(0.1, 6.7, 0.1, shW - 0.2, 3.65, N + glLen - 0.05, MAT.pull);
     colliders.push([shW - 0.25, shW - 0.15, N, fz(187.0)]);
-    var head = new T.Mesh(new T.CylinderGeometry(0.4, 0.4, 0.05, 16), MAT.pull); head.position.set((shW + E) / 2, 7.0, N + 0.6); scene.add(head);
-    var arm2 = new T.Mesh(new T.CylinderGeometry(0.04, 0.04, 0.7, 8), MAT.pull); arm2.rotation.x = Math.PI / 2; arm2.position.set((shW + E) / 2, 7.0, N + 0.3); scene.add(arm2);
+    // black rain head from the ceiling, a hand shower on a slide bar and a mixer on the north wall
+    var head = new T.Mesh(new T.CylinderGeometry(0.45, 0.45, 0.05, 20), MAT.pull); head.position.set((shW + E) / 2, CEIL - 0.9, N + 1.2); scene.add(head);
+    var drop = new T.Mesh(new T.CylinderGeometry(0.035, 0.035, 0.85, 8), MAT.pull); drop.position.set((shW + E) / 2, CEIL - 0.45, N + 1.2); scene.add(drop);
+    // the hand shower and mixer on the partition wall, clear of the window
+    var hz = N + 2.6;
+    var slide = new T.Mesh(new T.CylinderGeometry(0.03, 0.03, 2.6, 8), MAT.pull); slide.position.set(shW + 0.15, 5.0, hz); scene.add(slide);
+    var hand = new T.Mesh(new T.CylinderGeometry(0.06, 0.1, 0.55, 10), MAT.pull); hand.position.set(shW + 0.25, 5.6, hz); hand.rotation.z = 0.2; scene.add(hand);
+    var hose = new T.Mesh(new T.CylinderGeometry(0.02, 0.02, 2.2, 6), MAT.pull); hose.position.set(shW + 0.3, 4.4, hz + 0.1); hose.rotation.z = -0.15; scene.add(hose);
+    plank(0.05, 0.5, 0.5, shW + 0.05, 3.6, hz, MAT.pull); var knob2 = new T.Mesh(new T.CylinderGeometry(0.08, 0.08, 0.15, 10), MAT.pull); knob2.rotation.z = Math.PI / 2; knob2.position.set(shW + 0.12, 3.6, hz); scene.add(knob2);
+    var shL = new T.PointLight(0xfff0dc, 0.35, 8, 1.8); shL.position.set((shW + E) / 2, CEIL - 0.5, (N + shS) / 2); scene.add(shL);
     // a runner along the vanity, and recessed lights
     plank(2.4, 0.03, vlen - 1.0, vx2 + 1.4, 0.05, vcz, MAT.jute);
     [[cx - 3, N + 2.5], [cx - 3, S - 2.5], [cx + 3, N + 2.5], [cx + 3, S - 2.5]].forEach(function (p) { var can = new T.Mesh(new T.CylinderGeometry(0.28, 0.28, 0.02, 16), MAT.bulb); can.position.set(p[0], CEIL - 0.015, p[1]); scene.add(can); });
