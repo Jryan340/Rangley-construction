@@ -1194,11 +1194,11 @@
       for (var i = 0; i < 3; i++) { var cx2 = tx - 2.3 + i * 2.3; plank(1.5, 1.4, 1.5, cx2, 0.7, tz + 2.4, MAT.wickerDk); plank(1.5, 1.6, 0.3, cx2, 2.4, tz + 3.0, MAT.wickerDk); colliders.push([cx2 - 0.75, cx2 + 0.75, tz + 1.65, tz + 3.15]); }
       [[tx - 2.2, tz + 0.3], [tx + 1.8, tz - 0.3]].forEach(function (cp) { var cd = new T.Mesh(new T.CylinderGeometry(0.12, 0.12, 0.35, 10), MAT.white); cd.position.set(cp[0], 2.72, cp[1]); scene.add(cd); });
       // a hedge along the yard side either end, open across from the slider; planters of grasses at the posts
-      [[fx(640.0), E]].forEach(function (hx) { plank(hx[1] - hx[0], 5.0, 1.2, (hx[0] + hx[1]) / 2, 2.5, N + 0.6, MAT.leaf); colliders.push([hx[0], hx[1], N, N + 1.2]); });
-      // a built-in grill on the yard side at the west end, after the owner's photo:
+      [[W, fx(520.0)]].forEach(function (hx) { plank(hx[1] - hx[0], 5.0, 1.2, (hx[0] + hx[1]) / 2, 2.5, N + 0.6, MAT.leaf); colliders.push([hx[0], hx[1], N, N + 1.2]); });
+      // a built-in grill on the yard side at the east end, under the open deck, after the owner's photo:
       // a wood-clad island with a stone top, a stainless grill under a rounded hood, doors and a drawer below
       (function () {
-        var gx1 = W + 1.0, gx2 = W + 7.0, gz1 = N + 0.4, gz2 = N + 2.9, gcx = (gx1 + gx2) / 2, gcz = (gz1 + gz2) / 2;
+        var gx1 = E - 8.3, gx2 = E - 2.3, gz1 = N + 0.4, gz2 = N + 2.9, gcx = (gx1 + gx2) / 2, gcz = (gz1 + gz2) / 2;
         var teak = new T.MeshStandardMaterial({ color: 0xc8a06a, roughness: 0.7 }), steel = new T.MeshStandardMaterial({ color: 0xd8dadc, roughness: 0.3, metalness: 0.7 });
         plank(gx2 - gx1, 2.9, gz2 - gz1, gcx, 1.45, gcz, teak);
         for (var i = 0; i < 6; i++) { var ln = new T.Mesh(new T.BoxGeometry(gx2 - gx1 + 0.02, 0.03, 0.02), MAT.walnut); ln.position.set(gcx, 0.3 + i * 0.45, gz2 + 0.01); scene.add(ln); }

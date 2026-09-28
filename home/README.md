@@ -273,10 +273,10 @@ cedar-slat soffit under the deck with an amber cove along the house and
 warm downlights; an outdoor television on a dark slat wall at the west end
 with a hedge planter under it; a deep sectional with orange pillows and a
 teak coffee table facing the screen; a teak dining table for six with a
-bench under the open deck; a built-in grill on the yard side at the west end (a wood-clad island with
-a stone top, a stainless grill under a rounded hood, doors and a drawer), a
-hedge along the yard side at the east end, the middle open across from the
-slider; grasses in planters. A walkway runs along the yard
+bench under the open deck; a built-in grill on the yard side at the east end, under the open deck (a
+wood-clad island with a stone top, a stainless grill under a rounded hood,
+doors and a drawer), a hedge along the yard side at the west end, the
+middle open across from the slider; grasses in planters. A walkway runs along the yard
 side from the slider to the dining end and out to the lawn.
 
 ## Primary closet
