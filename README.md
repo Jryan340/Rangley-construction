@@ -184,6 +184,19 @@ opposite the bed. That wall carries three of the sheet's windows; the middle
 one is dropped, on request, so the television hangs on solid wall between
 the other two.
 
+## Paint
+
+Walls follow a warm farmhouse palette the owner chose, Sherwin-Williams
+names: Mushroom is the base on every wall in place of white; the living room
+and the south-east bedroom are Acacia Haze, a grey sage; the study and the
+north-west bedroom are Morning Fog, a blue grey; the south-west bedroom is
+Beachcomber, a warm tan; the halls, entry and both vestibules are Illusion, a
+warm grey; the primary bath is Sunbleached; the porch's knee walls are Studio
+Clay. Trim, crown and ceilings stay light. A room that names a colour has
+every wall face that bounds it painted, with its windows and doorways left
+open, so a wall shared by two rooms carries each room's colour on its own
+side.
+
 ## What was assumed
 
 The sheet is a plan. It has no heights on it, so:
