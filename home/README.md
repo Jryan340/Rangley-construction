@@ -229,6 +229,40 @@ east is at basement level off a driveway that runs down that side. The lawn
 is built to that slope, in pieces around the house, and the deck and porch
 stand on posts down to it.
 
+## The lot, from the surveyor's plot plan
+
+The ground is no longer a guess. The DWG in the repo's Temple-street folder
+is the surveyor's plot plan of the lot (1" = 20', March 2025): 60 feet on
+the street by 132 feet deep, 7,919 square feet, with the house 29.9 feet
+back from the front line and 14.4 feet off the west line, the driveway down
+the east side, the sidewalk, curb and street, the neighbours' trees and a
+chain-link fence along the rear line, and 170 surveyed spot elevations.
+Those points are interpolated onto a 2.5-foot grid and the whole ground
+follows it, heights relative to the first floor at elevation 120.0 (NGVD
+1988): the front yard sits about 2'-4" below the floor and is near flat,
+the ground at the back wall is at basement level, and the rear line is a
+foot lower still. The lot lines are drawn on the grass, the fence is where
+the survey has it, and labels name the front and back yards.
+
+## Roofs
+
+From the existing-conditions elevations: a 9-in-12 gable over the house with
+its ridge running east-west and gables on the side walls, eaves at the top of
+the second-floor walls (the scan's eaves are 8 feet above the second floor;
+the model's second-floor walls are the assumed 9 feet, so the roof sits a
+foot higher), the chimney carried above the ridge. The addition gets a cross
+gable at the same pitch with its ridge running north-south and its gable
+facing the back yard, as the one-storey rear ell it replaces had; the two
+roofs are let into each other. The addition's roof is not on the new sheets,
+so that is a choice, not a reading.
+
+## Deck stair
+
+Thirteen risers down from the open deck's north-west corner, straight out
+into the yard, landing on a pad at the edge of the under-deck patio; rails
+both sides. From the yard you climb it; from the patio you cannot walk in
+under its lower half.
+
 ## Under the deck
 
 The rec room's slider opens under the screened porch, at basement grade,
@@ -262,6 +296,10 @@ lanterns by the porch and planters of hydrangeas at the far rail. The set
 sits toward the rail so the walk from the screen door runs along the house.
 
 ## Art
+
+The entry's console is after the owner's foyer photo: a slim white-oak
+table with tapered legs under the round mirror, a stone vase of olive
+branches, two books and a bowl on it.
 
 On walls that were blank: a round black mirror over the entry bench; a
 botanical print in oak and a monochrome abstract in black down the

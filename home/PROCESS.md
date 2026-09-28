@@ -174,3 +174,23 @@ through the rooms. Build it in pieces around the footprint, each following
 the same grade function the player's feet use, and choose the colliders by
 the player's height when they are outside at basement level, or the first
 floor's walls stop them at the side entry.
+
+## 8. The lot came from a DWG
+
+The surveyor's plot plan was a DWG in the repo. `dwg2dxf` (libredwg) turns
+it into text; the DXF's ENTITIES section pairs group codes with values, and
+a hundred lines of Python read LINE, LWPOLYLINE, INSERT, TEXT and the
+survey-point blocks with their ELEV attributes. Bearings on the property
+lines give the lot's orientation (the street runs N75°E), and the house
+footprint on the plan is the same 30'-3" wall as the sheets, which is how
+the plan registers to the model: rotate into the lot's frame, then shift
+so the house's west and front walls land where the sheets put them.
+
+Interpolate the spot elevations (inverse distance) onto a grid in the
+model's frame and embed the grid; the ground, the driveway, the walk and
+the player's feet all read the same function. Add a few synthetic points
+where the design regrades (under the deck, at the side entry) so the built
+surfaces sit on the ground rather than in it.
+
+Do not render 700 frames in one scripted call to test a walk: the browser
+drops the WebGL context. Two hundred is fine.
