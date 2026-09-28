@@ -101,7 +101,7 @@ you see, so a render at 50° to 55° looks like standing there. The first
 version of this page used 70° vertical, which on a widescreen monitor is about
 100° across: twice the angle the screen really covers, so every wall was
 pushed away and every room read at about half its size. The lens is now held
-at a horizontal angle regardless of window shape, 100° by default because
+at a horizontal angle regardless of window shape, 120° by default because
 that is what felt right walking it, and there is a **Scale** panel to change
 it. Wider shows more of the room at once; narrower is truer to life.
 

@@ -355,8 +355,8 @@
   // monitor; the horizontal angle is held instead and the vertical follows the
   // window. A screen at arm's length covers roughly 50 degrees of your view, so
   // 55 is close to standing there; wider shows more but pushes everything away.
-  var HFOV = 100;
-  try { var savedFov = parseFloat(localStorage.getItem("ts_fov2")); if (savedFov >= 35 && savedFov <= 120) HFOV = savedFov; } catch (e) {}
+  var HFOV = 120;
+  try { var savedFov = parseFloat(localStorage.getItem("ts_fov3")); if (savedFov >= 35 && savedFov <= 140) HFOV = savedFov; } catch (e) {}
   var camera = new T.PerspectiveCamera(50, 1, 0.1, 400);
   function applyLens() {
     var h = 2 * Math.atan(Math.tan(HFOV * Math.PI / 360) / camera.aspect) * 180 / Math.PI;
@@ -1607,8 +1607,8 @@
     document.getElementById("eyeV").textContent = ft(EYE);
     document.getElementById("ceilV").textContent = ft(CEIL);
   }
-  document.getElementById("lensM").addEventListener("click", function () { HFOV = Math.max(35, HFOV - 5); applyLens(); save("ts_fov2", HFOV); showScale(); });
-  document.getElementById("lensP").addEventListener("click", function () { HFOV = Math.min(120, HFOV + 5); applyLens(); save("ts_fov2", HFOV); showScale(); });
+  document.getElementById("lensM").addEventListener("click", function () { HFOV = Math.max(35, HFOV - 5); applyLens(); save("ts_fov3", HFOV); showScale(); });
+  document.getElementById("lensP").addEventListener("click", function () { HFOV = Math.min(140, HFOV + 5); applyLens(); save("ts_fov3", HFOV); showScale(); });
   document.getElementById("eyeM").addEventListener("click", function () { EYE = Math.max(3.5, EYE - 1 / 6); save("ts_eye", EYE); showScale(); });
   document.getElementById("eyeP").addEventListener("click", function () { EYE = Math.min(7, EYE + 1 / 6); save("ts_eye", EYE); showScale(); });
   document.getElementById("ceilM").addEventListener("click", function () { CEIL = Math.max(7.5, CEIL - 0.5); save("ts_ceil", CEIL); rebuild(); showScale(); });
