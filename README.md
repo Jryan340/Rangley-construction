@@ -1,7 +1,9 @@
-# 33 Temple St · First Floor
+# 33 Temple St
 
-A first-person walkthrough of the proposed first floor from sheet PR-01 of the
-09/27/26 floor plans. One self-contained HTML file.
+A first-person walkthrough of the proposed first and second floors from
+sheets PR-01 and PR-02 of the 09/27/26 floor plans. One self-contained HTML
+file. The stair is walkable: climb it from the entry and you are upstairs, or
+use the floor buttons.
 
 Open [`index.html`](./index.html) in any browser and click to walk. W A S D
 moves, the mouse looks, Shift hurries, P switches to a top-down plan view, and
@@ -42,6 +44,30 @@ Read back from the model, against the sheet's labels:
 
 The entry reads 8'-1" rather than 8'-6" because the model takes the stair's
 bottom riser as the room's edge; the sheet's 8'-6" runs under the stair.
+
+## The second floor
+
+Sheet PR-02 is drawn 9 points higher and 2.3 points to the left of PR-01.
+Registered by the addition and the old rear wall, which then coincide
+exactly, every second-floor wall is stored in PR-01's coordinates, and the
+stairwell lands over the stair. One thing the registration shows: the
+second floor's front wall is 14.7 points, about 13", further forward than
+the first floor's, so the front bedrooms overhang the entry by that much,
+and the model builds it that way.
+
+Over the addition, the primary suite: the bedroom, 12'-6" x 15'-11" against
+the sheet's 12'6" x 16', with three windows west and three over the bed; the
+bath, 14'-3" x 8'-7" against 8'6" x 14', with a double vanity, a walled
+shower and a water closet; a vestibule between them; and the closet, 8'-4" x
+7'-1" against 8'6" x 7', with a window. Over the existing house, three
+bedrooms, a bath with a shower, the hall, the stairwell, and five closets.
+
+Heights are again assumed: floor to floor 10'-0", the 9' ceiling plus a foot
+of structure. The stair climbs that in sixteen risers over the sheet's run,
+which makes it steep; the sheet's stair is shorter than a straight run to a
+10' floor needs, so the real one likely turns. Furniture upstairs is blocks
+placed from the sheet: beds with headboards, dressers, nightstands, vanities,
+toilets, tiled showers with glass, wardrobes in the closet.
 
 ## What is on the floor
 
