@@ -324,7 +324,29 @@
     c.fillStyle = "#8f7a5c"; for (var y = 50; y < H - 40; y += 56) for (var x = 50; x < W - 40; x += 56) { c.beginPath(); c.moveTo(x, y - 18); c.lineTo(x + 18, y); c.lineTo(x, y + 18); c.lineTo(x - 18, y); c.closePath(); c.fill(); }
     var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
   }
-  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), porchCeil: deckTexture("#8b8378", "#665f56"), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture(), greyRug: greyRugTexture(), art: artTexture() };
+  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), porchCeil: deckTexture("#8b8378", "#665f56"), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture(), greyRug: greyRugTexture(), art: artTexture(), marble: marbleTexture(), frameArt: frameArtTexture() };
+  function marbleTexture() {
+    var S = 512, cv = document.createElement("canvas"); cv.width = S; cv.height = S; var c = cv.getContext("2d");
+    c.fillStyle = "#efece6"; c.fillRect(0, 0, S, S);
+    var seed = 21; function rnd() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
+    for (var v = 0; v < 14; v++) {
+      c.strokeStyle = "rgba(150,145,138," + (0.18 + rnd() * 0.3) + ")"; c.lineWidth = 0.8 + rnd() * 2.2;
+      c.beginPath(); var x = rnd() * S, y = rnd() * S; c.moveTo(x, y);
+      for (var k = 0; k < 5; k++) { x += (rnd() - 0.3) * 140; y += (rnd() - 0.5) * 120; c.quadraticCurveTo(x + (rnd() - 0.5) * 60, y + (rnd() - 0.5) * 60, x, y); }
+      c.stroke();
+    }
+    for (var w = 0; w < 6; w++) { c.strokeStyle = "rgba(190,186,178,0.35)"; c.lineWidth = 8 + rnd() * 14; c.beginPath(); var x2 = rnd() * S, y2 = rnd() * S; c.moveTo(x2, y2); c.quadraticCurveTo(x2 + 200, y2 + (rnd() - 0.5) * 200, x2 + 400, y2 + (rnd() - 0.5) * 100); c.stroke(); }
+    var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; return tex;
+  }
+  function frameArtTexture() {
+    // a quiet landscape for the television to show when it is off
+    var W = 512, H = 288, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
+    var sky = c.createLinearGradient(0, 0, 0, H * 0.62); sky.addColorStop(0, "#c9ccc6"); sky.addColorStop(1, "#e9dfcd"); c.fillStyle = sky; c.fillRect(0, 0, W, H);
+    c.fillStyle = "#9aa39a"; c.beginPath(); c.moveTo(0, H * 0.55); c.bezierCurveTo(W * 0.2, H * 0.4, W * 0.4, H * 0.6, W * 0.6, H * 0.48); c.bezierCurveTo(W * 0.75, H * 0.4, W * 0.9, H * 0.55, W, H * 0.5); c.lineTo(W, H); c.lineTo(0, H); c.fill();
+    c.fillStyle = "#6f7d6c"; c.beginPath(); c.moveTo(0, H * 0.7); c.bezierCurveTo(W * 0.3, H * 0.6, W * 0.5, H * 0.78, W * 0.8, H * 0.66); c.lineTo(W, H * 0.72); c.lineTo(W, H); c.lineTo(0, H); c.fill();
+    c.fillStyle = "#3f4a3d"; c.beginPath(); c.moveTo(0, H * 0.86); c.bezierCurveTo(W * 0.25, H * 0.8, W * 0.6, H * 0.92, W, H * 0.84); c.lineTo(W, H); c.lineTo(0, H); c.fill();
+    var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
+  }
   function greyRugTexture() {
     var W = 256, H = 256, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
     c.fillStyle = "#7d7a76"; c.fillRect(0, 0, W, H); c.fillStyle = "#a9a49c"; c.fillRect(12, 12, W - 24, H - 24);
@@ -390,6 +412,10 @@
     leather: new T.MeshStandardMaterial({ color: 0x8a5a3a, roughness: 0.6 }),
     greyCloth: new T.MeshStandardMaterial({ color: 0x8e8b86, roughness: 1 }),
     brass: new T.MeshStandardMaterial({ color: 0xb8924e, roughness: 0.35, metalness: 0.8 }),
+    marble: new T.MeshStandardMaterial({ map: null, roughness: 0.25 }),
+    amber: new T.MeshStandardMaterial({ color: 0x7a4a1e, roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.85 }),
+    darkGlass: new T.MeshStandardMaterial({ color: 0x1b2026, roughness: 0.1, metalness: 0.3, transparent: true, opacity: 0.7 }),
+    stoneware: new T.MeshStandardMaterial({ color: 0x8f8a80, roughness: 1 }),
     curtain: new T.MeshStandardMaterial({ color: 0xb9ad9c, roughness: 1 }),
     warmWall: new T.MeshStandardMaterial({ color: 0xe9e3d8, roughness: 0.95 }),
     wickerDk: new T.MeshStandardMaterial({ color: 0x8c7150, roughness: 1 }),
@@ -650,7 +676,7 @@
     var inr = new T.Mesh(new T.BoxGeometry(alongX ? w - 0.3 : 0.03, h - 0.3, alongX ? 0.03 : w - 0.3), inner); inr.position.set(cx + dx * 0.045, cy, cz + dz * 0.045); scene.add(inr);
     if (pullAt) {
       var vert = pullAt.vert, L = 0.45, py = pullAt.y, off = pullAt.off || 0;
-      var pl2 = new T.Mesh(new T.BoxGeometry(alongX ? (vert ? 0.05 : L) : 0.06, vert ? L : 0.05, alongX ? 0.06 : (vert ? 0.05 : L)), MAT.pull);
+      var pl2 = new T.Mesh(new T.BoxGeometry(alongX ? (vert ? 0.05 : L) : 0.06, vert ? L : 0.05, alongX ? 0.06 : (vert ? 0.05 : L)), pullAt.mat || MAT.pull);
       pl2.position.set(cx + dx * 0.11 + (alongX ? off : 0), py, cz + dz * 0.11 + (alongX ? 0 : off)); scene.add(pl2);
     }
   }
@@ -785,18 +811,42 @@
     fixLabel("Double oven", x1 - 0.2, 7.6, cz);
   }
   function buildCoffee(r) {
-    var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]), cx = (x1 + x2) / 2, w = x2 - x1, cz = (zN + zS) / 2;
-    box(r, 0, 2.88, MAT.shaker);                              // white shaker base
-    var nd = Math.round(w / 1.6), dw = w / nd;
-    for (var i = 0; i < nd; i++) shakerDoor(x1 + dw * (i + 0.5), 1.6, zN, dw - 0.08, 2.35, "n", MAT.shaker, MAT.shakerIn, { vert: false, y: 2.55 });
-    plank(w + 0.1, 0.12, zS - zN + 0.1, cx, 2.94, cz, MAT.quartz);    // counter
-    var backFace = zS - 0.02;                                 // the alcove's back wall, facing the kitchen
-    plank(3.4, 0.28, 0.1, cx, 5.55, backFace - 0.06, MAT.stone);      // floating shelf
-    plank(4.6, 2.65, 0.12, cx, 5.75, backFace - 0.35, MAT.fire);      // the television
-    plank(4.4, 2.45, 0.02, cx, 5.75, backFace - 0.42, new T.MeshStandardMaterial({ color: 0x1c2a36, roughness: 0.2, metalness: 0.3, emissive: 0x0d1720 }));
-    plank(1.1, 1.3, 1.2, x2 - 1.1, 3.7, cz - 0.1, MAT.steel);         // espresso machine
-    plank(0.5, 1.0, 0.9, x1 + 0.8, 3.55, cz - 0.1, MAT.frame);         // grinder
-    [0, 1, 2].forEach(function (i) { var m = new T.Mesh(new T.CylinderGeometry(0.17, 0.15, 0.32, 12), MAT.white); m.position.set(cx - 0.6 + i * 0.5, 3.21, cz + 0.2); scene.add(m); });
+    var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]), cx = (x1 + x2) / 2, w = x2 - x1, cz = (zN + zS) / 2, dep = zS - zN;
+    // marble: a slab counter and the back wall to the ceiling
+    var mt = TEX.marble.clone(); mt.needsUpdate = true; mt.repeat.set(w / 4, 1); var marbleTop = new T.MeshStandardMaterial({ map: mt, roughness: 0.25 });
+    var mb = TEX.marble.clone(); mb.needsUpdate = true; mb.repeat.set(w / 4, (CEIL - 2.9) / 4); var marbleBack = new T.MeshStandardMaterial({ map: mb, roughness: 0.3 });
+    var back = new T.Mesh(new T.BoxGeometry(w, CEIL - 2.9, 0.04), marbleBack); back.position.set(cx, 2.9 + (CEIL - 2.9) / 2, zS - 0.02); scene.add(back);
+    // charcoal shaker bases with brass pulls on a black toe kick:
+    // a door and drawer on the left, a beverage fridge in the middle, three drawers on the right
+    box(r, 0, 2.88, MAT.charcoal);
+    plank(w, 0.33, 0.02, cx, 0.165, zN + 0.28, MAT.ironBlk);
+    var fridgeW = 2.0, leftW = 1.8, rightW = w - fridgeW - leftW;
+    var lx = x1 + leftW / 2, fxm = x1 + leftW + fridgeW / 2, rx = x2 - rightW / 2;
+    shakerDoor(lx, 2.55, zN, leftW - 0.08, 0.55, "n", MAT.charcoal, MAT.charcoalIn, { vert: false, y: 2.55, mat: MAT.brass });
+    shakerDoor(lx, 1.32, zN, leftW - 0.08, 2.0, "n", MAT.charcoal, MAT.charcoalIn, { vert: true, y: 1.6, off: leftW / 2 - 0.25, mat: MAT.brass });
+    [2.45, 1.6, 0.75].forEach(function (y) { shakerDoor(rx, y, zN, rightW - 0.08, 0.72, "n", MAT.charcoal, MAT.charcoalIn, { vert: false, y: y, mat: MAT.brass }); });
+    // the beverage fridge: stainless frame, dark glass door, shelves of bottles
+    plank(fridgeW - 0.06, 2.45, 0.06, fxm, 1.55, zN - 0.03, MAT.steel);
+    plank(fridgeW - 0.3, 2.2, 0.03, fxm, 1.55, zN - 0.07, MAT.darkGlass);
+    for (var sh = 0; sh < 3; sh++) { var sy = 0.75 + sh * 0.62; plank(fridgeW - 0.4, 0.03, 0.4, fxm, sy, zN + 0.25, MAT.steel); for (var b = 0; b < 4; b++) { var bt = new T.Mesh(new T.CylinderGeometry(0.09, 0.09, 0.5, 8), MAT.amber); bt.rotation.x = Math.PI / 2; bt.position.set(fxm - 0.55 + b * 0.37, sy + 0.12, zN + 0.3); scene.add(bt); } }
+    plank(0.05, 1.6, 0.05, fxm + fridgeW / 2 - 0.2, 1.55, zN - 0.12, MAT.steel);
+    var fl = new T.PointLight(0xffe9c8, 0.25, 4, 2); fl.position.set(fxm, 2.2, zN + 0.2); scene.add(fl);
+    // counter
+    var top = new T.Mesh(new T.BoxGeometry(w + 0.1, 0.12, dep + 0.1), marbleTop); top.position.set(cx, 2.94, cz - 0.05); top.castShadow = true; scene.add(top);
+    // the television that looks like a picture frame: oak bezel, a mat, a landscape
+    var tvW = 4.6, tvH = 2.6, tvY = 5.7, tvZ = zS - 0.04;
+    plank(tvW + 0.24, tvH + 0.24, 0.1, cx, tvY, tvZ - 0.05, MAT.seatWood);
+    plank(tvW, tvH, 0.02, cx, tvY, tvZ - 0.11, MAT.white);
+    var pic = new T.Mesh(new T.BoxGeometry(tvW - 0.5, tvH - 0.5, 0.02), new T.MeshStandardMaterial({ map: TEX.frameArt, roughness: 0.9 })); pic.position.set(cx, tvY, tvZ - 0.13); scene.add(pic);
+    // on the counter: espresso machine and grinder on the left, a tray of bottles and a plant on the right
+    plank(1.05, 1.25, 1.15, x1 + 1.1, 3.62, cz - 0.05, MAT.steel);
+    plank(0.9, 0.08, 0.6, x1 + 1.1, 3.35, cz - 0.35, MAT.brass); plank(0.25, 0.25, 0.25, x1 + 1.1, 3.2, cz - 0.5, MAT.white);
+    plank(0.45, 0.95, 0.5, x1 + 0.35, 3.47, cz, MAT.ironBlk); var hopper = new T.Mesh(new T.CylinderGeometry(0.16, 0.14, 0.3, 10), MAT.darkGlass); hopper.position.set(x1 + 0.35, 4.1, cz); scene.add(hopper);
+    plank(1.7, 0.08, 0.8, x2 - 1.8, 3.04, cz, MAT.vanityWood);
+    [[-0.55, MAT.amber], [-0.2, MAT.darkGlass], [0.15, MAT.amber], [0.5, MAT.white]].forEach(function (bo, i) { var bt2 = new T.Mesh(new T.CylinderGeometry(0.11, 0.12, 0.7 + (i % 2) * 0.25, 10), bo[1]); bt2.position.set(x2 - 1.8 + bo[0], 3.45 + (i % 2) * 0.12, cz); scene.add(bt2); });
+    var vase = new T.Mesh(new T.CylinderGeometry(0.32, 0.22, 0.9, 12), MAT.stoneware); vase.position.set(x2 - 0.5, 3.45, cz + 0.2); scene.add(vase);
+    for (var f = 0; f < 9; f++) { var lf = new T.Mesh(new T.SphereGeometry(0.11, 7, 5), MAT.leaf); lf.position.set(x2 - 0.5 + Math.cos(f * 0.8) * (0.15 + (f % 3) * 0.2), 4.05 + (f % 4) * 0.22, cz + 0.2 + Math.sin(f * 0.8) * 0.2); lf.scale.set(1.4, 0.5, 1); lf.rotation.y = f; scene.add(lf); }
+    [0, 1, 2].forEach(function (i) { var m = new T.Mesh(new T.CylinderGeometry(0.16, 0.14, 0.3, 12), MAT.white); m.position.set(x1 + 2.2 + i * 0.4, 3.15, cz + 0.45); scene.add(m); });
     fixLabel("Coffee bar", cx, 7.9, cz);
   }
 

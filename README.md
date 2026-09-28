@@ -132,10 +132,14 @@ The sheet is a plan. It has no heights on it, so:
   stair beneath it is not modelled.
 
 Two elements on the sheet are unlabelled. The U of wall-weight lines at the
-kitchen seam, 6'-11" wide and open to the kitchen, is the coffee bar: a
-counter with base cabinets between two full-height returns, an espresso
-machine and grinder, a floating shelf, and a television on the back wall,
-which sits on the old wall line. The two hairline rectangles 2'-7" wide, one
+kitchen seam, 6'-11" wide and open to the kitchen, is the coffee bar, dressed
+after a reference: charcoal shaker bases with brass pulls, a door and drawer
+on the left, a glass-front beverage fridge stocked with bottles in the
+middle, three drawers on the right, a white marble counter with the marble
+carried up the back wall to the ceiling, and on it an espresso machine, a
+grinder, a wood tray of bottles, a stoneware vase of greenery and mugs. No
+uppers: a television that looks like a picture frame when it is off hangs on
+the marble, an oak bezel and mat around a landscape. The two hairline rectangles 2'-7" wide, one
 down the hall and one down the east side of the study, are built as runner
 rugs.
 
