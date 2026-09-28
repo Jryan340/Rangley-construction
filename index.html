@@ -131,7 +131,7 @@
     { r: [815.2, 822.0, 622.1, 691.8], k: "ext" },
     // ---- existing exterior: front (south) ----
     { r: [412.7, 479.0, 685.1, 691.8], k: "ext" }, { r: [479.0, 523.0, 685.1, 691.8], k: "ext", win: WIN },
-    { r: [523.0, 595.9, 685.1, 691.8], k: "ext" }, { r: [595.9, 638.8, 685.1, 691.8], k: "ext", door: true },
+    { r: [523.0, 595.9, 685.1, 691.8], k: "ext" }, { r: [595.9, 638.8, 685.1, 691.8], k: "ext", door: true, hinge: "e", swing: -1 },
     { r: [638.8, 711.2, 685.1, 691.8], k: "ext" }, { r: [711.2, 755.2, 685.1, 691.8], k: "ext", win: WIN },
     { r: [755.2, 822.0, 685.1, 691.8], k: "ext" },
     // ---- the old rear wall, now the seam between house and addition ----
@@ -333,7 +333,7 @@
     white: new T.MeshStandardMaterial({ color: 0xf4f4f2, roughness: 0.4 }),
     glass: new T.MeshStandardMaterial({ color: 0xcfe3f0, roughness: 0.08, metalness: 0.1, transparent: true, opacity: 0.28, side: T.DoubleSide, depthWrite: false }),
     frame: new T.MeshStandardMaterial({ color: 0x2d2a26, roughness: 0.6 }),
-    door: new T.MeshStandardMaterial({ color: 0xd9d2c4, roughness: 0.7 }),
+    door: new T.MeshStandardMaterial({ color: 0xb08b62, roughness: 0.65 }),   // oak, so a door never reads as wall
     brick: new T.MeshStandardMaterial({ color: 0x8a5a48, roughness: 0.95 }),
     lawn: new T.MeshStandardMaterial({ color: 0x7d9a5c, roughness: 1 }),
     trim: new T.MeshStandardMaterial({ color: 0xf7f4ee, roughness: 0.7 }),
@@ -483,17 +483,6 @@
     var knob = new T.Mesh(new T.SphereGeometry(0.08, 10, 8), MAT.steel); knob.position.set(hingeX + dir * 0.2, 3.1, cz + swing * (wide - 0.5)); scene.add(knob);
     colliders.push([hingeX + dir * 0.12 - 0.1, hingeX + dir * 0.12 + 0.1, Math.min(cz, cz + swing * wide), Math.max(cz, cz + swing * wide)]);
   }
-  // the front door leaf: standing open into the entry, hinged on the east jamb
-  // so it stands clear of the opening into the living room on the west side
-  (function () {
-    var r = [595.9, 638.8, 685.1, 691.8], x1 = fx(r[0]), x2 = fx(r[1]), z1 = fz(r[2]);
-    var wide = x2 - x1;
-    var leaf = new T.Mesh(new T.BoxGeometry(0.15, DOOR_H - 0.1, wide - 0.2), MAT.door);
-    leaf.position.set(x2 - 0.12, DOOR_H / 2, z1 - wide / 2); scene.add(leaf);
-    colliders.push([x2 - 0.22, x2 - 0.02, z1 - wide, z1]);
-    [x1 + 0.1, x2 - 0.1].forEach(function (jx) { var j = new T.Mesh(new T.BoxGeometry(0.2, DOOR_H, 0.65), MAT.frame); j.position.set(jx, DOOR_H / 2, z1 + 0.25); scene.add(j); });
-  })();
-
   // ---- floors and ceilings ----
   function slab(r, y, mat, thick, opts) {
     var x1 = fx(r[0]), x2 = fx(r[1]), z1 = fz(r[2]), z2 = fz(r[3]);
@@ -664,19 +653,6 @@
     // sink and cooktop marks on the island
     var sink = new T.Mesh(new T.BoxGeometry(1.4, 0.05, 1.9), MAT.steel); sink.position.set(fx(715.4), 3.03, fz(269.8)); scene.add(sink);
     fixLabel("Island", fx(708.3), 7.6, fz(269.4));
-  })();
-
-  // A 5'-10" person standing by the front window of the living room, for scale.
-  (function () {
-    var px = fx(462), pz = fz(655), H = 5.833;
-    function part(w, h, d, x, y, z, m) { var b = new T.Mesh(new T.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.castShadow = true; scene.add(b); }
-    part(0.55, 2.6, 0.7, px - 0.3, 1.3, pz, MAT.pants); part(0.55, 2.6, 0.7, px + 0.3, 1.3, pz, MAT.pants);   // legs to 2'-7"
-    part(1.5, 2.1, 0.8, px, 3.65, pz, MAT.shirt);                                                             // torso to 4'-8"
-    part(0.35, 2.0, 0.4, px - 0.95, 3.6, pz, MAT.shirt); part(0.35, 2.0, 0.4, px + 0.95, 3.6, pz, MAT.shirt); // arms
-    part(0.35, 0.3, 0.4, px, 4.85, pz, MAT.skin);                                                             // neck
-    var head = new T.Mesh(new T.SphereGeometry(0.4, 16, 12), MAT.skin); head.position.set(px, H - 0.4, pz); head.scale.set(0.85, 1, 0.9); head.castShadow = true; scene.add(head);
-    colliders.push([px - 0.8, px + 0.8, pz - 0.4, pz + 0.4]);
-    fixLabel("5'-10\" person", px, H + 0.9, pz);
   })();
 
   // lamps

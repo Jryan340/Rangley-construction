@@ -83,7 +83,7 @@ The other things the eye uses as a ruler are set to the standard sizes, since
 the sheet has no heights: doors 6'-8", window heads level with the door heads,
 counters 36", risers 7-1/2", baseboards 4-1/2". The floor is 5" oak planks in
 random lengths, the bathroom 12" tile, the deck 5-1/2" boards, all at true
-size. A 5'-10" figure stands by the living room's front window. The eye is at
+size. The eye is at
 5'-5", walking is 3.2 ft/s, about 2.2 mph, which is an indoor pace, and the
 body stops 8" from a wall rather than 11".
 
