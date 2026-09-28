@@ -623,9 +623,11 @@
   // hood in the middle, subway tile behind, glass-front uppers either side.
   function buildEastRun(r) {
     var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]), dep = x2 - x1, len = zS - zN;
-    var rangeN = fz(289.6), rangeS = fz(249.0);          // where the sheet had the ovens: now the range
+    // Where the sheet had the ovens, y 249 to 289.6: now the range. z grows with
+    // y, so the range's north end is the smaller y.
+    var rangeN = fz(249.0), rangeS = fz(289.6);
     // bases either side of the range, on a black toe kick
-    box([r[0], r[1], r[2], 289.6], 0, 2.88, MAT.shaker); box([r[0], r[1], 249.0, r[3]], 0, 2.88, MAT.shaker);
+    box([r[0], r[1], r[2], 249.0], 0, 2.88, MAT.shaker); box([r[0], r[1], 289.6, r[3]], 0, 2.88, MAT.shaker);
     plank(0.02, 0.33, len, x1 + 0.28, 0.165, (zN + zS) / 2, MAT.ironBlk);
     var top = new T.Mesh(new T.BoxGeometry(dep + 0.1, 0.12, len), MAT.quartz); top.position.set((x1 + x2) / 2 - 0.05, 2.94, (zN + zS) / 2); top.castShadow = true; scene.add(top);
     function bases(z0, z1) { var n = Math.max(1, Math.round((z1 - z0) / 1.6)), dw = (z1 - z0) / n; for (var i = 0; i < n; i++) { var cz = z0 + dw * (i + 0.5); shakerDoor(x1, 1.6, cz, dw - 0.08, 2.35, "w", MAT.shaker, MAT.shakerIn, { vert: false, y: 2.55 }); } }
@@ -643,17 +645,31 @@
     plank(1.6, 0.7, hw - 0.4, x2 - 0.8, 5.95, hz, MAT.plaster);
     plank(1.3, CEIL - 6.3, hw - 0.8, x2 - 0.65, 6.3 + (CEIL - 6.3) / 2, hz, MAT.plaster);
     plank(1.85, 0.03, hw - 0.1, x2 - 0.95, 5.06, hz, MAT.bulb);                                  // hood light
-    // backsplash: subway tile from the counter to the uppers, full length
-    var bs = new T.Mesh(new T.BoxGeometry(0.03, 4.6 - 3.0, len), new T.MeshStandardMaterial({ map: (function () { var t = TEX.subway.clone(); t.needsUpdate = true; t.repeat.set(len, 1.6); return t; })(), roughness: 0.35 }));
-    bs.position.set(x2 - 0.03, 3.8, (zN + zS) / 2); scene.add(bs);
-    // uppers, 12" deep, glass-front, with a warm strip light underneath
+    // The wall behind this run has two windows on the sheet. Backsplash and
+    // uppers go only on the solid stretches between them: never across glass.
+    var wins = WALLS.filter(function (w) { return w.win && w.r[0] === 774.6 + 27.0; }).map(function (w) { return [fz(w.r[2]), fz(w.r[3])]; }).sort(function (a, b) { return a[0] - b[0]; });
+    var solid = [], cur = zN;
+    wins.forEach(function (wz) { if (wz[0] > cur) solid.push([cur, wz[0]]); cur = wz[1]; });
+    if (zS > cur) solid.push([cur, zS]);
+    solid.forEach(function (sp) {
+      var L = sp[1] - sp[0];
+      var bs = new T.Mesh(new T.BoxGeometry(0.03, 4.6 - 3.0, L), new T.MeshStandardMaterial({ map: (function () { var t = TEX.subway.clone(); t.needsUpdate = true; t.repeat.set(L, 1.6); return t; })(), roughness: 0.35 }));
+      bs.position.set(x2 - 0.03, 3.8, (sp[0] + sp[1]) / 2); scene.add(bs);
+    });
+    // uppers, 12" deep, glass-front, with a warm strip light underneath, on
+    // solid wall only and clear of the hood
     function uppers(z0, z1) {
+      if (z1 - z0 < 1.2) return;
       plank(1.0, 3.0, z1 - z0, x2 - 0.5, 6.1, (z0 + z1) / 2, MAT.shaker);
       var n = Math.max(1, Math.round((z1 - z0) / 1.3)), dw = (z1 - z0) / n;
       for (var i = 0; i < n; i++) { var cz = z0 + dw * (i + 0.5); shakerDoor(x2 - 1.0, 6.1, cz, dw - 0.08, 2.85, "w", MAT.shaker, MAT.glass, { vert: true, y: 5.0, off: 0 }); }
       plank(0.9, 0.03, z1 - z0 - 0.2, x2 - 0.55, 4.6, (z0 + z1) / 2, MAT.bulb);
     }
-    uppers(zN + 0.1, rangeN - 0.2); uppers(rangeS + 0.2, zS - 0.1);
+    solid.forEach(function (sp) {
+      // carve the hood's span out of each solid stretch
+      var a = sp[0] + 0.1, b = sp[1] - 0.1, hN = rangeN - 0.35, hS = rangeS + 0.35;
+      if (b <= hN || a >= hS) uppers(a, b); else { uppers(a, Math.min(b, hN)); uppers(Math.max(a, hS), b); }
+    });
     fixLabel("Range", x1 - 0.2, 7.9, hz);
   }
   function buildIsland(r) {
