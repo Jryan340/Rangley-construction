@@ -249,8 +249,8 @@
   // monitor; the horizontal angle is held instead and the vertical follows the
   // window. A screen at arm's length covers roughly 50 degrees of your view, so
   // 55 is close to standing there; wider shows more but pushes everything away.
-  var HFOV = 55;
-  try { var savedFov = parseFloat(localStorage.getItem("ts_fov")); if (savedFov >= 35 && savedFov <= 100) HFOV = savedFov; } catch (e) {}
+  var HFOV = 100;
+  try { var savedFov = parseFloat(localStorage.getItem("ts_fov2")); if (savedFov >= 35 && savedFov <= 120) HFOV = savedFov; } catch (e) {}
   var camera = new T.PerspectiveCamera(50, 1, 0.1, 400);
   function applyLens() {
     var h = 2 * Math.atan(Math.tan(HFOV * Math.PI / 360) / camera.aspect) * 180 / Math.PI;
@@ -483,13 +483,14 @@
     var knob = new T.Mesh(new T.SphereGeometry(0.08, 10, 8), MAT.steel); knob.position.set(hingeX + dir * 0.2, 3.1, cz + swing * (wide - 0.5)); scene.add(knob);
     colliders.push([hingeX + dir * 0.12 - 0.1, hingeX + dir * 0.12 + 0.1, Math.min(cz, cz + swing * wide), Math.max(cz, cz + swing * wide)]);
   }
-  // the front door leaf: standing open into the entry, hinged on the west jamb
+  // the front door leaf: standing open into the entry, hinged on the east jamb
+  // so it stands clear of the opening into the living room on the west side
   (function () {
     var r = [595.9, 638.8, 685.1, 691.8], x1 = fx(r[0]), x2 = fx(r[1]), z1 = fz(r[2]);
     var wide = x2 - x1;
     var leaf = new T.Mesh(new T.BoxGeometry(0.15, DOOR_H - 0.1, wide - 0.2), MAT.door);
-    leaf.position.set(x1 + 0.12, DOOR_H / 2, z1 - wide / 2); scene.add(leaf);
-    colliders.push([x1 + 0.02, x1 + 0.22, z1 - wide, z1]);
+    leaf.position.set(x2 - 0.12, DOOR_H / 2, z1 - wide / 2); scene.add(leaf);
+    colliders.push([x2 - 0.22, x2 - 0.02, z1 - wide, z1]);
     [x1 + 0.1, x2 - 0.1].forEach(function (jx) { var j = new T.Mesh(new T.BoxGeometry(0.2, DOOR_H, 0.65), MAT.frame); j.position.set(jx, DOOR_H / 2, z1 + 0.25); scene.add(j); });
   })();
 
@@ -715,14 +716,19 @@
   var start = { x: fx(664), z: fz(640), yaw: 0 };   // in the entry, facing north up the hall
   var pl = { x: start.x, z: start.z, yaw: start.yaw, pitch: 0 };
   function insideAnyRoom(x, z) { for (var i = 0; i < ROOMS.length; i++) { var r = ROOMS[i]; if (x >= fx(r.r[0]) && x <= fx(r.r[1]) && z <= fz(r.r[3]) && z >= fz(r.r[2])) return r; } return null; }
+  // The floor is level across the whole footprint, doorways included. z grows
+  // toward the street, so "inside" is between the rear line and the front line.
+  function inFootprint(x, z) {
+    var inHouse = x >= fx(412.7) && x <= fx(822) && z >= fz(392.2) && z <= fz(691.8);
+    var inAdd = x >= fx(422.4) && x <= fx(812) && z >= fz(167) && z <= fz(392.2);
+    var inDeck = x >= fx(427.6) && x <= fx(801.6) && z >= fz(39.7) && z <= fz(167);
+    return inHouse || inAdd || inDeck;
+  }
   function floorY(x, z) {
-    // inside the house or on the deck the floor is 0; on the stoop it steps down; elsewhere grade
     var r = insideAnyRoom(x, z);
     if (r && r.n === "Front stoop") { var z1 = fz(STOOP.r[2]); var d = z - z1; return d < 3.4 ? 0 : d < 4.8 ? -0.7 : d < 6.2 ? -1.4 : GRADE; }
-    if (r) return 0;
-    var inHouse = x >= fx(412.7) && x <= fx(822) && z <= fz(392.2) && z >= fz(691.8);
-    var inAdd = x >= fx(422.4) && x <= fx(812) && z <= fz(167) && z >= fz(392.2);
-    return (inHouse || inAdd) ? 0 : GRADE;
+    if (r || inFootprint(x, z)) return 0;
+    return GRADE;
   }
   function collide(nx, nz) {
     for (var i = 0; i < colliders.length; i++) {
@@ -773,8 +779,8 @@
     document.getElementById("eyeV").textContent = ft(EYE);
     document.getElementById("ceilV").textContent = ft(CEIL);
   }
-  document.getElementById("lensM").addEventListener("click", function () { HFOV = Math.max(35, HFOV - 5); applyLens(); save("ts_fov", HFOV); showScale(); });
-  document.getElementById("lensP").addEventListener("click", function () { HFOV = Math.min(100, HFOV + 5); applyLens(); save("ts_fov", HFOV); showScale(); });
+  document.getElementById("lensM").addEventListener("click", function () { HFOV = Math.max(35, HFOV - 5); applyLens(); save("ts_fov2", HFOV); showScale(); });
+  document.getElementById("lensP").addEventListener("click", function () { HFOV = Math.min(120, HFOV + 5); applyLens(); save("ts_fov2", HFOV); showScale(); });
   document.getElementById("eyeM").addEventListener("click", function () { EYE = Math.max(3.5, EYE - 1 / 6); save("ts_eye", EYE); showScale(); });
   document.getElementById("eyeP").addEventListener("click", function () { EYE = Math.min(7, EYE + 1 / 6); save("ts_eye", EYE); showScale(); });
   document.getElementById("ceilM").addEventListener("click", function () { CEIL = Math.max(7.5, CEIL - 0.5); save("ts_ceil", CEIL); rebuild(); showScale(); });
@@ -839,7 +845,7 @@
      Loop
      ================================================================ */
   var hudName = document.getElementById("roomName"), hudDims = document.getElementById("roomDims"), hudSub = document.getElementById("roomSub"), hudAhead = document.getElementById("roomAhead");
-  var clock = new T.Clock(), moved = false, bobT = 0, camY = EYE;
+  var clock = new T.Clock(), moved = false, bobT = 0, camY = EYE, lastRoom = null;
   function resize() {
     var w = window.innerWidth, h = window.innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; applyLens();
     var pw = (PB.x2 - PB.x1) * PT, ph = (PB.y2 - PB.y1) * PT, ar = w / h; var hw = Math.max(pw / 2, ph / 2 * ar) * 1.04, hh = hw / ar;
@@ -871,6 +877,7 @@
 
     for (var li = 0; li < fixLabels.length; li++) { var L = fixLabels[li]; L.visible = !planMode && Math.hypot(L.position.x - pl.x, L.position.z - pl.z) < 18; }
     var rm = insideAnyRoom(pl.x, pl.z);
+    if (!rm && inFootprint(pl.x, pl.z)) rm = lastRoom; else lastRoom = rm;
     hudName.textContent = rm ? rm.n : "Outside"; hudDims.textContent = rm ? rm.dims : "";
     // Range finder: distance along your line of sight to the nearest wall, so you
     // can stand in the real room, look at a wall, and compare the two numbers.

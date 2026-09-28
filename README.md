@@ -75,8 +75,9 @@ you see, so a render at 50° to 55° looks like standing there. The first
 version of this page used 70° vertical, which on a widescreen monitor is about
 100° across: twice the angle the screen really covers, so every wall was
 pushed away and every room read at about half its size. The lens is now held
-at 55° across regardless of window shape, and there is a **Scale** panel to
-change it. Wider shows more of the room at once; narrower is truer to life.
+at a horizontal angle regardless of window shape, 100° by default because
+that is what felt right walking it, and there is a **Scale** panel to change
+it. Wider shows more of the room at once; narrower is truer to life.
 
 The other things the eye uses as a ruler are set to the standard sizes, since
 the sheet has no heights: doors 6'-8", window heads level with the door heads,
