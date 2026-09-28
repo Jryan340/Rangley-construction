@@ -469,7 +469,7 @@
     c.fillStyle = "#8f7a5c"; for (var y = 50; y < H - 40; y += 56) for (var x = 50; x < W - 40; x += 56) { c.beginPath(); c.moveTo(x, y - 18); c.lineTo(x + 18, y); c.lineTo(x, y + 18); c.lineTo(x - 18, y); c.closePath(); c.fill(); }
     var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
   }
-  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), porchCeil: deckTexture("#8b8378", "#665f56"), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture(), greyRug: greyRugTexture(), art: artTexture(), marble: marbleTexture(), frameArt: frameArtTexture(), warmArt: warmArtTexture(), darkSubway: subwayTexture("#3b3e42", "#25272a"), pebble: pebbleTexture() };
+  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), porchCeil: deckTexture("#8b8378", "#665f56"), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture(), greyRug: greyRugTexture(), art: artTexture(), marble: marbleTexture(), frameArt: frameArtTexture(), warmArt: warmArtTexture(), botanical: botanicalTexture(), mono: monoTexture(), darkSubway: subwayTexture("#3b3e42", "#25272a"), pebble: pebbleTexture() };
   function marbleTexture() {
     var S = 512, cv = document.createElement("canvas"); cv.width = S; cv.height = S; var c = cv.getContext("2d");
     c.fillStyle = "#efece6"; c.fillRect(0, 0, S, S);
@@ -506,6 +506,24 @@
     var seed = 31; function rnd() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
     for (var i = 0; i < 260; i++) { var g = 70 + Math.floor(rnd() * 50); c.fillStyle = "rgb(" + g + "," + (g + 2) + "," + (g + 5) + ")"; c.beginPath(); c.ellipse(rnd() * S, rnd() * S, 6 + rnd() * 9, 4 + rnd() * 7, rnd() * 3, 0, Math.PI * 2); c.fill(); }
     var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; return tex;
+  }
+  function botanicalTexture() {
+    // a line drawing of stems and leaves on cream
+    var W = 256, H = 320, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
+    c.fillStyle = "#efe9dd"; c.fillRect(0, 0, W, H);
+    var seed = 17; function rnd() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
+    c.strokeStyle = "#4f5f45"; c.fillStyle = "#6c7c5a"; c.lineWidth = 2;
+    for (var st = 0; st < 3; st++) { var x0 = 70 + st * 55, y0 = H - 30; c.beginPath(); c.moveTo(x0, y0); c.quadraticCurveTo(x0 + (rnd() - 0.5) * 60, H / 2, x0 + (rnd() - 0.5) * 40, 40); c.stroke();
+      for (var l = 0; l < 7; l++) { var t = 0.15 + l * 0.12, lx = x0 + (rnd() - 0.5) * 30, ly = y0 - t * (H - 70), side = l % 2 ? 1 : -1; c.beginPath(); c.ellipse(lx + side * 18, ly, 20, 8, side * 0.6, 0, Math.PI * 2); c.fill(); } }
+    var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
+  }
+  function monoTexture() {
+    // a black-and-white abstract: soft grey forms on white
+    var W = 256, H = 320, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
+    c.fillStyle = "#f2f0ec"; c.fillRect(0, 0, W, H);
+    var seed = 23; function rnd() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
+    for (var i = 0; i < 9; i++) { var g = 40 + Math.floor(rnd() * 120); c.fillStyle = "rgba(" + g + "," + g + "," + g + "," + (0.35 + rnd() * 0.4) + ")"; c.beginPath(); c.ellipse(40 + rnd() * 176, 40 + rnd() * 240, 25 + rnd() * 60, 12 + rnd() * 40, rnd() * 3, 0, Math.PI * 2); c.fill(); }
+    var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
   }
   function greyRugTexture() {
     var W = 256, H = 256, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
@@ -1666,6 +1684,34 @@
       bands.forEach(function (bd) { if (horiz) face(A, B, fixed, fixed, n, bd[0], bd[1]); else face(fixed, fixed, A, B, n, bd[0], bd[1]); });
     });
   });
+
+  // ---- art on the blank walls. `n` is the way the wall face looks. ----
+  function hangArt(x, y, z, n, w, h, tex, frameMat) {
+    var horiz = n === "n" || n === "s", dx = n === "w" ? -1 : n === "e" ? 1 : 0, dz = n === "n" ? -1 : n === "s" ? 1 : 0;
+    function slab(width, height, thick, off, mat) { var m = new T.Mesh(new T.BoxGeometry(horiz ? width : thick, height, horiz ? thick : width), mat); m.position.set(x + dx * off, y, z + dz * off); m.castShadow = true; scene.add(m); }
+    slab(w + 0.24, h + 0.24, 0.1, 0.05, frameMat || MAT.ironBlk);
+    slab(w, h, 0.02, 0.11, MAT.white);
+    slab(w - 0.4, h - 0.4, 0.02, 0.13, new T.MeshStandardMaterial({ map: tex, roughness: 0.9 }));
+  }
+  function hangMirror(x, y, z, n, rad, frameMat) {
+    var horiz = n === "n" || n === "s", dx = n === "w" ? -1 : n === "e" ? 1 : 0, dz = n === "n" ? -1 : n === "s" ? 1 : 0;
+    var fr = new T.Mesh(new T.TorusGeometry(rad, 0.08, 10, 40), frameMat || MAT.ironBlk); fr.position.set(x + dx * 0.1, y, z + dz * 0.1); if (!horiz) fr.rotation.y = Math.PI / 2; scene.add(fr);
+    var gl = new T.Mesh(new T.CylinderGeometry(rad - 0.04, rad - 0.04, 0.03, 40), MAT.mirror); gl.position.set(x + dx * 0.07, y, z + dz * 0.07); if (horiz) gl.rotation.x = Math.PI / 2; else gl.rotation.z = Math.PI / 2; scene.add(gl);
+  }
+  if (fi === 0) {
+    hangMirror(fx(662.35), 5.0, fz(685.1), "n", 1.1, MAT.ironBlk);                                      // over the entry bench
+    hangArt(fx(687.8), 5.2, fz(445), "w", 1.6, 2.0, TEX.botanical, MAT.seatWood);                       // down the hall, a pair
+    hangArt(fx(687.8), 5.2, fz(555), "w", 1.6, 2.0, TEX.mono, MAT.ironBlk);
+    hangArt(fx(815.2), 5.2, fz(507.75), "w", 2.0, 1.5, TEX.frameArt, MAT.ironBlk);                     // the vestibule's east wall
+  } else {
+    hangArt(fx(616), 5.4, fz(399.5), "s", 2.6, 3.2, TEX.art, MAT.ironBlk);                              // facing you at the top of the stairs
+    hangArt(fx(450.7), 5.2, fz(588.0), "e", 1.4, 1.8, TEX.botanical, MAT.seatWood);                     // hall, on the NW bedroom's wall
+    hangArt(fx(479.5) - 1.0, 6.0, fz(399.5), "s", 1.6, 2.0, TEX.botanical, MAT.seatWood);              // NW bedroom, a pair over the bed
+    hangArt(fx(479.5) + 1.0, 6.0, fz(399.5), "s", 1.6, 2.0, TEX.botanical, MAT.seatWood);
+    hangArt(fx(556.5), 6.0, fz(570.2), "s", 3.6, 2.4, TEX.frameArt, MAT.ironBlk);                       // SW bedroom, over the bed
+    hangArt(fx(687.3), 6.0, fz(636), "e", 2.4, 3.2, TEX.mono, MAT.ironBlk);                             // SE bedroom, over the bed
+    hangMirror(fx(682.2), 5.2, fz(312), "w", 0.8, MAT.seatWood);                                        // the upstairs vestibule
+  }
 
   // ---- room labels as sprites at the ceiling ----
   function labelSprite(text, sub) {

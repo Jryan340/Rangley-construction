@@ -197,6 +197,17 @@ every wall face that bounds it painted, with its windows and doorways left
 open, so a wall shared by two rooms carries each room's colour on its own
 side.
 
+## Art
+
+On walls that were blank: a round black mirror over the entry bench; a
+botanical print in oak and a monochrome abstract in black down the
+first-floor hall; a small landscape in the first-floor vestibule; an
+abstract facing you at the top of the stairs; a small botanical on the
+upstairs hall; a pair of botanicals over the north-west bed, a landscape
+over the south-west bed, a monochrome abstract over the south-east bed; and
+a small oak mirror in the upstairs vestibule. All are drawn pictures, placed
+where a wall was bare and a room needed a focus.
+
 ## What was assumed
 
 The sheet is a plan. It has no heights on it, so:
