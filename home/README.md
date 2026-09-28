@@ -279,12 +279,22 @@ doors and a drawer), a hedge along the yard side at the west end, the
 middle open across from the slider; grasses in planters. A walkway runs along the yard
 side from the slider to the dining end and out to the lawn.
 
+## Shed
+
+In the back-right corner of the lot (east, by the rear line), after the
+owner's photo but in the house's colours: 8 by 10, a shingled gable roof,
+corner boards and white trim, a white door facing the house with a step, a
+window either side of it with black shutters and a box of red flowers. It
+is not walkable inside.
+
 ## Gym
 
-After the owner's photos: a folding treadmill with a console and screen
-along the east wall, a squat rack with a loaded bar against the west wall
-with its bar running front to back so the doorway and the floor stay
-clear, and a yoga mat between them on the rubber floor.
+After the owner's photos: their 3' by 7' folding treadmill with a console
+and screen along the east wall; a squat rack with a 7'-2" bar against the
+west wall, centred in the room's 10' depth so there is about 2' beyond each
+end of the bar for loading plates, its bar running front to back so the
+doorway and the floor stay clear; a yoga mat between them on the rubber
+floor. The room is 11'-10" by 10'-0".
 
 ## Primary closet
 
@@ -304,6 +314,12 @@ three wicker chairs on the house side and one at the far end, set with
 plates, glasses, candles and flowers, on a striped outdoor rug, with
 lanterns by the porch and planters of hydrangeas at the far rail. The set
 sits toward the rail so the walk from the screen door runs along the house.
+
+## The girls' room
+
+The south-west bedroom is shared by two girls: two twin beds against the
+north wall with a nightstand between them, and the dresser. Bunk beds are
+the alternative if the floor needs to be freer.
 
 ## Art
 
