@@ -1071,7 +1071,7 @@
         railRun(sx, 0, zT, sx, BASE, zB);
       });
       var pad = new T.Mesh(new T.BoxGeometry(x2 - x1 + 1.0, 0.12, 4.0), MAT.stoop); pad.position.set(cx, BASE + 0.02, zB + 2.0); pad.receiveShadow = true; scene.add(pad);
-      colliders.push([x1 - 0.3, x1 + 0.2, zL, zB + 0.5]); colliders.push([x2 - 0.2, x2 + 0.3, zL, zB + 0.5]); colliders.push([x1, x2, zL - 0.3, zL + 0.2]);   // its rails
+      colliders.push([x1 - 0.3, x1 + 0.2, zT, zB + 0.5]); colliders.push([x2 - 0.2, x2 + 0.3, zL, zB + 0.5]); colliders.push([x1, x2, zL - 0.3, zL + 0.2]);   // its rails; the landing is open to the deck
     })();
     // warm downlights under the deck, for the lounge there
     [[fx(470.0), (zN + zS) / 2], [fx(560.0), (zN + zS) / 2], [fx(716.0), (zN + zS) / 2]].forEach(function (lp) { var l = new T.PointLight(0xffc98a, 0.9, 16, 1.6); l.position.set(lp[0], -1.3, lp[1]); scene.add(l); });
@@ -1197,7 +1197,7 @@
       [[tx - 2.2, tz + 0.3], [tx + 1.8, tz - 0.3]].forEach(function (cp) { var cd = new T.Mesh(new T.CylinderGeometry(0.12, 0.12, 0.35, 10), MAT.white); cd.position.set(cp[0], 2.72, cp[1]); scene.add(cd); });
       // a hedge along the yard side either end, open across from the slider; planters of grasses at the posts
       [[W, fx(520.0)], [fx(640.0), E]].forEach(function (hx) { plank(hx[1] - hx[0], 5.0, 1.2, (hx[0] + hx[1]) / 2, 2.5, N + 0.6, MAT.leaf); colliders.push([hx[0], hx[1], N, N + 1.2]); });
-      colliders.push([DSTAIR.x1 - 0.3, DSTAIR.x1 + 0.2, DSTAIR.zLand, DSTAIR.zTop + DSTAIR.len + 0.5]); colliders.push([DSTAIR.x2 - 0.2, DSTAIR.x2 + 0.3, DSTAIR.zLand, DSTAIR.zTop + DSTAIR.len + 0.5]);   // the deck stair's rails
+      colliders.push([DSTAIR.x1 - 0.3, DSTAIR.x1 + 0.2, DSTAIR.zTop, DSTAIR.zTop + DSTAIR.len + 0.5]); colliders.push([DSTAIR.x2 - 0.2, DSTAIR.x2 + 0.3, DSTAIR.zLand, DSTAIR.zTop + DSTAIR.len + 0.5]);   // the deck stair's rails
       colliders.push([DSTAIR.x1, DSTAIR.x2, DSTAIR.zTop + 2.6, DSTAIR.zTop + 9.5]);                                                                   // and no walking in under it; its foot stays open
       [[fx(520.0) + 0.9, N + 1.9], [fx(640.0) - 0.9, N + 1.9], [E - 0.9, N + 1.9]].forEach(function (pt) { plank(1.3, 1.6, 1.3, pt[0], 0.8, pt[1], MAT.concrete); for (var q = 0; q < 9; q++) { var gr = new T.Mesh(new T.CylinderGeometry(0.02, 0.06, 2.2, 5), MAT.leaf); gr.position.set(pt[0] + Math.cos(q * 0.7) * 0.35, 2.6, pt[1] + Math.sin(q * 0.7) * 0.35); gr.rotation.z = Math.cos(q) * 0.25; gr.rotation.x = Math.sin(q) * 0.25; scene.add(gr); } colliders.push([pt[0] - 0.65, pt[0] + 0.65, pt[1] - 0.65, pt[1] + 0.65]); });
       fixLabel("Under the deck: outdoor lounge", W + 9.0, TOP - 0.6, tvz);
@@ -1946,7 +1946,7 @@
     plank(tx2 - tx1 - 0.6, 0.15, 1.25, tcx, 1.5, bz, MAT.walnut); plank(tx2 - tx1 - 0.7, 0.2, 1.15, tcx, 1.68, bz, MAT.ironBlk);
     [[tcx - (tx2 - tx1) / 2 + 0.6, bz], [tcx + (tx2 - tx1) / 2 - 0.6, bz]].forEach(function (pp) { plank(0.18, 1.45, 1.0, pp[0], 0.72, pp[1], MAT.walnut); });
     colliders.push([tcx - (tx2 - tx1) / 2 + 0.3, tcx + (tx2 - tx1) / 2 - 0.3, bz - 0.65, bz + 0.65]);
-    // three wicker chairs on the house side, a chair at the far end
+    // three wicker chairs on the house side
     function chair(x, z, facing) {
       plank(1.5, 1.4, 1.5, x, 0.7, z, MAT.wickerDk); plank(1.4, 0.3, 1.4, x, 1.55, z, MAT.cushionBeige);
       var bx = x + (facing === "w" ? 0.6 : facing === "e" ? -0.6 : 0), bzc = z + (facing === "n" ? 0.6 : facing === "s" ? -0.6 : 0);
@@ -1954,7 +1954,7 @@
       colliders.push([x - 0.75, x + 0.75, z - 0.75, z + 0.75]);
     }
     for (var i = 0; i < 3; i++) chair(tx1 + (tx2 - tx1) * (i + 0.5) / 3, tz2 + 1.0, "n");
-    chair(tx2 + 1.1, tcz, "w");   // one end chair; the screen door is at the other end
+    // no end chairs: the screen door is at the west end, the stair landing at the east
     // on the table: plates, glasses, a candle, flowers
     for (var pl = 0; pl < 5; pl++) { var px = tx1 + (tx2 - tx1) * (pl % 3 + 0.5) / 3, pz = pl < 3 ? tz2 - 0.7 : tz1 + 0.7; if (pl >= 3) px = tx1 + (tx2 - tx1) * (pl - 3 + 0.9) / 3; var plate = new T.Mesh(new T.CylinderGeometry(0.42, 0.42, 0.03, 16), MAT.white); plate.position.set(px, 2.57, pz); scene.add(plate); var gl = new T.Mesh(new T.CylinderGeometry(0.1, 0.07, 0.45, 8), MAT.glass); gl.position.set(px + 0.5, 2.78, pz - 0.3); scene.add(gl); }
     var vase = new T.Mesh(new T.CylinderGeometry(0.2, 0.15, 0.5, 10), MAT.glass); vase.position.set(tcx, 2.8, tcz); scene.add(vase);
@@ -1962,11 +1962,7 @@
     [[tcx - 1.6, tcz + 0.3], [tcx + 1.6, tcz - 0.3]].forEach(function (cp) { var cd = new T.Mesh(new T.CylinderGeometry(0.12, 0.12, 0.35, 10), MAT.white); cd.position.set(cp[0], 2.72, cp[1]); scene.add(cd); var fl2 = new T.PointLight(0xffc27a, 0.25, 5, 2); fl2.position.set(cp[0], 3.0, cp[1]); scene.add(fl2); });
     // lanterns on the deck by the rail, planters in the corners
     [[fx(645), fz(60)], [fx(645), fz(150)]].forEach(function (lp) { plank(0.6, 1.3, 0.6, lp[0], 0.65, lp[1], MAT.ironBlk); var lg = new T.Mesh(new T.BoxGeometry(0.45, 0.9, 0.45), MAT.lantern); lg.position.set(lp[0], 0.7, lp[1]); scene.add(lg); var ll = new T.PointLight(0xffc98a, 0.3, 6, 1.8); ll.position.set(lp[0], 1.1, lp[1]); scene.add(ll); });
-    [[fx(788), fz(150), 0x9cb86a], [fx(788), fz(60), 0xc9d7a6]].forEach(function (pt) {
-      plank(1.6, 1.7, 1.6, pt[0], 0.85, pt[1], MAT.concrete);
-      for (var q = 0; q < 10; q++) { var ang = q * 0.65, rr = 0.25 + (q % 3) * 0.25; var bloom = new T.Mesh(new T.SphereGeometry(0.28, 8, 6), new T.MeshStandardMaterial({ color: pt[2], roughness: 1 })); bloom.position.set(pt[0] + Math.cos(ang) * rr, 2.0 + (q % 3) * 0.3, pt[1] + Math.sin(ang) * rr); scene.add(bloom); }
-      colliders.push([pt[0] - 0.8, pt[0] + 0.8, pt[1] - 0.8, pt[1] + 0.8]);
-    });
+    // no planters at the east end: the way to the stair landing stays clear
   }
 
   // The primary closet, after its reference: cream built-ins down both long
