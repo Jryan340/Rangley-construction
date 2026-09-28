@@ -216,6 +216,11 @@ the stair wall, conduit and a shop light, so the west storage room's east
 wall stays where it is instead of taking in the hall. The hall meets the new
 vestibule, powder room and mudroom at its north end.
 
+The nook at the foot of the stair is the laundry: a front-loading washer
+and dryer under a butcher-block folding counter along the front wall, a
+shelf of baskets above, a hanging rod, a utility sink at the end, under the
+exposed joists.
+
 The basement floor is 7'-10" below the first floor, from the existing set,
 with 6'-8" under the joists everywhere; the addition's basement is assumed
 to match. The lot falls from the street: the first floor is at grade at the
@@ -253,6 +258,14 @@ upstairs hall; a pair of botanicals over the north-west bed, a landscape
 over the south-west bed, a monochrome abstract over the south-east bed; and
 a small oak mirror in the upstairs vestibule. All are drawn pictures, placed
 where a wall was bare and a room needed a focus.
+
+## Keeping the frame rate up
+
+Every point light costs every pixel, so only the floor you are on has its
+lamps lit; the sun's shadow map is drawn when something changes rather than
+every frame; the render is capped at 1.5x pixel density on Retina screens;
+the lawn is built with the fewest triangles that follow the slope; and the
+minimap redraws every other frame.
 
 ## What was assumed
 
