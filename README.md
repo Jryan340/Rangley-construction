@@ -142,8 +142,8 @@ three runs of string lights with a bulb every foot and a half, and a bronze
 ceiling fan under a grey plank ceiling. The sheet's round table comes out to
 make room.
 
-Every door on both floors is left off, an open doorway, on request; only the
-closets keep their double doors, closed.
+Every door on both floors is left off, an open doorway with no jambs, on
+request; only the closets keep their double doors, closed.
 
 The primary bath is dressed after its reference: a black shaker double
 vanity along the wall it shares with the bedroom, with brass knobs, a pair of
@@ -162,9 +162,10 @@ the wall shared with the vestibule, layered pillows and a taupe throw, wood
 nightstands with lamps and a cylinder sconce over each, a painting over the
 bed, a large rug, a curved armchair in the corner from the sheet, curtains at
 the west and north windows, and a television on a console on the wall
-opposite the bed. That wall carries three of the sheet's windows, so the
-television sits in front of the middle one; the alternative is to turn the
-bed to the south wall, which the sheet does not do.
+opposite the bed. That wall carries three of the sheet's windows; the middle
+one is dropped, on request, so the television hangs on solid wall between
+the other two. That is the one place the model departs from the sheet's
+openings.
 
 ## What was assumed
 

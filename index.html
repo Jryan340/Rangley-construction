@@ -253,8 +253,8 @@
     { r: [677.2, 821.9, 392.2, 399.5], k: "ext" },
     // ---- addition: west, three windows over the bed ----
     { r: [422.4, 432.7, 166.6, 200.9], k: "add" }, { r: [422.4, 432.7, 200.9, 234.7], k: "add", win: AWIN },
-    { r: [422.4, 432.7, 234.7, 261.8], k: "add" }, { r: [422.4, 432.7, 261.8, 295.7], k: "add", win: AWIN },
-    { r: [422.4, 432.7, 295.7, 322.8], k: "add" }, { r: [422.4, 432.7, 322.8, 356.6], k: "add", win: AWIN },
+    { r: [422.4, 432.7, 234.7, 322.8], k: "add" },                       // the sheet's middle window is dropped: the television goes here
+    { r: [422.4, 432.7, 322.8, 356.6], k: "add", win: AWIN },
     { r: [422.4, 432.7, 356.6, 392.2], k: "add" },
     // ---- addition: east, one window in the closet ----
     { r: [801.6, 812.1, 166.6, 326.2], k: "add" }, { r: [801.6, 812.1, 326.2, 360.0], k: "add", win: AWIN },
@@ -688,7 +688,9 @@
   function doorIn(w) {
     var r = w.r, x1 = fx(r[0]), x2 = fx(r[1]), z1 = fz(r[2]), z2 = fz(r[3]);
     var wide = x2 - x1, t = z2 - z1, cz = (z1 + z2) / 2;
-    // jambs
+    // An open doorway gets nothing but its opening: no jambs, no leaf. Only the
+    // closets' double doors are drawn.
+    if (w.leaf === false) return;
     [x1 + 0.1, x2 - 0.1].forEach(function (jx) { var j = new T.Mesh(new T.BoxGeometry(0.2, DOOR_H, t + 0.15), MAT.frame); j.position.set(jx, DOOR_H / 2, cz); scene.add(j); });
     if (w.dbl) {
       // The closet's pair of doors, drawn closed. Open, the west leaf would stand
@@ -1336,7 +1338,7 @@
         cur = w1; });
       if (isX) paint(cur, b, fixed, fixed, n, 0, CEIL); else paint(fixed, fixed, cur, b, n, 0, CEIL);
     }
-    var westWins = [[fz(200.9), fz(234.7)], [fz(261.8), fz(295.7)], [fz(322.8), fz(356.6)]];
+    var westWins = [[fz(200.9), fz(234.7)], [fz(322.8), fz(356.6)]];
     var northWins = [[fx(479.5), fx(513.4)], [fx(514.8), fx(548.7)], [fx(550.3), fx(584.2)]];
     wallWithWindows(W, false, N, S, "e", westWins, AWIN.sill, AWIN.head);
     wallWithWindows(N, true, W, E, "s", northWins, AWIN.sill, AWIN.head);
@@ -1391,7 +1393,7 @@
     colliders.push([ax - 1.2, ax + 1.2, az - 1.2, az + 1.2]);
     // curtains at the west and north windows
     function curtains(x1, x2, z1, z2, n) { var horiz = n === "n" || n === "s"; var L = horiz ? x2 - x1 : z2 - z1; var rod = new T.Mesh(new T.CylinderGeometry(0.04, 0.04, L + 1.6, 8), MAT.bronzeDk); if (horiz) rod.rotation.z = Math.PI / 2; else rod.rotation.x = Math.PI / 2; var dx = n === "w" ? -0.25 : n === "e" ? 0.25 : 0, dz = n === "n" ? -0.25 : n === "s" ? 0.25 : 0; rod.position.set((x1 + x2) / 2 + dx, 8.2, (z1 + z2) / 2 + dz); scene.add(rod); [-1, 1].forEach(function (o) { var pnl = new T.Mesh(new T.BoxGeometry(horiz ? 0.8 : 0.25, 8.0, horiz ? 0.25 : 0.8), MAT.linen); pnl.position.set(horiz ? (o < 0 ? x1 - 0.3 : x2 + 0.3) : (x1 + x2) / 2 + dx, 4.1, horiz ? (z1 + z2) / 2 + dz : (o < 0 ? z1 - 0.3 : z2 + 0.3)); scene.add(pnl); }); }
-    curtains(W, W, fz(200.9), fz(356.6), "e"); curtains(fx(479.5), fx(584.2), N, N, "s");
+    curtains(W, W, fz(200.9), fz(234.7), "e"); curtains(W, W, fz(322.8), fz(356.6), "e"); curtains(fx(479.5), fx(584.2), N, N, "s");
     fixLabel("Primary bedroom", cx, 7.9, cz);
   }
 
