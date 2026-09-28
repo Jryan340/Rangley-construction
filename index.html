@@ -134,7 +134,7 @@
     { r: [815.2, 822.0, 622.1, 691.8], k: "ext" },
     // ---- existing exterior: front (south) ----
     { r: [412.7, 479.0, 685.1, 691.8], k: "ext" }, { r: [479.0, 523.0, 685.1, 691.8], k: "ext", win: WIN },
-    { r: [523.0, 595.9, 685.1, 691.8], k: "ext" }, { r: [595.9, 638.8, 685.1, 691.8], k: "ext", door: true, hinge: "e", swing: -1 },
+    { r: [523.0, 595.9, 685.1, 691.8], k: "ext" }, { r: [595.9, 638.8, 685.1, 691.8], k: "ext", door: true, leaf: false },
     { r: [638.8, 711.2, 685.1, 691.8], k: "ext" }, { r: [711.2, 755.2, 685.1, 691.8], k: "ext", win: WIN },
     { r: [755.2, 822.0, 685.1, 691.8], k: "ext" },
     // ---- the old rear wall, now the seam between house and addition ----
@@ -311,10 +311,8 @@
     { n: "bed", r: [506.0, 588.0, 233.0, 322.0], bed: true, head: "e" },
     { n: "dresser", r: [435.0, 452.0, 249.0, 331.0], h: 2.8, m: "cab" },
     { n: "chair", r: [447.0, 486.0, 350.0, 393.0], h: 2.4, m: "cloth" },
-    { n: "vanity", r: [609.1, 640.0, 180.0, 290.0], h: 2.9, m: "cab", top: false, vanity2: true },
+    { n: "master bath", r: [609.1, 801.6, 176.9, 292.7], masterBath: true },
     { n: "toilet", r: [742.0, 764.0, 252.0, 284.0], toilet: true, face: "s" },
-    { n: "shower", r: [719.1, 801.6, 176.9, 244.2], showerFloor: true },
-    { n: "shower glass", r: [714.0, 719.1, 176.9, 187.0], glassWall: true },   // a short fixed panel; the sheet's 3' opening stays
     { n: "wardrobe", r: [689.5, 801.6, 297.7, 315.0], h: 7.0, m: "cab", tallWhite: true, face: "s" },
     { n: "wardrobe", r: [689.5, 801.6, 376.0, 393.8], h: 7.0, m: "cab", tallWhite: true, face: "n" },
     { n: "bed", r: [440.0, 519.0, 402.0, 497.0], bed: true, head: "n" },
@@ -530,6 +528,8 @@
     amber: new T.MeshStandardMaterial({ color: 0x7a4a1e, roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.85 }),
     darkGlass: new T.MeshStandardMaterial({ color: 0x1b2026, roughness: 0.1, metalness: 0.3, transparent: true, opacity: 0.7 }),
     stoneware: new T.MeshStandardMaterial({ color: 0x8f8a80, roughness: 1 }),
+    blackCab: new T.MeshStandardMaterial({ color: 0x17191b, roughness: 0.6 }),
+    blackCabIn: new T.MeshStandardMaterial({ color: 0x232527, roughness: 0.65 }),
     curtain: new T.MeshStandardMaterial({ color: 0xb9ad9c, roughness: 1 }),
     warmWall: new T.MeshStandardMaterial({ color: 0xe9e3d8, roughness: 0.95 }),
     wickerDk: new T.MeshStandardMaterial({ color: 0x8c7150, roughness: 1 }),
@@ -608,14 +608,7 @@
     box(r, 6.9, PORCH_H, MAT.screen, { solid: false, shadow: false });
     var beam = new T.Mesh(new T.BoxGeometry(0.5, 0.5, wide), MAT.frame); beam.position.set(cx, PORCH_H + 0.25, (zN + zS) / 2); scene.add(beam);
     [zN + 0.1, zS - 0.1].forEach(function (jz) { var j = new T.Mesh(new T.BoxGeometry(0.4, 6.9, 0.2), MAT.frame); j.position.set(cx, 3.45, jz); scene.add(j); });
-    // the door itself, standing open onto the deck, hinged on the north jamb
-    var leafW = wide - 0.2;
-    var leaf = new T.Group(); leaf.position.set(x2, 0, zN + 0.1);
-    var fr = new T.Mesh(new T.BoxGeometry(leafW, 6.7, 0.12), MAT.frame); fr.position.set(leafW / 2, 3.4, 0); leaf.add(fr);
-    var mesh = new T.Mesh(new T.BoxGeometry(leafW - 0.3, 6.3, 0.03), MAT.screen); mesh.position.set(leafW / 2, 3.4, 0); leaf.add(mesh);
-    var bar = new T.Mesh(new T.BoxGeometry(leafW, 0.3, 0.16), MAT.frame); bar.position.set(leafW / 2, 3.0, 0); leaf.add(bar);
-    scene.add(leaf);
-    colliders.push([x2, x2 + leafW, zN, zN + 0.25]);
+    // an open doorway in the screen; no leaf
   }
   function deckRail(r) {
     var x1 = fx(r[0]), x2 = fx(r[1]), z1 = fz(r[2]), z2 = fz(r[3]);
@@ -1248,7 +1241,75 @@
     var nd = Math.round(d / 1.5), dw = d / nd; for (var i = 0; i < nd; i++) shakerDoor(x2, 1.55, zN + dw * (i + 0.5), dw - 0.08, 2.3, "e", MAT.shaker, MAT.shakerIn, { vert: false, y: 2.5 });
   }
 
+  // The primary bath, after the reference: a black shaker double vanity with
+  // brass knobs and open shelves below, a marble top, two white vessel sinks
+  // with black wall-mounted taps, black-framed mirrors, brass sconces, a
+  // marble-tiled shower with glass, a runner, a plant, recessed lights.
+  function buildMasterBath(r) {
+    var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]), cx = (W + E) / 2, cz = (N + S) / 2;
+    var shW = fx(719.1), shS = fz(244.2), partW = fx(714.0);
+    // crown
+    [[W, E, N, N], [W, E, S, S], [W, W, N, S], [E, E, N, S]].forEach(function (c) { var horiz = c[2] === c[3]; var m = new T.Mesh(new T.BoxGeometry(horiz ? c[1] - c[0] : 0.3, 0.3, horiz ? 0.3 : c[3] - c[2]), MAT.trim); m.position.set((c[0] + c[1]) / 2 + (horiz ? 0 : (c[0] === W ? 0.15 : -0.15)), CEIL - 0.15, (c[2] + c[3]) / 2 + (horiz ? (c[2] === N ? 0.15 : -0.15) : 0)); scene.add(m); });
+    // the vanity along the west wall
+    var vx1 = W, vx2 = W + 2.3, vz1 = N + 0.3, vz2 = S - 0.3, vcz = (vz1 + vz2) / 2, vlen = vz2 - vz1;
+    plank(2.3, 0.3, vlen, vx1 + 1.15, 0.15, vcz, MAT.blackCab);                                    // plinth
+    plank(0.25, 2.9, vlen, vx1 + 0.125, 1.45, vcz, MAT.blackCab);                                   // back
+    [vz1, vz2].forEach(function (ez) { plank(2.3, 2.9, 0.15, vx1 + 1.15, 1.45, ez + (ez === vz1 ? 0.075 : -0.075), MAT.blackCab); });   // ends
+    plank(2.3, 0.1, vlen, vx1 + 1.15, 1.15, vcz, MAT.blackCab);                                     // open shelf
+    plank(2.3, 0.1, vlen, vx1 + 1.15, 1.7, vcz, MAT.blackCab);                                      // underside of the cabinets
+    // the cabinets: a pair of doors at each end, three drawers in the middle, on the east face
+    var doorsW = (vlen - 2.0) / 2, mid = vcz, fx2 = vx2;
+    plank(1.1, 1.2, vlen, vx2 - 0.55, 2.3, vcz, MAT.blackCab);                                      // cabinet bodies
+    [[vz1 + doorsW / 2, doorsW], [vz2 - doorsW / 2, doorsW]].forEach(function (p) {
+      shakerDoor(fx2, 2.3, p[0] - p[1] / 4, p[1] / 2 - 0.06, 1.1, "e", MAT.blackCab, MAT.blackCabIn, null);
+      shakerDoor(fx2, 2.3, p[0] + p[1] / 4, p[1] / 2 - 0.06, 1.1, "e", MAT.blackCab, MAT.blackCabIn, null);
+      [p[0] - 0.12, p[0] + 0.12].forEach(function (kz) { var kn = new T.Mesh(new T.SphereGeometry(0.05, 8, 6), MAT.brass); kn.position.set(fx2 + 0.08, 2.3, kz); scene.add(kn); });
+    });
+    [2.62, 2.3, 1.98].forEach(function (y) { shakerDoor(fx2, y, mid, 1.9, 0.3, "e", MAT.blackCab, MAT.blackCabIn, null); var kn = new T.Mesh(new T.SphereGeometry(0.05, 8, 6), MAT.brass); kn.position.set(fx2 + 0.08, y, mid); scene.add(kn); });
+    // baskets and towels on the open shelf
+    [[vz1 + doorsW / 2, MAT.wicker], [vz2 - doorsW / 2, MAT.wicker]].forEach(function (b) { plank(1.6, 0.6, 1.3, vx1 + 1.2, 1.5, b[0], b[1]); });
+    plank(1.4, 0.4, 1.2, vx1 + 1.2, 1.4, mid, MAT.white);
+    colliders.push([vx1, vx2, vz1, vz2]);
+    // marble top and two vessel sinks with black wall taps
+    var mt = TEX.marble.clone(); mt.needsUpdate = true; mt.repeat.set(1, vlen / 4);
+    var topM = new T.Mesh(new T.BoxGeometry(2.4, 0.12, vlen + 0.1), new T.MeshStandardMaterial({ map: mt, roughness: 0.25 })); topM.position.set(vx1 + 1.2, 2.96, vcz); scene.add(topM);
+    [vcz - vlen / 4, vcz + vlen / 4].forEach(function (sz) {
+      plank(1.5, 0.45, 1.15, vx1 + 1.25, 3.25, sz, MAT.porcelain);
+      var arm = new T.Mesh(new T.CylinderGeometry(0.035, 0.035, 0.7, 8), MAT.pull); arm.rotation.z = Math.PI / 2; arm.position.set(vx1 + 0.35, 4.0, sz); scene.add(arm);
+      var sp = new T.Mesh(new T.CylinderGeometry(0.035, 0.035, 0.35, 8), MAT.pull); sp.position.set(vx1 + 0.68, 3.85, sz); scene.add(sp);
+      var hd = new T.Mesh(new T.CylinderGeometry(0.03, 0.03, 0.25, 8), MAT.pull); hd.rotation.z = Math.PI / 2; hd.position.set(vx1 + 0.3, 3.6, sz + 0.35); scene.add(hd);
+      // a black-framed mirror over each sink
+      plank(0.06, 3.3, 2.3, vx1 + 0.06, 5.9, sz, MAT.ironBlk); plank(0.02, 3.1, 2.1, vx1 + 0.1, 5.9, sz, MAT.mirror);
+    });
+    // brass sconces: between the mirrors and outside each
+    [vcz, vcz - vlen / 4 - 1.6, vcz + vlen / 4 + 1.6].forEach(function (sz) {
+      plank(0.25, 0.7, 0.12, vx1 + 0.15, 5.0, sz, MAT.brass);
+      var shade = new T.Mesh(new T.CylinderGeometry(0.12, 0.16, 0.45, 12, 1, true), MAT.lantern); shade.position.set(vx1 + 0.3, 5.6, sz); scene.add(shade);
+      var pl = new T.PointLight(0xffdcae, 0.35, 8, 1.8); pl.position.set(vx1 + 0.45, 5.6, sz); scene.add(pl);
+    });
+    // a plant and a couple of bottles between the sinks
+    var pot = new T.Mesh(new T.CylinderGeometry(0.4, 0.3, 0.7, 12), MAT.stoneware); pot.position.set(vx1 + 1.25, 3.37, vcz); scene.add(pot);
+    for (var f = 0; f < 11; f++) { var lf = new T.Mesh(new T.SphereGeometry(0.11, 7, 5), MAT.leaf); lf.position.set(vx1 + 1.25 + Math.cos(f * 0.75) * (0.2 + (f % 3) * 0.25), 3.9 + (f % 4) * 0.28, vcz + Math.sin(f * 0.75) * 0.3); lf.scale.set(1.5, 0.5, 1); lf.rotation.y = f; scene.add(lf); }
+    [0.55, 0.85].forEach(function (o, i) { var bt = new T.Mesh(new T.CylinderGeometry(0.08, 0.08, 0.5 + i * 0.15, 10), i ? MAT.amber : MAT.porcelain); bt.position.set(vx1 + 1.6, 3.27 + i * 0.07, vcz + o); scene.add(bt); });
+    // towel ring with a towel, on the south wall by the door
+    var ring = new T.Mesh(new T.TorusGeometry(0.28, 0.03, 8, 20), MAT.pull); ring.position.set(fx(622), 4.3, S - 0.1); scene.add(ring);
+    plank(0.9, 1.6, 0.1, fx(622), 3.5, S - 0.12, MAT.white);
+    // shower: marble on its walls, tiled floor, a short glass panel at the entry, a rain head
+    function marbleWall(x1, x2, z1, z2, n) { var horiz = n === "n" || n === "s", L = horiz ? x2 - x1 : z2 - z1; var t = TEX.marble.clone(); t.needsUpdate = true; t.repeat.set(L / 4, 2); var m = new T.Mesh(new T.BoxGeometry(horiz ? L : 0.03, CEIL - 0.3, horiz ? 0.03 : L), new T.MeshStandardMaterial({ map: t, roughness: 0.3 })); var dx = n === "w" ? -0.015 : n === "e" ? 0.015 : 0, dz = n === "n" ? -0.015 : n === "s" ? 0.015 : 0; m.position.set((x1 + x2) / 2 + dx, (CEIL - 0.3) / 2, (z1 + z2) / 2 + dz); scene.add(m); }
+    marbleWall(shW, E, N, N, "s"); marbleWall(E, E, N, shS, "w"); marbleWall(shW, E, shS, shS, "n"); marbleWall(partW + (fx(719.1) - partW), shW, N, shS, "e");
+    box([719.1, 801.6, 176.9, 244.2], 0, 0.3, MAT.tile, { solid: false });
+    var gl = new T.Mesh(new T.BoxGeometry(0.06, 7, fz(187.0) - N), MAT.glass); gl.position.set(shW - 0.2, 3.5, (N + fz(187.0)) / 2); scene.add(gl);
+    colliders.push([shW - 0.25, shW - 0.15, N, fz(187.0)]);
+    var head = new T.Mesh(new T.CylinderGeometry(0.4, 0.4, 0.05, 16), MAT.pull); head.position.set((shW + E) / 2, 7.0, N + 0.6); scene.add(head);
+    var arm2 = new T.Mesh(new T.CylinderGeometry(0.04, 0.04, 0.7, 8), MAT.pull); arm2.rotation.x = Math.PI / 2; arm2.position.set((shW + E) / 2, 7.0, N + 0.3); scene.add(arm2);
+    // a runner along the vanity, and recessed lights
+    plank(2.4, 0.03, vlen - 1.0, vx2 + 1.4, 0.05, vcz, MAT.jute);
+    [[cx - 3, N + 2.5], [cx - 3, S - 2.5], [cx + 3, N + 2.5], [cx + 3, S - 2.5]].forEach(function (p) { var can = new T.Mesh(new T.CylinderGeometry(0.28, 0.28, 0.02, 16), MAT.bulb); can.position.set(p[0], CEIL - 0.015, p[1]); scene.add(can); });
+    fixLabel("Primary bath", cx, 7.9, cz);
+  }
+
   STUFF.forEach(function (s) {
+    if (s.masterBath) { buildMasterBath(s.r); return; }
     if (s.bed) { buildBed(s.r, s.head); return; }
     if (s.toilet) { buildToilet(s.r, s.face); return; }
     if (s.vanity2) { buildVanity2(s.r); return; }

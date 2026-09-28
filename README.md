@@ -142,7 +142,18 @@ three runs of string lights with a bulb every foot and a half, and a bronze
 ceiling fan under a grey plank ceiling. The sheet's round table comes out to
 make room.
 
-The bathroom's door is left off, an open doorway, on request.
+Every door on both floors is left off, an open doorway, on request; only the
+closets keep their double doors, closed.
+
+The primary bath is dressed after its reference: a black shaker double
+vanity along the wall it shares with the bedroom, with brass knobs, a pair of
+doors at each end and three drawers between, an open shelf below with
+baskets and towels, a marble top, two white vessel sinks with black
+wall-mounted taps, a black-framed mirror over each, three brass sconces, a
+plant and bottles between the sinks, a towel ring by the door, a runner
+along the vanity, recessed lights, and the sheet's shower in marble with a
+short glass panel at its opening and a rain head. The water closet keeps its
+toilet.
 
 ## What was assumed
 
