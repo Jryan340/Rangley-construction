@@ -261,7 +261,7 @@ Vinyl lap siding on every exterior wall, in a warm off-white, its courses
 aligned above and below the windows; black window frames; white corner
 boards. Mulched foundation beds either side of the front walk with a row of
 boxwoods, a hydrangea at each side of the stoop, an arborvitae at each end,
-and a Japanese maple in the front lawn.
+and an open front lawn.
 
 ## Roofs
 

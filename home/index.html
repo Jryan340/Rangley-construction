@@ -1086,7 +1086,7 @@
     }
     tree(50.7, -49.6, 26); tree(-20.4, -84.8, 28); tree(-26.3, -93.4, 24); tree(72.2, -78.6, 24); tree(1.1, 36.8, 6); tree(-23.1, 37.0, 6);
     // curb appeal: white corner boards, mulched foundation beds either side of the walk with boxwoods,
-    // hydrangeas at the corners, an arborvitae at each end, and a Japanese maple in the lawn
+    // hydrangeas at the corners, an arborvitae at each end
     var topY = FLOOR2 + CEIL + 0.5;
     [[fx(412.7) - 0.05, fz(691.8) + 0.05], [fx(822.0) + 0.05, fz(691.8) + 0.05], [fx(412.7) - 0.05, fz(392.2) - 0.3], [fx(822.0) + 0.05, fz(392.2) - 0.3], [fx(422.4) - 0.05, fz(167.0) - 0.05], [fx(812.0) + 0.05, fz(167.0) - 0.05]].forEach(function (c) { var g0 = grade(c[0], c[1]); var cb = new T.Mesh(new T.BoxGeometry(0.5, topY - g0, 0.5), MAT.trim); cb.position.set(c[0], (topY + g0) / 2, c[1]); scene.add(cb); });
     var mulch = new T.MeshStandardMaterial({ color: 0x4a3324, roughness: 1 }), box2 = new T.MeshStandardMaterial({ color: 0x3f6b35, roughness: 1 }), hyd = new T.MeshStandardMaterial({ color: 0x5f8a4a, roughness: 1 }), arb = new T.MeshStandardMaterial({ color: 0x2f5a30, roughness: 1 });
@@ -1099,10 +1099,7 @@
     for (var bx2 = sx2 + 1.6; bx2 < fx(822.0) - 1.4; bx2 += 2.6) shrub(bx2, fz0 + 1.7, 1.1, box2, false);
     shrub(sx1 - 2.0, fz0 + 2.2, 1.6, hyd, true); shrub(sx2 + 2.0, fz0 + 2.2, 1.6, hyd, true);
     [[fx(412.7) + 1.2, fz0 + 1.8], [fx(822.0) - 1.2, fz0 + 1.8]].forEach(function (a) { var g0 = grade(a[0], a[1]), cone = new T.Mesh(new T.ConeGeometry(1.3, 7.0, 10), arb); cone.position.set(a[0], g0 + 3.5, a[1]); cone.castShadow = true; scene.add(cone); colliders.push([a[0] - 1.2, a[0] + 1.2, a[1] - 1.2, a[1] + 1.2]); });
-    (function () { var mx = fx(470.0), mz = fz0 + 13.0, g0 = grade(mx, mz), red = new T.MeshStandardMaterial({ color: 0x8a2c2c, roughness: 1 });
-      var tr = new T.Mesh(new T.CylinderGeometry(0.22, 0.32, 6.0, 8), MAT.walnut); tr.position.set(mx, g0 + 3.0, mz); tr.castShadow = true; scene.add(tr);
-      [[0, 7.5, 0, 4.2], [-2.6, 6.3, 1.2, 2.8], [2.4, 6.6, -1.4, 2.6], [0.8, 9.0, 1.8, 2.4]].forEach(function (c) { var cn = new T.Mesh(new T.SphereGeometry(c[3], 9, 7), red); cn.position.set(mx + c[0], g0 + c[1], mz + c[2]); cn.scale.set(1, 0.6, 1); cn.castShadow = true; scene.add(cn); });
-      colliders.push([mx - 0.4, mx + 0.4, mz - 0.4, mz + 0.4]); })();
+    // no tree in the front lawn
     // a garden shed in the back-right corner of the lot, after the owner's photo but in the house's colours:
     // 8 by 10, gable roof with the ridge east-west, door on the side facing the house, a window either side of it with black shutters and flower boxes
     (function () {
