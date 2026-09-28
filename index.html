@@ -157,7 +157,7 @@
     { r: [687.8, 692.9, 361.9, 484.1], k: "int" },                       // hall | bath, runs up as the pantry end wall
     { r: [687.8, 692.9, 531.4, 685.1], k: "int" },                       // hall | closet and study
     { r: [692.9, 770.2, 478.9, 484.1], k: "int" }, { r: [770.2, 815.2, 478.9, 484.1], k: "int", door: true, hinge: "e", swing: -1, leaf: false },
-    { r: [755.5, 770.2, 531.4, 536.4], k: "int" }, { r: [770.2, 815.2, 531.4, 536.4], k: "int", door: true, hinge: "e", swing: 1 },
+    { r: [755.5, 770.2, 531.4, 536.4], k: "int" }, { r: [770.2, 815.2, 531.4, 536.4], k: "int", door: true, hinge: "e", swing: 1, leaf: false },
     { r: [692.9, 755.5, 531.4, 536.4], k: "int", door: true, dbl: true, swing: -1 },     // closet double doors
     { r: [692.9, 758.9, 563.5, 568.6], k: "int" },                       // closet | study
     { r: [758.9, 763.9, 536.4, 568.6], k: "int" },                       // closet east side
@@ -907,8 +907,16 @@
   function buildStudy(r) {
     var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]), len = S - N, cx = (W + E) / 2, cz = (N + S) / 2;
     var paint = function (x1, x2, z1, z2, n, mat, y0, y1) { var horiz = n === "n" || n === "s", L = horiz ? x2 - x1 : z2 - z1; var m = new T.Mesh(new T.BoxGeometry(horiz ? L : 0.03, y1 - y0, horiz ? 0.03 : L), mat); var dx = n === "w" ? -0.015 : n === "e" ? 0.015 : 0, dz = n === "n" ? -0.015 : n === "s" ? 0.015 : 0; m.position.set((x1 + x2) / 2 + dx, (y0 + y1) / 2, (z1 + z2) / 2 + dz); m.receiveShadow = true; scene.add(m); };
-    paint(W, E, N, N, "s", MAT.warmWall, 0, CEIL); paint(W, E, S, S, "n", MAT.warmWall, 0, CEIL);
-    [[W, E, N, N], [W, E, S, S], [W, W, N, S], [E, E, N, S]].forEach(function (c) { var horiz = c[2] === c[3]; var m = new T.Mesh(new T.BoxGeometry(horiz ? c[1] - c[0] : 0.3, 0.3, horiz ? 0.3 : c[3] - c[2]), MAT.trim); m.position.set((c[0] + c[1]) / 2 + (horiz ? 0 : (c[0] === W ? 0.15 : -0.15)), CEIL - 0.15, (c[2] + c[3]) / 2 + (horiz ? (c[2] === N ? 0.15 : -0.15) : 0)); scene.add(m); });
+    // The room's north edge steps: the closet wall as far as x 763.9, then the
+    // strip up to the door. Paint follows that, and the south wall is painted
+    // around the sheet's front window, not over it.
+    var cE = fx(763.9), stripN = fz(536.4), stubE = fx(770.2), fwW = fx(711.2), fwE = fx(755.2);
+    paint(W, cE, N, N, "s", MAT.warmWall, 0, CEIL);
+    paint(cE, cE, stripN, N, "e", MAT.warmWall, 0, CEIL);
+    paint(cE, stubE, stripN, stripN, "s", MAT.warmWall, 0, CEIL);
+    paint(W, fwW, S, S, "n", MAT.warmWall, 0, CEIL); paint(fwE, E, S, S, "n", MAT.warmWall, 0, CEIL);
+    paint(fwW, fwE, S, S, "n", MAT.warmWall, 0, WIN.sill); paint(fwW, fwE, S, S, "n", MAT.warmWall, WIN.head, CEIL);
+    [[W, cE, N, N], [cE, stubE, stripN, stripN], [W, E, S, S], [W, W, N, S], [E, E, stripN, S], [cE, cE, stripN, N]].forEach(function (c) { var horiz = c[2] === c[3]; var m = new T.Mesh(new T.BoxGeometry(horiz ? c[1] - c[0] : 0.3, 0.3, horiz ? 0.3 : c[3] - c[2]), MAT.trim); m.position.set((c[0] + c[1]) / 2 + (horiz ? 0 : (c[0] === E ? -0.15 : 0.15)), CEIL - 0.15, (c[2] + c[3]) / 2 + (horiz ? (c[2] === S ? -0.15 : 0.15) : 0)); scene.add(m); });
     // built-ins on the west wall: 15" deep, base cabinets to 2'-10", shelves above, a painting bay in the middle
     var dep = 1.0, bx = W + dep / 2, bay = 3.0, side = (len - bay) / 2;
     plank(dep, 2.85, len, bx, 1.425, cz, MAT.charcoal);
@@ -938,12 +946,12 @@
     var plight = new T.PointLight(0xffd9a8, 0.5, 6, 1.8); plight.position.set(W + 0.6, 5.6 + artH / 2 + 0.2, cz); scene.add(plight);
     var plantW = new T.Mesh(new T.CylinderGeometry(0.2, 0.16, 0.4, 10), MAT.charcoal); plantW.position.set(W + 0.7, 3.15, cz - 1.0); scene.add(plantW);
     for (var f = 0; f < 6; f++) { var lf = new T.Mesh(new T.SphereGeometry(0.13, 8, 6), MAT.leaf); lf.position.set(W + 0.7 + Math.cos(f) * 0.2, 3.45 + (f % 3) * 0.12, cz - 1.0 + Math.sin(f) * 0.2); lf.scale.set(1, 0.6, 1.3); scene.add(lf); }
-    var rug = new T.Mesh(new T.BoxGeometry(6.2, 0.03, 7.4), new T.MeshStandardMaterial({ map: TEX.greyRug, roughness: 1 })); rug.position.set(W + dep + 3.3, 0.05, cz); scene.add(rug);
-    var dx1 = W + dep + 1.3, dx2 = dx1 + 2.3, dz1 = cz - 2.75, dz2 = cz + 2.75, dcx = (dx1 + dx2) / 2;
+    var rug = new T.Mesh(new T.BoxGeometry(6.6, 0.03, 7.4), new T.MeshStandardMaterial({ map: TEX.greyRug, roughness: 1 })); rug.position.set(W + dep + 3.5, 0.05, cz); scene.add(rug);
+    var dx1 = W + dep + 2.6, dx2 = dx1 + 2.3, dz1 = cz - 2.5, dz2 = cz + 2.5, dcx = (dx1 + dx2) / 2;
     plank(dx2 - dx1, 0.15, dz2 - dz1, dcx, 2.5, cz, MAT.walnut);
     [[dx1 + 0.08, dz1 + 0.08], [dx2 - 0.08, dz1 + 0.08], [dx1 + 0.08, dz2 - 0.08], [dx2 - 0.08, dz2 - 0.08]].forEach(function (p) { plank(0.1, 2.42, 0.1, p[0], 1.21, p[1], MAT.ironBlk); });
     plank(dx2 - dx1 - 0.16, 0.1, 0.1, dcx, 0.4, dz1 + 0.08, MAT.ironBlk); plank(dx2 - dx1 - 0.16, 0.1, 0.1, dcx, 0.4, dz2 - 0.08, MAT.ironBlk);
-    plank(0.1, 2.3, dz2 - dz1 - 0.3, dx2 - 0.35, 1.2, cz + 1.2, MAT.walnut);
+    plank(0.1, 2.3, dz2 - dz1 - 0.3, dx2 - 0.35, 1.2, cz, MAT.walnut);                     // modesty panel on the room side
     colliders.push([dx1, dx2, dz1, dz2]);
     plank(1.0, 0.04, 0.75, dcx - 0.2, 2.6, cz + 0.2, MAT.steel); var lid = new T.Mesh(new T.BoxGeometry(0.03, 0.7, 1.0), MAT.steel); lid.rotation.z = -0.35; lid.position.set(dcx - 0.65, 2.93, cz + 0.2); scene.add(lid);
     var lampArm = new T.Mesh(new T.CylinderGeometry(0.025, 0.025, 1.5, 8), MAT.ironBlk); lampArm.rotation.z = 0.5; lampArm.position.set(dx1 + 0.55, 3.2, dz1 + 0.6); scene.add(lampArm);
@@ -952,22 +960,13 @@
     plank(0.9, 0.35, 0.7, dcx + 0.6, 2.75, dz2 - 0.8, MAT.leather);
     var dpot = new T.Mesh(new T.CylinderGeometry(0.15, 0.12, 0.3, 10), MAT.porcelain); dpot.position.set(dcx + 0.7, 2.72, dz1 + 0.9); scene.add(dpot);
     for (var g = 0; g < 4; g++) { var gl2 = new T.Mesh(new T.SphereGeometry(0.1, 8, 6), MAT.leaf); gl2.position.set(dcx + 0.7 + Math.cos(g * 1.6) * 0.14, 2.95 + (g % 2) * 0.1, dz1 + 0.9 + Math.sin(g * 1.6) * 0.14); scene.add(gl2); }
-    var chx = dx2 + 1.0, chz = cz;
+    // the chair sits between the desk and the built-ins, facing the room
+    var chx = dx1 - 1.2, chz = cz;
     plank(1.6, 0.35, 1.6, chx, 1.55, chz, MAT.leather);
-    plank(0.3, 1.9, 1.5, chx + 0.7, 2.7, chz, MAT.leather);
+    plank(0.3, 1.9, 1.5, chx - 0.7, 2.7, chz, MAT.leather);
     for (var k2 = 0; k2 < 5; k2++) { var a = k2 * Math.PI * 2 / 5; var spoke = new T.Mesh(new T.BoxGeometry(1.0, 0.08, 0.1), MAT.ironBlk); spoke.rotation.y = a; spoke.position.set(chx + Math.cos(a) * 0.5, 0.12, chz - Math.sin(a) * 0.5); scene.add(spoke); }
     var lift = new T.Mesh(new T.CylinderGeometry(0.08, 0.08, 1.3, 8), MAT.ironBlk); lift.position.set(chx, 0.75, chz); scene.add(lift);
     colliders.push([chx - 0.7, chx + 0.7, chz - 0.7, chz + 0.7]);
-    // armchair tucked into the south-east corner, a small round table beside it
-    var ax = E - 1.2, az = S - 1.2;
-    plank(2.1, 1.3, 2.1, ax, 0.65, az, MAT.greyCloth); plank(2.1, 1.4, 0.45, ax, 2.0, az + 0.82, MAT.greyCloth);
-    plank(0.4, 1.0, 2.1, ax - 0.85, 1.8, az, MAT.greyCloth); plank(0.4, 1.0, 2.1, ax + 0.85, 1.8, az, MAT.greyCloth);
-    plank(0.9, 0.45, 0.9, ax, 1.55, az + 0.35, MAT.white);
-    colliders.push([ax - 1.05, ax + 1.05, az - 1.05, az + 1.05]);
-    var stx = ax, stz = az - 1.75;
-    var stTop = new T.Mesh(new T.CylinderGeometry(0.55, 0.55, 0.06, 20), MAT.walnut); stTop.position.set(stx, 1.9, stz); scene.add(stTop);
-    var stLeg = new T.Mesh(new T.CylinderGeometry(0.07, 0.25, 1.9, 10), MAT.ironBlk); stLeg.position.set(stx, 0.95, stz); scene.add(stLeg);
-    plank(0.6, 0.06, 0.45, stx - 0.1, 1.96, stz, MAT.white); var mug = new T.Mesh(new T.CylinderGeometry(0.11, 0.09, 0.25, 10), MAT.charcoal); mug.position.set(stx + 0.3, 2.05, stz - 0.15); scene.add(mug);
     // a tall plant in the north-east corner; foliage, so it does not block
     var stand = new T.Mesh(new T.CylinderGeometry(0.32, 0.28, 0.9, 12), MAT.charcoal); stand.position.set(E - 0.8, 0.45, N + 0.8); scene.add(stand);
     for (var q = 0; q < 12; q++) { var a2 = q * 0.55, r2 = 0.25 + (q % 4) * 0.22; var pl2 = new T.Mesh(new T.SphereGeometry(0.2, 8, 6), MAT.leaf); pl2.position.set(E - 0.8 + Math.cos(a2) * r2, 1.4 + (q % 5) * 0.45, N + 0.8 + Math.sin(a2) * r2); pl2.scale.set(1.6, 0.4, 0.8); pl2.rotation.y = a2; scene.add(pl2); }

@@ -102,12 +102,12 @@ The study is dressed after a third reference, a dark library-style office:
 12"-deep charcoal built-ins down the west wall with shaker bases, three rows
 of lit shelves full of books and objects, and a painting bay in the middle
 with a framed abstract under a brass picture light. A walnut desk on a black
-frame floats in front of them with a laptop, a lamp, books and a plant, a
-leather chair on a five-star base faces it, a grey rug lies under both, a
-grey armchair and a round side table sit in the corner by the front window,
-curtains flank both windows, and a black ring chandelier with brass candles
-hangs from the centre. The sheet's desk was against the wall; it moves out
-just far enough to clear the built-ins.
+frame floats in front of them with a laptop, a lamp, books and a plant, with
+a leather chair on a five-star base between the desk and the shelves, facing
+the room. A grey rug lies under both, curtains flank the side and front
+windows, and a black ring chandelier with brass candles hangs from the
+centre. The sheet's desk was against the wall; it moves out far enough to
+seat the chair behind it. The study's door is left off, an open doorway.
 
 The screened porch is dressed after a fourth: a wicker sectional along the
 north and west screens with beige cushions and patterned pillows, a concrete
