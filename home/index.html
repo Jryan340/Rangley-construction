@@ -1564,8 +1564,10 @@
     var pot = new T.Mesh(new T.CylinderGeometry(0.3, 0.24, 0.6, 12), MAT.stoneware); pot.position.set(fx(561.6), 2.33, fz(466)); scene.add(pot);
     for (var f = 0; f < 6; f++) { var lf = new T.Mesh(new T.SphereGeometry(0.1, 7, 5), MAT.leaf); lf.position.set(fx(561.6) + Math.cos(f) * 0.25, 2.75 + (f % 3) * 0.12, fz(466) + Math.sin(f) * 0.25); lf.scale.set(1.3, 0.5, 1); scene.add(lf); }
     // a tall plant and a basket in the corner by the entry opening
-    var stand = new T.Mesh(new T.CylinderGeometry(0.42, 0.34, 1.0, 12), MAT.stoneware); stand.position.set(E - 1.1, 0.5, S - 1.1); scene.add(stand);
-    for (var q = 0; q < 12; q++) { var a2 = q * 0.55, r2 = 0.3 + (q % 4) * 0.25; var pl3 = new T.Mesh(new T.SphereGeometry(0.2, 8, 6), MAT.leaf); pl3.position.set(E - 1.1 + Math.cos(a2) * r2, 1.5 + (q % 5) * 0.45, S - 1.1 + Math.sin(a2) * r2); pl3.scale.set(1.6, 0.4, 0.8); pl3.rotation.y = a2; scene.add(pl3); }
+    // a tall plant in the north-west corner, clear of the opening from the entry
+    var px = W + 1.1, pz = N + 1.1;
+    var stand = new T.Mesh(new T.CylinderGeometry(0.42, 0.34, 1.0, 12), MAT.stoneware); stand.position.set(px, 0.5, pz); scene.add(stand);
+    for (var q = 0; q < 12; q++) { var a2 = q * 0.55, r2 = 0.3 + (q % 4) * 0.25; var pl3 = new T.Mesh(new T.SphereGeometry(0.2, 8, 6), MAT.leaf); pl3.position.set(px + Math.cos(a2) * r2, 1.5 + (q % 5) * 0.45, pz + Math.sin(a2) * r2); pl3.scale.set(1.6, 0.4, 0.8); pl3.rotation.y = a2; scene.add(pl3); }
     var bask = new T.Mesh(new T.CylinderGeometry(0.55, 0.45, 1.0, 14), MAT.wicker); bask.position.set(W + 1.0, 0.5, S - 1.0); scene.add(bask);
     // cream curtains on black rods at the two west windows and the front window
     function curtains(x1, x2, z1, z2, n) { var horiz = n === "n" || n === "s"; var L = horiz ? x2 - x1 : z2 - z1; var rod = new T.Mesh(new T.CylinderGeometry(0.04, 0.04, L + 1.6, 8), MAT.ironBlk); if (horiz) rod.rotation.z = Math.PI / 2; else rod.rotation.x = Math.PI / 2; var dx = n === "w" ? -0.25 : n === "e" ? 0.25 : 0, dz = n === "n" ? -0.25 : n === "s" ? 0.25 : 0; rod.position.set((x1 + x2) / 2 + dx, 7.6, (z1 + z2) / 2 + dz); scene.add(rod); [-1, 1].forEach(function (o) { var pnl = new T.Mesh(new T.BoxGeometry(horiz ? 0.8 : 0.25, 7.4, horiz ? 0.25 : 0.8), MAT.linen); pnl.position.set(horiz ? (o < 0 ? x1 - 0.3 : x2 + 0.3) : (x1 + x2) / 2 + dx, 3.8, horiz ? (z1 + z2) / 2 + dz : (o < 0 ? z1 - 0.3 : z2 + 0.3)); scene.add(pnl); }); }
