@@ -111,11 +111,17 @@ which sits on the old wall line. The two hairline rectangles 2'-7" wide, one
 down the hall and one down the east side of the study, are built as runner
 rugs.
 
-The kitchen's fixed pieces are built to read as what they are: a french-door
-fridge with a freezer drawer and a two-door pantry cabinet beside it. Those,
-the island and the coffee bar carry a small floating label that shows when you
-are within about 18' of them. The sheet's double wall oven in the east counter
-run is left out on request; that stretch is counter.
+The kitchen is dressed after a reference photo, a modern farmhouse room, with
+none of the sheet's footprints moved: white shaker cabinets with black pulls
+and a quartz top down the east wall, a stainless range with a plaster hood
+where the sheet had the wall ovens, subway tile behind, glass-front uppers
+with a light strip under them, a dark shaker island with a quartz top that
+overhangs a foot on the seating side, four wood-seat iron stools, a black
+gooseneck tap, four black dome pendants over the island, recessed cans across
+the ceiling, a trestle-base plank dining table with black iron chairs four a
+side, a french-door fridge and a white two-door pantry. The floor is a
+lighter, wider oak. The fridge, pantry, range, island and coffee bar carry a
+small floating label that shows when you are within about 18' of them.
 
 Furniture follows the sheet's placement and is mostly blocks, there for
 scale and to keep you from walking through the dining table. The living
