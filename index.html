@@ -1324,7 +1324,7 @@
     function darkWall(x1, x2, z1, z2, n, y0, y1) { var horiz = n === "n" || n === "s", L = horiz ? x2 - x1 : z2 - z1; if (L <= 0 || y1 <= y0) return; var t = TEX.darkSubway.clone(); t.needsUpdate = true; t.repeat.set(L, y1 - y0); var m = new T.Mesh(new T.BoxGeometry(horiz ? L : 0.03, y1 - y0, horiz ? 0.03 : L), new T.MeshStandardMaterial({ map: t, roughness: 0.35 })); var dx = n === "w" ? -0.015 : n === "e" ? 0.015 : 0, dz = n === "n" ? -0.015 : n === "s" ? 0.015 : 0; m.position.set((x1 + x2) / 2 + dx, (y0 + y1) / 2, (z1 + z2) / 2 + dz); scene.add(m); }
     darkWall(shW, winA, N, N, "s", 0, CEIL - 0.3); darkWall(winB, E, N, N, "s", 0, CEIL - 0.3);
     darkWall(winA, winB, N, N, "s", 0, AWIN.sill); darkWall(winA, winB, N, N, "s", AWIN.head, CEIL - 0.3);
-    darkWall(E, E, N, shS, "w", 0, CEIL - 0.3); darkWall(shW, E, shS, shS, "n", 0, CEIL - 0.3); darkWall(shW, shW, N, shS, "e", 0, CEIL - 0.3);
+    darkWall(E, E, N, shS, "w", 0, CEIL - 0.3); darkWall(shW, E, shS, shS, "n", 0, CEIL - 0.3); darkWall(shW, shW, fz(217.4), shS, "e", 0, CEIL - 0.3);   // the partition only; north of it is the entry
     var pt = TEX.pebble.clone(); pt.needsUpdate = true; pt.repeat.set((E - shW) / 1.5, (shS - N) / 1.5);
     var floorP = new T.Mesh(new T.BoxGeometry(E - shW, 0.3, shS - N), new T.MeshStandardMaterial({ map: pt, roughness: 0.9 })); floorP.position.set((shW + E) / 2, 0.15, (N + shS) / 2); scene.add(floorP);
     plank(0.35, 0.35, shS - N, shW - 0.17, 0.175, (N + shS) / 2, MAT.charcoal);                  // the curb at the entry
