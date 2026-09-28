@@ -1879,6 +1879,22 @@
     var back = new T.Mesh(new T.CylinderGeometry(1.2, 1.2, 1.5, 24, 1, true, Math.PI * 0.55, Math.PI * 1.25), MAT.linen); back.position.set(ax, 2.05, az); scene.add(back);
     [[0.7, 0.7], [-0.7, 0.7], [0.7, -0.7], [-0.7, -0.7]].forEach(function (o) { var lg = new T.Mesh(new T.CylinderGeometry(0.05, 0.05, 0.5, 6), MAT.nightWood); lg.position.set(ax + o[0], 0.25, az + o[1]); scene.add(lg); });
     colliders.push([ax - 1.2, ax + 1.2, az - 1.2, az + 1.2]);
+    // the owner's exercise bike in the north-west corner, facing down the room
+    (function () {
+      var px = fx(458), z1 = fz(190), z2 = fz(245), cz = (z1 + z2) / 2, blk = MAT.fire, red = new T.MeshStandardMaterial({ color: 0xb42a2a, roughness: 0.6 });
+      plank(1.9, 0.15, 0.25, px, 0.08, z1 + 0.3, blk); plank(1.9, 0.15, 0.25, px, 0.08, z2 - 0.3, blk); plank(0.2, 0.15, z2 - z1 - 0.4, px, 0.08, cz, blk);   // stabilisers and base
+      var mast = new T.Mesh(new T.BoxGeometry(0.25, 3.2, 0.25), blk); mast.position.set(px, 1.75, z2 - 0.9); mast.rotation.x = 0.35; scene.add(mast);            // front mast, leaning forward
+      var post = new T.Mesh(new T.BoxGeometry(0.2, 2.6, 0.2), blk); post.position.set(px, 1.5, z1 + 1.1); post.rotation.x = -0.2; scene.add(post);               // seat post
+      plank(0.22, 0.22, 2.4, px, 1.3, cz, red);                                                                                                                  // the frame between
+      var fw = new T.Mesh(new T.CylinderGeometry(0.75, 0.75, 0.12, 24), blk); fw.rotation.z = Math.PI / 2; fw.position.set(px, 0.85, z2 - 1.2); scene.add(fw);      // flywheel
+      var crank = new T.Mesh(new T.CylinderGeometry(0.18, 0.18, 0.5, 12), blk); crank.rotation.z = Math.PI / 2; crank.position.set(px, 1.0, cz + 0.2); scene.add(crank);
+      [[-0.35, 0.75], [0.35, 1.25]].forEach(function (pd) { plank(0.35, 0.08, 0.45, px + pd[0], pd[1], cz + 0.2, blk); });                                       // pedals
+      plank(0.9, 0.15, 1.1, px, 2.9, z1 + 1.0, blk);                                                                                                             // saddle
+      plank(1.6, 0.1, 0.1, px, 3.4, z2 - 0.4, blk); [[-0.7], [0.7]].forEach(function (hx) { plank(0.1, 0.1, 0.8, px + hx[0], 3.4, z2 - 0.8, blk); });             // handlebars
+      plank(1.9, 1.2, 0.06, px, 4.5, z2 - 0.25, blk); plank(1.75, 1.05, 0.02, px, 4.5, z2 - 0.21, new T.MeshStandardMaterial({ color: 0x1c2f45, emissive: 0x152a45, roughness: 0.3 }));   // the screen
+      colliders.push([px - 1.0, px + 1.0, z1, z2]);
+      fixLabel("Bike", px, 6.2, cz);
+    })();
     // curtains at the west and north windows
     function curtains(x1, x2, z1, z2, n) { var horiz = n === "n" || n === "s"; var L = horiz ? x2 - x1 : z2 - z1; var rod = new T.Mesh(new T.CylinderGeometry(0.04, 0.04, L + 1.6, 8), MAT.bronzeDk); if (horiz) rod.rotation.z = Math.PI / 2; else rod.rotation.x = Math.PI / 2; var dx = n === "w" ? -0.25 : n === "e" ? 0.25 : 0, dz = n === "n" ? -0.25 : n === "s" ? 0.25 : 0; rod.position.set((x1 + x2) / 2 + dx, 8.2, (z1 + z2) / 2 + dz); scene.add(rod); [-1, 1].forEach(function (o) { var pnl = new T.Mesh(new T.BoxGeometry(horiz ? 0.8 : 0.25, 8.0, horiz ? 0.25 : 0.8), MAT.linen); pnl.position.set(horiz ? (o < 0 ? x1 - 0.3 : x2 + 0.3) : (x1 + x2) / 2 + dx, 4.1, horiz ? (z1 + z2) / 2 + dz : (o < 0 ? z1 - 0.3 : z2 + 0.3)); scene.add(pnl); }); }
     curtains(W, W, fz(200.9), fz(234.7), "e"); curtains(W, W, fz(322.8), fz(356.6), "e"); curtains(fx(479.5), fx(584.2), N, N, "s");
@@ -2130,8 +2146,8 @@
   function buildGymKit(r) {
     var blk = MAT.fire, steel = new T.MeshStandardMaterial({ color: 0xc9cbcf, roughness: 0.3, metalness: 0.8 });
     // treadmill: deck, belt, motor hood, two uprights, a console with a screen, handrails
-    // the owner's treadmill is 3' by 7': along the east wall, its front to the windows
-    var tx = fx(832.3 - 36.2) - 1.65, tz1 = fz(192.2 - 9.2) + 0.4, tz2 = tz1 + 7.0, tcz = (tz1 + tz2) / 2, tl = tz2 - tz1;
+    // the owner's treadmill is 3' by 7': along the west wall, its front to the windows, short of the door
+    var tx = fx(672.8 - 36.2) + 1.65, tz1 = fz(192.2 - 9.2) + 0.4, tz2 = tz1 + 7.0, tcz = (tz1 + tz2) / 2, tl = tz2 - tz1;
     plank(3.0, 0.5, tl, tx, 0.3, tcz, blk); plank(2.0, 0.06, tl - 1.2, tx, 0.58, tcz + 0.4, new T.MeshStandardMaterial({ color: 0x232323, roughness: 1 }));
     plank(3.0, 1.1, 1.3, tx, 0.85, tz1 + 0.65, blk);                                              // motor hood at the front
     [tx - 1.3, tx + 1.3].forEach(function (ux) { var up = new T.Mesh(new T.BoxGeometry(0.2, 4.3, 0.2), blk); up.position.set(ux, 2.7, tz1 + 0.9); up.rotation.x = -0.3; scene.add(up); var hr = plank(0.15, 0.15, 1.6, ux, 3.5, tz1 + 1.9, blk); });
@@ -2139,18 +2155,18 @@
     colliders.push([tx - 1.5, tx + 1.5, tz1, tz2]);
     fixLabel("Treadmill, 3' x 7'", tx, 6.2, tcz);
     // squat rack against the west wall, its bar running north-south: two uprights on splayed feet, a pull-up bar, j-hooks, the bar with two plates a side
-    // the rack: the bar is 7'-2" and the room is 10' deep, so it runs north-south along the west wall with
+    // the rack: the bar is 7'-2" and the room is 10' deep, so it runs north-south along the east wall with
     // about 2' beyond each end for loading plates, and 2'-6" between its south end and the door wall
-    var rx = fx(672.8 - 36.2) + 1.5, rz = (fz(192.2 - 9.2) + fz(327.6 - 9.2)) / 2;   // centred in the room's depth
+    var rx = fx(832.3 - 36.2) - 1.5, rz = (fz(192.2 - 9.2) + fz(327.6 - 9.2)) / 2;   // centred in the room's depth
     [rz - 1.6, rz + 1.6].forEach(function (uz) {
       plank(0.25, 7.6, 0.25, rx, 3.8, uz, blk);
       plank(3.0, 0.15, 0.25, rx, 0.08, uz, blk); plank(0.25, 0.15, 0.9, rx - 1.4, 0.08, uz + (uz < rz ? -0.35 : 0.35), blk); plank(0.25, 0.15, 0.9, rx + 1.4, 0.08, uz + (uz < rz ? -0.35 : 0.35), blk);
-      plank(0.5, 0.2, 0.3, rx + 0.3, 4.45, uz + (uz < rz ? 0.25 : -0.25), blk);                  // j-hook
+      plank(0.5, 0.2, 0.3, rx - 0.3, 4.45, uz + (uz < rz ? 0.25 : -0.25), blk);                  // j-hook, on the room side
       for (var h2 = 0.6; h2 < 7.4; h2 += 0.45) { var hole = new T.Mesh(new T.BoxGeometry(0.08, 0.08, 0.27), MAT.pull); hole.position.set(rx, h2, uz); scene.add(hole); }
     });
     var pu = new T.Mesh(new T.CylinderGeometry(0.06, 0.06, 3.5, 10), blk); pu.rotation.x = Math.PI / 2; pu.position.set(rx, 7.3, rz); scene.add(pu);
-    var bar = new T.Mesh(new T.CylinderGeometry(0.05, 0.05, 7.2, 10), steel); bar.rotation.x = Math.PI / 2; bar.position.set(rx + 0.3, 4.65, rz); scene.add(bar);
-    [-3.05, -3.3, 3.05, 3.3].forEach(function (pz) { var pl3 = new T.Mesh(new T.CylinderGeometry(0.75, 0.75, 0.22, 24), blk); pl3.rotation.x = Math.PI / 2; pl3.position.set(rx + 0.3, 4.65, rz + pz); scene.add(pl3); var rim = new T.Mesh(new T.TorusGeometry(0.75, 0.02, 6, 24), MAT.pull); rim.position.set(rx + 0.3, 4.65, rz + pz); scene.add(rim); });
+    var bar = new T.Mesh(new T.CylinderGeometry(0.05, 0.05, 7.2, 10), steel); bar.rotation.x = Math.PI / 2; bar.position.set(rx - 0.3, 4.65, rz); scene.add(bar);
+    [-3.05, -3.3, 3.05, 3.3].forEach(function (pz) { var pl3 = new T.Mesh(new T.CylinderGeometry(0.75, 0.75, 0.22, 24), blk); pl3.rotation.x = Math.PI / 2; pl3.position.set(rx - 0.3, 4.65, rz + pz); scene.add(pl3); var rim = new T.Mesh(new T.TorusGeometry(0.75, 0.02, 6, 24), MAT.pull); rim.position.set(rx - 0.3, 4.65, rz + pz); scene.add(rim); });
     colliders.push([rx - 1.6, rx + 1.6, rz - 2.1, rz + 2.1]);   // the feet; the bar's ends are above head height
     fixLabel("Squat rack, 7'-2\" bar", rx, 8.2, rz);
     // yoga mat between them

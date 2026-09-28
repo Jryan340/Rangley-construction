@@ -290,11 +290,17 @@ is not walkable inside.
 ## Gym
 
 After the owner's photos: their 3' by 7' folding treadmill with a console
-and screen along the east wall; a squat rack with a 7'-2" bar against the
-west wall, centred in the room's 10' depth so there is about 2' beyond each
+and screen along the west wall, short of the door; a squat rack with a
+7'-2" bar against the east wall, centred in the room's 10' depth so there is about 2' beyond each
 end of the bar for loading plates, its bar running front to back so the
 doorway and the floor stay clear; a yoga mat between them on the rubber
 floor. The room is 11'-10" by 10'-0".
+
+## Primary bedroom's bike
+
+The owner's exercise bike stands in the north-west corner of the primary
+bedroom, beside the television, facing down the room: black frame with a
+red spar, flywheel, saddle, handlebars and a screen.
 
 ## Primary closet
 
