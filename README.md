@@ -1,4 +1,4 @@
-# 33 Temple St
+# Home
 
 A first-person walkthrough of the proposed first and second floors from
 sheets PR-01 and PR-02 of the 09/27/26 floor plans. One self-contained HTML

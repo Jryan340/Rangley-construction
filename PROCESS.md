@@ -1,6 +1,6 @@
 # Building a walkthrough from an architect's PDF
 
-What was learned building the first floor of 33 Temple St. Read this before
+What was learned building the first floor of the house. Read this before
 starting another floor or another house. The method is in `index.html`; this
 is the reasoning and the traps.
 
