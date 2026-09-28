@@ -353,6 +353,13 @@ every frame; the render is capped at 1.5x pixel density on Retina screens;
 the lawn is built with the fewest triangles that follow the slope; and the
 minimap redraws every other frame.
 
+## The fridge
+
+The sheet draws a 36" fridge beside a 36" pantry in the 8'-0" run between
+the hall wall and the corner cabinet. The owner wants a big one, so the
+model has a 48" built-in, 27" deep like the sheet's alcove, with the pantry
+a 24" cabinet: 48 + 24 + 24 fills the run.
+
 ## What was assumed
 
 The sheet is a plan. It has no heights on it, so:

@@ -234,8 +234,9 @@
   var STUFF = [
     { n: "island", r: [687.8, 728.8, 217.4, 321.4], h: 3.0, m: "stone", island: true },
     { n: "counter", r: [774.6, 801.6, 177.5, 365.0], h: 3.0, m: "cab", eastRun: true },
-    { n: "fridge", r: [692.9, 732.8, 361.9, 392.2], h: 7.0, m: "steel", fridge: true },
-    { n: "pantry", r: [733.2, 774.0, 361.9, 392.2], h: 7.0, m: "cab", pantry: true },
+    // the sheet draws a 36" fridge and a 36" pantry in this 8'-0" run; the owner wants a big fridge, so it is a 48" built-in and the pantry is a 24" cabinet
+    { n: "fridge", r: [692.9, 746.9, 361.9, 392.2], h: 7.0, m: "steel", fridge: true },
+    { n: "pantry", r: [747.3, 774.0, 361.9, 392.2], h: 7.0, m: "cab", pantry: true },
     { n: "corner", r: [774.6, 801.6, 365.0, 392.2], h: 7.0, m: "cab", tallWhite: true },
     { n: "coffee bar", r: [552.4, 634.9, 364.0, 390.1], h: 3.0, m: "cab", coffee: true },
     { n: "table", r: [478.9, 607.2, 257.0, 300.1], h: 2.5, m: "wood", dining: true },
