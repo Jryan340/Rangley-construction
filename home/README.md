@@ -229,6 +229,19 @@ east is at basement level off a driveway that runs down that side. The lawn
 is built to that slope, in pieces around the house, and the deck and porch
 stand on posts down to it.
 
+## Under the deck
+
+The rec room's slider opens under the screened porch, at basement grade,
+and the whole under-deck is dressed as a covered outdoor lounge after the
+owner's reference: charcoal tile across it and a few feet into the yard; a
+cedar-slat soffit under the deck with an amber cove along the house and
+warm downlights; an outdoor television on a dark slat wall at the west end
+with a hedge planter under it; a deep sectional with orange pillows and a
+teak coffee table facing the screen; a teak dining table for six with a
+bench under the open deck; a hedge along the yard side either end, open
+across from the slider; grasses in planters. A walkway runs along the yard
+side from the slider to the dining end and out to the lawn.
+
 ## Primary closet
 
 Dressed after the owner's walk-in photo. The sheet's closet is 8'-4" by
