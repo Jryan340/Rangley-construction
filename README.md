@@ -155,6 +155,17 @@ along the vanity, recessed lights, and the sheet's shower in marble with a
 short glass panel at its opening and a rain head. The water closet keeps its
 toilet.
 
+The primary bedroom is dressed after its reference: greige walls with panel
+moulding on the bed wall and the south wall, a lit cove under the crown, an
+upholstered bed with a tall headboard where the sheet puts it, its head on
+the wall shared with the vestibule, layered pillows and a taupe throw, wood
+nightstands with lamps and a cylinder sconce over each, a painting over the
+bed, a large rug, a curved armchair in the corner from the sheet, curtains at
+the west and north windows, and a television on a console on the wall
+opposite the bed. That wall carries three of the sheet's windows, so the
+television sits in front of the middle one; the alternative is to turn the
+bed to the south wall, which the sheet does not do.
+
 ## What was assumed
 
 The sheet is a plan. It has no heights on it, so:

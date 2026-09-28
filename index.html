@@ -308,9 +308,7 @@
     { n: "Linen", r: [687.3, 706.2, 473.9, 500.9] }, { n: "Closet", r: [711.3, 815.2, 473.9, 500.9] }
   ];
   var STUFF2 = [
-    { n: "bed", r: [506.0, 588.0, 233.0, 322.0], bed: true, head: "e" },
-    { n: "dresser", r: [435.0, 452.0, 249.0, 331.0], h: 2.8, m: "cab" },
-    { n: "chair", r: [447.0, 486.0, 350.0, 393.0], h: 2.4, m: "cloth" },
+    { n: "primary bedroom", r: [432.7, 601.8, 176.9, 392.2], masterBed: true },
     { n: "master bath", r: [609.1, 801.6, 176.9, 292.7], masterBath: true },
     { n: "toilet", r: [742.0, 764.0, 252.0, 284.0], toilet: true, face: "s" },
     { n: "wardrobe", r: [689.5, 801.6, 297.7, 315.0], h: 7.0, m: "cab", tallWhite: true, face: "s" },
@@ -436,7 +434,7 @@
     c.fillStyle = "#8f7a5c"; for (var y = 50; y < H - 40; y += 56) for (var x = 50; x < W - 40; x += 56) { c.beginPath(); c.moveTo(x, y - 18); c.lineTo(x + 18, y); c.lineTo(x, y + 18); c.lineTo(x - 18, y); c.closePath(); c.fill(); }
     var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
   }
-  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), porchCeil: deckTexture("#8b8378", "#665f56"), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture(), greyRug: greyRugTexture(), art: artTexture(), marble: marbleTexture(), frameArt: frameArtTexture() };
+  var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), porchCeil: deckTexture("#8b8378", "#665f56"), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture(), greyRug: greyRugTexture(), art: artTexture(), marble: marbleTexture(), frameArt: frameArtTexture(), warmArt: warmArtTexture() };
   function marbleTexture() {
     var S = 512, cv = document.createElement("canvas"); cv.width = S; cv.height = S; var c = cv.getContext("2d");
     c.fillStyle = "#efece6"; c.fillRect(0, 0, S, S);
@@ -457,6 +455,14 @@
     c.fillStyle = "#9aa39a"; c.beginPath(); c.moveTo(0, H * 0.55); c.bezierCurveTo(W * 0.2, H * 0.4, W * 0.4, H * 0.6, W * 0.6, H * 0.48); c.bezierCurveTo(W * 0.75, H * 0.4, W * 0.9, H * 0.55, W, H * 0.5); c.lineTo(W, H); c.lineTo(0, H); c.fill();
     c.fillStyle = "#6f7d6c"; c.beginPath(); c.moveTo(0, H * 0.7); c.bezierCurveTo(W * 0.3, H * 0.6, W * 0.5, H * 0.78, W * 0.8, H * 0.66); c.lineTo(W, H * 0.72); c.lineTo(W, H); c.lineTo(0, H); c.fill();
     c.fillStyle = "#3f4a3d"; c.beginPath(); c.moveTo(0, H * 0.86); c.bezierCurveTo(W * 0.25, H * 0.8, W * 0.6, H * 0.92, W, H * 0.84); c.lineTo(W, H); c.lineTo(0, H); c.fill();
+    var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
+  }
+  function warmArtTexture() {
+    var W = 320, H = 224, cv = document.createElement("canvas"); cv.width = W; cv.height = H; var c = cv.getContext("2d");
+    c.fillStyle = "#e3d9cb"; c.fillRect(0, 0, W, H);
+    var seed = 9; function rnd() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
+    var cols = ["rgba(150,110,75,0.5)", "rgba(110,80,55,0.55)", "rgba(200,180,150,0.6)", "rgba(90,70,55,0.45)"];
+    for (var i = 0; i < 40; i++) { c.fillStyle = cols[i % 4]; var x = 40 + rnd() * 220, y = 40 + rnd() * 130; c.beginPath(); c.ellipse(x, y, 20 + rnd() * 60, 8 + rnd() * 30, rnd() * 3, 0, Math.PI * 2); c.fill(); }
     var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
   }
   function greyRugTexture() {
@@ -529,6 +535,13 @@
     darkGlass: new T.MeshStandardMaterial({ color: 0x1b2026, roughness: 0.1, metalness: 0.3, transparent: true, opacity: 0.7 }),
     stoneware: new T.MeshStandardMaterial({ color: 0x8f8a80, roughness: 1 }),
     blackCab: new T.MeshStandardMaterial({ color: 0x17191b, roughness: 0.6 }),
+    greige: new T.MeshStandardMaterial({ color: 0xd3c7b8, roughness: 0.95 }),
+    greigeTrim: new T.MeshStandardMaterial({ color: 0xc4b6a4, roughness: 0.9 }),
+    linen: new T.MeshStandardMaterial({ color: 0xd9cdbb, roughness: 1 }),
+    taupe: new T.MeshStandardMaterial({ color: 0x8f7b66, roughness: 1 }),
+    nightWood: new T.MeshStandardMaterial({ color: 0x6b4e36, roughness: 0.7 }),
+    beigeRug: new T.MeshStandardMaterial({ color: 0xc9baa3, roughness: 1 }),
+    shadeLit: new T.MeshStandardMaterial({ color: 0xf6ecd8, emissive: 0xf3d6a6, emissiveIntensity: 0.7, roughness: 1 }),
     blackCabIn: new T.MeshStandardMaterial({ color: 0x232527, roughness: 0.65 }),
     curtain: new T.MeshStandardMaterial({ color: 0xb9ad9c, roughness: 1 }),
     warmWall: new T.MeshStandardMaterial({ color: 0xe9e3d8, roughness: 0.95 }),
@@ -1308,7 +1321,82 @@
     fixLabel("Primary bath", cx, 7.9, cz);
   }
 
+  // The primary bedroom, after the reference: greige walls with panel moulding
+  // and a lit cove, an upholstered bed with a tall headboard under a painting
+  // between cylinder sconces, wood nightstands with lamps, a big rug, a curved
+  // armchair, curtains, and a television on the wall opposite the bed.
+  function buildMasterBed(r) {
+    var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]), cx = (W + E) / 2, cz = (N + S) / 2;
+    // walls in greige, painted around the windows and the door
+    var paint = function (x1, x2, z1, z2, n, y0, y1) { var horiz = n === "n" || n === "s", L = horiz ? x2 - x1 : z2 - z1; if (L <= 0 || y1 <= y0) return; var m = new T.Mesh(new T.BoxGeometry(horiz ? L : 0.03, y1 - y0, horiz ? 0.03 : L), MAT.greige); var dx = n === "w" ? -0.015 : n === "e" ? 0.015 : 0, dz = n === "n" ? -0.015 : n === "s" ? 0.015 : 0; m.position.set((x1 + x2) / 2 + dx, (y0 + y1) / 2, (z1 + z2) / 2 + dz); m.receiveShadow = true; scene.add(m); };
+    function wallWithWindows(fixed, isX, a, b, n, wins, sill, head) {
+      // paint a wall face from a to b along the free axis, skipping the window spans except above and below them
+      var cur = a; wins.forEach(function (wv) { var w0 = Math.min(wv[0], wv[1]), w1 = Math.max(wv[0], wv[1]);
+        if (isX) { paint(cur, w0, fixed, fixed, n, 0, CEIL); paint(w0, w1, fixed, fixed, n, 0, sill); paint(w0, w1, fixed, fixed, n, head, CEIL); } else { paint(fixed, fixed, cur, w0, n, 0, CEIL); paint(fixed, fixed, w0, w1, n, 0, sill); paint(fixed, fixed, w0, w1, n, head, CEIL); }
+        cur = w1; });
+      if (isX) paint(cur, b, fixed, fixed, n, 0, CEIL); else paint(fixed, fixed, cur, b, n, 0, CEIL);
+    }
+    var westWins = [[fz(200.9), fz(234.7)], [fz(261.8), fz(295.7)], [fz(322.8), fz(356.6)]];
+    var northWins = [[fx(479.5), fx(513.4)], [fx(514.8), fx(548.7)], [fx(550.3), fx(584.2)]];
+    wallWithWindows(W, false, N, S, "e", westWins, AWIN.sill, AWIN.head);
+    wallWithWindows(N, true, W, E, "s", northWins, AWIN.sill, AWIN.head);
+    paint(W, E, S, S, "n", 0, CEIL);
+    paint(E, E, N, fz(347.9), "w", 0, CEIL); paint(E, E, fz(347.9), S, "w", DOOR_H, CEIL);
+    // panel moulding on the bed wall and the south wall, a cove light at the ceiling, crown
+    function panel(x, z, along, len, n) { var horiz = n === "n" || n === "s"; var y0 = 1.2, y1 = 7.4, t = 0.08; [[y0, y1]].forEach(function () {}); 
+      var rails = [[0, y0], [0, y1]]; rails.forEach(function (rr) { var m = new T.Mesh(new T.BoxGeometry(horiz ? len : t, t, horiz ? t : len), MAT.greigeTrim); m.position.set(horiz ? x + len / 2 : x, rr[1], horiz ? z : z + len / 2); scene.add(m); });
+      [0, len].forEach(function (o) { var m = new T.Mesh(new T.BoxGeometry(horiz ? t : t, y1 - y0, horiz ? t : t), MAT.greigeTrim); m.position.set(horiz ? x + o : x, (y0 + y1) / 2, horiz ? z : z + o); scene.add(m); }); }
+    var bays = 3, bayL = (fz(347.9) - N) / bays; for (var b = 0; b < bays; b++) panel(E - 0.05, N + bayL * b + 0.3, true, bayL - 0.6, "w");
+    var sb = 2, sbL = (E - W) / sb; for (var b2 = 0; b2 < sb; b2++) panel(W + sbL * b2 + 0.3, S - 0.05, true, sbL - 0.6, "n");
+    [[W, E, N, N], [W, E, S, S], [W, W, N, S], [E, E, N, S]].forEach(function (c) { var horiz = c[2] === c[3]; var m = new T.Mesh(new T.BoxGeometry(horiz ? c[1] - c[0] : 0.35, 0.35, horiz ? 0.35 : c[3] - c[2]), MAT.trim); m.position.set((c[0] + c[1]) / 2 + (horiz ? 0 : (c[0] === W ? 0.175 : -0.175)), CEIL - 0.175, (c[2] + c[3]) / 2 + (horiz ? (c[2] === N ? 0.175 : -0.175) : 0)); scene.add(m);
+      var cove = new T.Mesh(new T.BoxGeometry(horiz ? c[1] - c[0] - 0.7 : 0.08, 0.06, horiz ? 0.08 : c[3] - c[2] - 0.7), MAT.bulb); cove.position.set((c[0] + c[1]) / 2 + (horiz ? 0 : (c[0] === W ? 0.4 : -0.4)), CEIL - 0.4, (c[2] + c[3]) / 2 + (horiz ? (c[2] === N ? 0.4 : -0.4) : 0)); scene.add(cove); });
+    var coveL = new T.PointLight(0xffe2c0, 0.5, 22, 1.4); coveL.position.set(cx, CEIL - 0.8, cz); scene.add(coveL);
+    // the bed, from the sheet: head against the east wall
+    var bx1 = fx(506), bx2 = fx(588), bz1 = fz(233), bz2 = fz(322), bcx = (bx1 + bx2) / 2, bcz = (bz1 + bz2) / 2, bw = bx2 - bx1, bd = bz2 - bz1;
+    plank(bw, 1.1, bd, bcx, 0.55, bcz, MAT.linen);
+    plank(bw - 0.15, 0.7, bd - 0.15, bcx, 1.45, bcz, new T.MeshStandardMaterial({ color: 0xece5d8, roughness: 1 }));
+    plank(0.35, 4.6, bd + 0.3, bx2 + 0.4, 2.3, bcz, MAT.linen);                                   // tall upholstered headboard
+    [[bcz - bd / 4, MAT.white], [bcz + bd / 4, MAT.white]].forEach(function (p) { plank(1.3, 0.5, bd / 2 - 0.5, bx2 - 0.9, 2.05, p[0], p[1]); });
+    [[bcz - bd / 4 - 0.1, MAT.taupe], [bcz + bd / 4 + 0.1, MAT.taupe], [bcz, MAT.linen]].forEach(function (p, i) { plank(1.1, 0.45, i === 2 ? 1.6 : bd / 2 - 0.9, bx2 - 1.7 + (i === 2 ? -0.3 : 0), 2.0, p[0], p[1]); });
+    plank(2.6, 0.1, bd - 0.2, bx1 + 1.7, 1.85, bcz, MAT.taupe);                                    // throw across the foot
+    colliders.push([bx1, bx2 + 0.6, bz1, bz2]);
+    // nightstands and lamps either side of the bed
+    [bz1 - 1.3, bz2 + 1.3].forEach(function (nz) {
+      plank(1.8, 2.1, 1.7, bx2 - 0.6, 1.05, nz, MAT.nightWood); plank(0.05, 0.05, 0.8, bx2 - 0.05 - 0.9, 1.5, nz, MAT.brass);
+      var base = new T.Mesh(new T.CylinderGeometry(0.28, 0.32, 0.9, 12), MAT.stoneware); base.position.set(bx2 - 0.6, 2.55, nz); scene.add(base);
+      var shade = new T.Mesh(new T.CylinderGeometry(0.55, 0.65, 0.75, 16, 1, true), MAT.shadeLit); shade.position.set(bx2 - 0.6, 3.5, nz); scene.add(shade);
+      var lp = new T.PointLight(0xffdcae, 0.5, 9, 1.8); lp.position.set(bx2 - 0.6, 3.4, nz); scene.add(lp);
+      colliders.push([bx2 - 1.5, bx2 + 0.3, nz - 0.85, nz + 0.85]);
+      // cylinder sconce above each nightstand
+      var sc = new T.Mesh(new T.CylinderGeometry(0.12, 0.12, 1.1, 12), MAT.bronzeDk); sc.position.set(E - 0.2, 6.0, nz); scene.add(sc);
+      var scl = new T.PointLight(0xffdcae, 0.3, 7, 1.8); scl.position.set(E - 0.5, 6.0, nz); scene.add(scl);
+    });
+    // the painting over the bed
+    plank(0.08, 3.2, 4.4, E - 0.12, 6.6, bcz, MAT.ironBlk);
+    var art = new T.Mesh(new T.BoxGeometry(0.04, 3.0, 4.2), new T.MeshStandardMaterial({ map: TEX.warmArt, roughness: 0.9 })); art.position.set(E - 0.17, 6.6, bcz); scene.add(art);
+    // a large rug under the bed, out past its foot
+    plank(bw + 5.0, 0.03, bd + 4.0, bcx - 2.0, 0.05, bcz, MAT.beigeRug);
+    // the media console and the television on the west wall, opposite the bed
+    var tvz = bcz, con1 = fz(237), con2 = fz(318);
+    plank(1.5, 2.3, con2 - con1, W + 0.75, 1.15, tvz, MAT.nightWood);
+    var nd = 3, dw = (con2 - con1) / nd; for (var d = 0; d < nd; d++) shakerDoor(W + 1.5, 1.15, con1 + dw * (d + 0.5), dw - 0.08, 2.1, "e", MAT.nightWood, MAT.taupe, null);
+    colliders.push([W, W + 1.5, con1, con2]);
+    plank(0.1, 2.7, 4.7, W + 0.12, 5.4, tvz, MAT.fire);
+    var scr = new T.Mesh(new T.BoxGeometry(0.02, 2.55, 4.55), new T.MeshStandardMaterial({ color: 0x1c2a36, roughness: 0.2, metalness: 0.3, emissive: 0x0d1720 })); scr.position.set(W + 0.18, 5.4, tvz); scene.add(scr);
+    // a curved armchair in the south-west corner, from the sheet, turned to the bed
+    var ax = fx(466), az = fz(371);
+    var seat = new T.Mesh(new T.CylinderGeometry(1.15, 1.05, 1.4, 20), MAT.linen); seat.position.set(ax, 0.7, az); scene.add(seat);
+    var back = new T.Mesh(new T.CylinderGeometry(1.2, 1.2, 1.5, 24, 1, true, Math.PI * 0.55, Math.PI * 1.25), MAT.linen); back.position.set(ax, 2.05, az); scene.add(back);
+    [[0.7, 0.7], [-0.7, 0.7], [0.7, -0.7], [-0.7, -0.7]].forEach(function (o) { var lg = new T.Mesh(new T.CylinderGeometry(0.05, 0.05, 0.5, 6), MAT.nightWood); lg.position.set(ax + o[0], 0.25, az + o[1]); scene.add(lg); });
+    colliders.push([ax - 1.2, ax + 1.2, az - 1.2, az + 1.2]);
+    // curtains at the west and north windows
+    function curtains(x1, x2, z1, z2, n) { var horiz = n === "n" || n === "s"; var L = horiz ? x2 - x1 : z2 - z1; var rod = new T.Mesh(new T.CylinderGeometry(0.04, 0.04, L + 1.6, 8), MAT.bronzeDk); if (horiz) rod.rotation.z = Math.PI / 2; else rod.rotation.x = Math.PI / 2; var dx = n === "w" ? -0.25 : n === "e" ? 0.25 : 0, dz = n === "n" ? -0.25 : n === "s" ? 0.25 : 0; rod.position.set((x1 + x2) / 2 + dx, 8.2, (z1 + z2) / 2 + dz); scene.add(rod); [-1, 1].forEach(function (o) { var pnl = new T.Mesh(new T.BoxGeometry(horiz ? 0.8 : 0.25, 8.0, horiz ? 0.25 : 0.8), MAT.linen); pnl.position.set(horiz ? (o < 0 ? x1 - 0.3 : x2 + 0.3) : (x1 + x2) / 2 + dx, 4.1, horiz ? (z1 + z2) / 2 + dz : (o < 0 ? z1 - 0.3 : z2 + 0.3)); scene.add(pnl); }); }
+    curtains(W, W, fz(200.9), fz(356.6), "e"); curtains(fx(479.5), fx(584.2), N, N, "s");
+    fixLabel("Primary bedroom", cx, 7.9, cz);
+  }
+
   STUFF.forEach(function (s) {
+    if (s.masterBed) { buildMasterBed(s.r); return; }
     if (s.masterBath) { buildMasterBath(s.r); return; }
     if (s.bed) { buildBed(s.r, s.head); return; }
     if (s.toilet) { buildToilet(s.r, s.face); return; }
