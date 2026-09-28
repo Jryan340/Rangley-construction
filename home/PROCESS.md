@@ -149,3 +149,28 @@ three sheets within a few inches, which fixes the floors' registration to
 each other. The build is already a function that can be torn down and
 rebuilt, so a floor selector is a matter of swapping the data and the floor
 height. The second floor's rooms are on the sheet; its heights are not.
+
+## 7. A third sheet, and a stair that goes both ways
+
+The basement sheet registered by the centre of the footprint, not by any
+one wall: its foundation is drawn a few inches inside the framing above, so
+inner and outer faces cannot both match. Check the registration with the
+plan view's drawing overlay before trusting a single room.
+
+Where the architect's sheet contradicts the existing-conditions set and the
+owner (the stair arrow, a hallway absorbed into storage), the existing set
+wins for existing construction: the owner's photo of the hall settled it.
+Note the departure in the README so the next person does not "fix" it back.
+
+One stair box carries two runs: up from the south end, down from the north
+end beneath it. The ramp for the feet computes both heights and takes the
+one nearer the player's current height, so entering from either end does
+the right thing and a sideways step mid-run keeps you on the run you were
+on. The floor above needs a hole over the box, the treads above need a
+soffit, and the space under the top of the down-run is closed off.
+
+Sloping ground cannot be one plane once there is a basement: it would pass
+through the rooms. Build it in pieces around the footprint, each following
+the same grade function the player's feet use, and choose the colliders by
+the player's height when they are outside at basement level, or the first
+floor's walls stop them at the side entry.

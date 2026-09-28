@@ -197,6 +197,33 @@ every wall face that bounds it painted, with its windows and doorways left
 open, so a wall shared by two rooms carries each room's colour on its own
 side.
 
+## Basement
+
+From sheet PR-00, registered to the first-floor sheet by the centre of the
+footprint (PR-00 is drawn 36.2 points right and 9.2 points down). The plan
+view's **Show drawing** overlays the sheet's own lines on the basement too.
+Rec room and gym across the back with the rec room's slider and the gym's
+three windows; the side entry on the driveway side; mudroom with two closets,
+powder room and vestibule in the middle; storage and mechanical rooms either
+side of the stair at the front.
+
+Two things follow the existing-conditions set and the owner rather than
+PR-00. The stair comes **down toward the front of the house**, under the
+stair that goes up, landing in the existing nook at the front (the sheet's
+arrow points the other way). And the **existing hallway** west of the stair
+is kept as it is, with its joists exposed and painted black, a beam along
+the stair wall, conduit and a shop light, so the west storage room's east
+wall stays where it is instead of taking in the hall. The hall meets the new
+vestibule, powder room and mudroom at its north end.
+
+The basement floor is 7'-10" below the first floor, from the existing set,
+with 6'-8" under the joists everywhere; the addition's basement is assumed
+to match. The lot falls from the street: the first floor is at grade at the
+front, the basement is at grade at the back, and the side entry on the
+east is at basement level off a driveway that runs down that side. The lawn
+is built to that slope, in pieces around the house, and the deck and porch
+stand on posts down to it.
+
 ## Primary closet
 
 Dressed after the owner's walk-in photo. The sheet's closet is 8'-4" by
