@@ -242,7 +242,10 @@ follows it, heights relative to the first floor at elevation 120.0 (NGVD
 1988): the front yard sits about 2'-4" below the floor and is near flat,
 the ground at the back wall is at basement level, and the rear line is a
 foot lower still. The lot lines are drawn on the grass, the fence is where
-the survey has it, and labels name the front and back yards.
+the survey has it, and labels name the front and back yards. The lawn is
+built only where there is lawn, around the driveway, sidewalk and street,
+so the grass cannot show through the paving. A basketball hoop stands at
+the top of the driveway, its backboard facing down the drive.
 
 ## Roofs
 

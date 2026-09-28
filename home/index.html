@@ -1004,17 +1004,34 @@
     }
     var hx1 = fx(412.7), hx2 = fx(822.0), hz1 = fz(167.0), hz2 = fz(691.8);
     var X1 = -45, X2 = 95, Z1 = -125, Z2 = 80;                                       // the surveyed area; flat beyond it
-    ground(X1, hx1, Z1, Z2, MAT.lawn); ground(hx2, X2, Z1, Z2, MAT.lawn);
-    ground(hx1, hx2, Z1, hz1, MAT.lawn); ground(hx1, hx2, hz2, Z2, MAT.lawn);
-    ground(hx1, fx(422.4), hz1, fz(392.2), MAT.lawn); ground(fx(812.0), hx2, hz1, fz(392.2), MAT.lawn);   // the slivers beside the addition
+    // lawn only where there is lawn: it stops at the sidewalk, the street and the driveway, so nothing shows through them
+    var D = LOT.drive;
+    ground(X1, hx1, Z1, LOT.zFront, MAT.lawn);                                                                   // west of the house, to the sidewalk
+    ground(hx2, D[0], Z1, LOT.zFront, MAT.lawn); ground(D[1], X2, Z1, LOT.zFront, MAT.lawn); ground(D[0], D[1], Z1, D[2], MAT.lawn);   // east of the house, around the driveway
+    ground(hx1, hx2, Z1, hz1, MAT.lawn); ground(hx1, hx2, hz2, LOT.zFront, MAT.lawn);                            // behind the house, and the front yard
+    ground(hx1, fx(422.4), hz1, fz(392.2), MAT.lawn); ground(fx(812.0), hx2, hz1, fz(392.2), MAT.lawn);        // the slivers beside the addition
+    ground(X1, D[0], LOT.walk, LOT.curb - 0.5, MAT.lawn); ground(D[1], X2, LOT.walk, LOT.curb - 0.5, MAT.lawn);   // the grass plot between the sidewalk and the curb
+    ground(X1, X2, LOT.streetFar, Z2, MAT.lawn);                                                                 // across the street
     ground(-185, X1, -220, 180, MAT.lawn, 0, 20); ground(X2, 215, -220, 180, MAT.lawn, 0, 20); ground(X1, X2, -220, Z1, MAT.lawn, 0, 20); ground(X1, X2, Z2, 180, MAT.lawn, 0, 20);
     // the street: pavement from the curb out, a granite curb, a grass plot, the concrete sidewalk, and the front walk
-    ground(X1, X2, LOT.curb, LOT.streetFar, MAT.asphalt, 0.02);
+    ground(X1, X2, LOT.curb, LOT.streetFar, MAT.asphalt, 0.03);
     ground(X1, X2, LOT.curb - 0.5, LOT.curb, MAT.stone, 0.45, 2.5);
     ground(X1, X2, LOT.zFront, LOT.walk, MAT.stoop, 0.06);
     ground(fx(570.0) + 1.8, fx(658.0) - 1.8, fz(745.0) - 0.2, LOT.zFront, MAT.stoop, 0.07);
     // the driveway, where the survey has it: down the east side to the side entry, and a pad at its door
-    ground(LOT.drive[0], LOT.drive[1], LOT.drive[2], LOT.drive[3], MAT.asphalt, 0.04);
+    ground(D[0], D[1], D[2], D[3], MAT.asphalt, 0.06);
+    // a basketball hoop at the top of the driveway: pole, backboard facing down the drive, rim and net
+    (function () {
+      var hx = D[1] - 1.0, hz = D[2] - 1.2, g0 = grade(hx, hz);
+      var pole = new T.Mesh(new T.CylinderGeometry(0.18, 0.18, 12.8, 12), MAT.ironBlk); pole.position.set(hx, g0 + 6.4, hz); pole.castShadow = true; scene.add(pole);
+      var arm = new T.Mesh(new T.BoxGeometry(0.15, 0.15, 2.6), MAT.ironBlk); arm.position.set(hx, g0 + 11.6, hz + 1.3); scene.add(arm);
+      var bb = new T.Mesh(new T.BoxGeometry(6.0, 3.6, 0.12), new T.MeshStandardMaterial({ color: 0xe9eef2, roughness: 0.2, transparent: true, opacity: 0.75 })); bb.position.set(hx, g0 + 11.9, hz + 2.6); scene.add(bb);
+      var bf = new T.Mesh(new T.BoxGeometry(6.0, 3.6, 0.02), new T.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 })); bf.position.set(hx, g0 + 11.9, hz + 2.54); scene.add(bf);
+      [[6.0, 0.15, 0, 1.75], [6.0, 0.15, 0, -1.75], [0.15, 3.6, -2.93, 0], [0.15, 3.6, 2.93, 0], [2.0, 0.1, 0, 0.55], [2.0, 0.1, 0, -0.55], [0.1, 1.2, -0.95, 0], [0.1, 1.2, 0.95, 0]].forEach(function (b) { var m = new T.Mesh(new T.BoxGeometry(b[0], b[1], 0.03), MAT.ironBlk); m.position.set(hx + b[2], g0 + 11.9 + b[3], hz + 2.68); scene.add(m); });
+      var rim = new T.Mesh(new T.TorusGeometry(0.75, 0.04, 8, 24), new T.MeshStandardMaterial({ color: 0xe8641b, roughness: 0.5, metalness: 0.3 })); rim.rotation.x = Math.PI / 2; rim.position.set(hx, g0 + 10.0, hz + 3.45); scene.add(rim);
+      var net = new T.Mesh(new T.CylinderGeometry(0.75, 0.45, 1.3, 12, 1, true), new T.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.55, side: T.DoubleSide, roughness: 1 })); net.position.set(hx, g0 + 9.35, hz + 3.45); scene.add(net);
+      colliders.push([hx - 0.4, hx + 0.4, hz - 0.4, hz + 0.4]);
+    })();
     var pad = new T.Mesh(new T.BoxGeometry(4.0, 0.1, 6.0), MAT.stoop); pad.position.set(fx(807.4) + 2.0, BASE + 0.02, fz(361.0)); pad.receiveShadow = true; scene.add(pad);
     // the lot lines, a chain-link fence along the rear one, and the neighbours' trees from the survey
     var lineMat = new T.MeshStandardMaterial({ color: 0xf3efe6, roughness: 1 });
