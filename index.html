@@ -283,7 +283,7 @@
     { r: [489.4, 501.6, 564.0, 570.2], k: "int" },
     { r: [506.2, 643.9, 565.8, 570.2], k: "int" }, { r: [643.9, 682.2, 565.8, 570.2], k: "int", door: true, leaf: false },   // closet B and stair | SW bedroom, and its door
     { r: [634.5, 639.0, 466.3, 527.4], k: "int" },                                                                         // stair | hall
-    { r: [593.1, 634.5, 540.0, 544.0], k: "guard" }, { r: [634.5, 639.0, 527.4, 544.0], k: "guard" },                       // knee wall and rail at the stairwell's open edges
+    { r: [634.5, 639.0, 527.4, 565.8], k: "int", door: true, closed: true },                                              // the attic stair's door, kept shut
     { r: [687.3, 815.2, 468.8, 473.9], k: "int" },                                                                         // bath | closets
     { r: [682.2, 689.5, 399.5, 421.1], k: "int" }, { r: [682.2, 689.5, 421.1, 464.4], k: "int", door: true, leaf: false },   // hall | bath
     { r: [682.2, 689.5, 464.4, 473.8], k: "int" },
@@ -718,6 +718,14 @@
       return;
     }
     if (w.leaf === false) return;                                // an open doorway: jambs and header only
+    if (w.closed) {
+      // a solid door kept shut, in the plane of the wall, whichever way the wall runs
+      var alongZ = (z2 - z1) > (x2 - x1), span = alongZ ? z2 - z1 : x2 - x1, cxm = (x1 + x2) / 2;
+      var shut = new T.Mesh(new T.BoxGeometry(alongZ ? 0.15 : span - 0.1, DOOR_H - 0.05, alongZ ? span - 0.1 : 0.15), MAT.door); shut.position.set(cxm, DOOR_H / 2, cz); scene.add(shut);
+      var kb = new T.Mesh(new T.SphereGeometry(0.07, 10, 8), MAT.pull); kb.position.set(alongZ ? cxm + 0.12 : cxm + span / 2 - 0.4, 3.1, alongZ ? cz + span / 2 - 0.4 : cz + 0.12); scene.add(kb);
+      colliders.push([x1, x2, Math.min(z1, z2), Math.max(z1, z2)]);
+      return;
+    }
     var hingeX = w.hinge === "e" ? x2 : x1, dir = w.hinge === "e" ? -1 : 1;
     var swing = w.swing || 1;                                   // +1 opens toward +z (south), -1 toward north
     var leaf = new T.Mesh(new T.BoxGeometry(0.15, DOOR_H - 0.1, wide - 0.2), MAT.door);

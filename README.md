@@ -65,8 +65,8 @@ bedrooms, a bath with a shower, the hall, the stairwell, and five closets.
 The stairwell in the second floor is cut over the upper part of the stair
 only, to where the sheet draws the stair's break line and its east wall
 stops; the lower third of the stair passes under the second floor, and the
-floor over it is part of the hall. A knee wall with a black rail guards the
-hole's open edges.
+floor over it is the foot of the attic stair, which is not modelled; a solid
+door in the hall wall, kept shut, closes it off.
 
 The kids' bath is dressed after the powder-room reference: black shiplap on
 the vanity wall, white on the rest, the rustic open vanity, a round mirror,
