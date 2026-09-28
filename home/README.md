@@ -218,9 +218,12 @@ owner does not want it gutted. That is where the sheet put the new powder
 room, so the powder room moves to the front-right room off the mudroom,
 taking the east half with the existing window, and the laundry, a stacked
 washer and dryer beside a utility sink, takes the west half; each has its
-own door from the mudroom. The mechanical room itself is shown as it is:
-a bare slab, the blue boiler with its flue, the grey water tank by the
-window with copper pipes up the wall, and nothing else. The nook at the
+own door from the mudroom. The mechanical room itself is shown as it is,
+so nobody expects it finished: a bare slab, poured-concrete foundation
+walls, brown joists and boards overhead with no ceiling, pink batts between
+the studs of the wall toward the hall, the blue boiler with its flue, the
+grey water tank by the window with copper pipes up the wall, and nothing
+else. The nook at the
 foot of the stair is left as the unfinished space it is. The
 vestibule narrows to the hall's width and opens to the rec room through a
 3' doorway; the mechanical room's two existing doors open to the vestibule
