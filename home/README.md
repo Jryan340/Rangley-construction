@@ -258,10 +258,11 @@ so that is a choice, not a reading.
 
 ## Deck stair
 
-Thirteen risers down from the open deck's north-west corner, straight out
-into the yard, landing on a pad at the edge of the under-deck patio; rails
-both sides. From the yard you climb it; from the patio you cannot walk in
-under its lower half.
+Off the deck's east side, the driveway side: a railed landing outside the
+rail at the north-east corner, then thirteen risers south along the deck's
+east edge to a pad at the end of the driveway, a few steps from the side
+entry. Rails both sides. From the driveway you climb it; you cannot walk
+in under its lower half.
 
 ## Under the deck
 
