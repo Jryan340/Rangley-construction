@@ -373,12 +373,22 @@ every frame; the render is capped at 1.5x pixel density on Retina screens;
 the lawn is built with the fewest triangles that follow the slope; and the
 minimap redraws every other frame.
 
+## Kitchen layout
+
+From the cabinet designer's plan of 2026-09-29, finishes unchanged: down the
+east wall a 24" pantry at the north end, bases, the 30" range and its plaster
+hood between the two windows, more bases and a 36" corner cabinet, with no
+uppers on that wall; along the seam wall a 36" fridge with a cabinet over it,
+a 24" drawer base and the corner, with uppers above; the island (18" base,
+33" sink base, 24" dishwasher, 24" deep plus the seating overhang) 42" off
+the east run and 40" off the seam run, stools on the dining side.
+
 ## The fridge
 
-The sheet draws a 36" fridge beside a 36" pantry in the 8'-0" run between
-the hall wall and the corner cabinet. The owner wants a big one, so the
-model has a 48" built-in, 27" deep like the sheet's alcove, with the pantry
-a 24" cabinet: 48 + 24 + 24 fills the run.
+The cabinet plan draws a 36" fridge with a 24" drawer base beside it, and
+that is what the model shows now. A 48" fridge was wanted earlier; it would
+take the drawer base's place (48 + 12" of filler + the 36" corner), so it is
+a one-line change if the plan is revised.
 
 ## What was assumed
 

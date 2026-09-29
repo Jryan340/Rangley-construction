@@ -232,12 +232,17 @@
 
   // Fixtures, in points: [x1, x2, y1, y2], height in feet, and a material.
   var STUFF = [
-    { n: "island", r: [687.8, 728.8, 217.4, 321.4], h: 3.0, m: "stone", island: true },
-    { n: "counter", r: [774.6, 801.6, 177.5, 365.0], h: 3.0, m: "cab", eastRun: true },
+    // the kitchen, laid out from the cabinet plan of 2026-09-29: down the east wall a 24" pantry at the north end,
+    // then bases with the 30" range between the two windows, and a 36" corner cabinet; along the seam wall a 36"
+    // fridge, a 24" drawer base and the corner; the island (18" base, 33" sink base, 24" dishwasher) 42" off the
+    // east run and 40" off the seam run. Finishes, chairs and counters as before.
+    { n: "island", r: [686.4, 723.4, 235.2, 319.6], h: 3.0, m: "stone", island: true },
+    { n: "counter", r: [774.6, 801.6, 201.1, 351.7], h: 3.0, m: "cab", eastRun: true },
+    { n: "pantry", r: [774.6, 801.6, 177.5, 201.1], h: 7.0, m: "cab", pantry: true, face: "w" },
+    { n: "drawers", r: [733.4, 760.4, 365.2, 392.2], h: 3.0, m: "cab", drawerBase: true },
+    { n: "corner", r: [760.4, 801.6, 351.7, 392.2], h: 3.0, m: "cab", cornerBase: true },
     // the sheet draws a 36" fridge and a 36" pantry in this 8'-0" run; the owner wants a big fridge, so it is a 48" built-in and the pantry is a 24" cabinet
-    { n: "fridge", r: [692.9, 746.9, 361.9, 392.2], h: 7.0, m: "steel", fridge: true },
-    { n: "pantry", r: [747.3, 774.0, 361.9, 392.2], h: 7.0, m: "cab", pantry: true },
-    { n: "corner", r: [774.6, 801.6, 365.0, 392.2], h: 7.0, m: "cab", tallWhite: true },
+    { n: "fridge", r: [692.9, 733.4, 361.9, 392.2], h: 7.0, m: "steel", fridge: true },
     { n: "coffee bar", r: [552.4, 634.9, 364.0, 390.1], h: 3.0, m: "cab", coffee: true },
     { n: "table", r: [478.9, 607.2, 257.0, 300.1], h: 2.5, m: "wood", dining: true },
     { n: "runner", r: [645.0, 680.0, 406.0, 569.0], h: 0.04, m: "rug", rug: true },
@@ -1365,7 +1370,14 @@
     plank(w - 0.1, 2.5, 0.06, cx, 1.35, face - 0.03, MAT.steel);                       // freezer drawer
     plank(0.07, 2.2, 0.12, cx - 0.16, 4.6, face - 0.12, MAT.frame); plank(0.07, 2.2, 0.12, cx + 0.16, 4.6, face - 0.12, MAT.frame);
     plank(1.6, 0.07, 0.12, cx, 2.35, face - 0.12, MAT.frame);
-    fixLabel("Fridge", cx, 7.6, (zN + zS) / 2);
+    // the cabinet over the fridge, and the uppers along the seam wall over the drawers and the corner
+    plank(w, 1.5, zS - zN, cx, 7.75, (zN + zS) / 2, MAT.shaker); shakerDoor(cx - w / 4, 7.75, zN, w / 2 - 0.08, 1.35, "n", MAT.shaker, MAT.shakerIn, null); shakerDoor(cx + w / 4, 7.75, zN, w / 2 - 0.08, 1.35, "n", MAT.shaker, MAT.shakerIn, null);
+    var ux1 = x2 + 0.05, ux2 = fx(801.6), uz = fz(392.2) - 0.5;
+    plank(ux2 - ux1, 3.0, 1.0, (ux1 + ux2) / 2, 6.1, uz, MAT.shaker);
+    var nu = Math.max(1, Math.round((ux2 - ux1) / 1.5)), du = (ux2 - ux1) / nu;
+    for (var i = 0; i < nu; i++) shakerDoor(ux1 + du * (i + 0.5), 6.1, uz - 0.5, du - 0.08, 2.85, "n", MAT.shaker, MAT.shakerIn, { vert: true, y: 5.0, off: 0 });
+    plank(ux2 - ux1 - 0.2, 0.03, 0.9, (ux1 + ux2) / 2, 4.6, uz, MAT.bulb);
+    fixLabel("Fridge", cx, 9.2, (zN + zS) / 2);
   }
   // A shaker door: a frame standing 1/2" proud with the centre panel set back,
   // and a black pull. `n` is the direction the door faces: "w", "e", "n" or "s".
@@ -1380,13 +1392,32 @@
       pl2.position.set(cx + dx * 0.11 + (alongX ? off : 0), py, cz + dz * 0.11 + (alongX ? 0 : off)); scene.add(pl2);
     }
   }
-  function buildPantry(r) {
-    var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]), cx = (x1 + x2) / 2, w = x2 - x1;
+  function buildPantry(r, face) {
+    var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]), cx = (x1 + x2) / 2, cz = (zN + zS) / 2, w = x2 - x1, d = zS - zN;
     box(r, 0, 7.0, MAT.shaker);
-    var face = zN;
-    shakerDoor(cx - w / 4, 3.55, face, w / 2 - 0.08, 6.7, "n", MAT.shaker, MAT.shakerIn, { vert: true, y: 3.4, off: w / 4 - 0.25 });
-    shakerDoor(cx + w / 4, 3.55, face, w / 2 - 0.08, 6.7, "n", MAT.shaker, MAT.shakerIn, { vert: true, y: 3.4, off: -(w / 4 - 0.25) });
-    fixLabel("Pantry", cx, 7.6, (zN + zS) / 2);
+    if (face === "w") {
+      shakerDoor(x1, 3.55, cz - d / 4, d / 2 - 0.08, 6.7, "w", MAT.shaker, MAT.shakerIn, { vert: true, y: 3.4, off: d / 4 - 0.25 });
+      shakerDoor(x1, 3.55, cz + d / 4, d / 2 - 0.08, 6.7, "w", MAT.shaker, MAT.shakerIn, { vert: true, y: 3.4, off: -(d / 4 - 0.25) });
+    } else {
+      shakerDoor(cx - w / 4, 3.55, zN, w / 2 - 0.08, 6.7, "n", MAT.shaker, MAT.shakerIn, { vert: true, y: 3.4, off: w / 4 - 0.25 });
+      shakerDoor(cx + w / 4, 3.55, zN, w / 2 - 0.08, 6.7, "n", MAT.shaker, MAT.shakerIn, { vert: true, y: 3.4, off: -(w / 4 - 0.25) });
+    }
+    fixLabel("Pantry", cx, 7.6, cz);
+  }
+  // A base of drawers on the seam wall, quartz top, three drawer fronts facing the kitchen.
+  function buildDrawerBase(r) {
+    var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]), cx = (x1 + x2) / 2, w = x2 - x1;
+    box(r, 0, 2.88, MAT.shaker);
+    var top = new T.Mesh(new T.BoxGeometry(w + 0.05, 0.12, zS - zN + 0.1), MAT.quartz); top.position.set(cx, 2.94, (zN + zS) / 2 - 0.05); top.castShadow = true; scene.add(top);
+    [0.55, 1.5, 2.4].forEach(function (y) { shakerDoor(cx, y, zN, w - 0.08, 0.8, "n", MAT.shaker, MAT.shakerIn, { vert: false, y: y + 0.1 }); });
+  }
+  // The corner cabinet where the seam run meets the east run: a base with a door on each face and one quartz top.
+  function buildCornerBase(r) {
+    var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]), cx = (x1 + x2) / 2, cz = (zN + zS) / 2;
+    box(r, 0, 2.88, MAT.shaker);
+    var top = new T.Mesh(new T.BoxGeometry(x2 - x1 + 0.1, 0.12, zS - zN + 0.1), MAT.quartz); top.position.set(cx - 0.05, 2.94, cz - 0.05); top.castShadow = true; scene.add(top);
+    shakerDoor(x1 + (x2 - x1) * 0.28, 1.6, zN, (x2 - x1) * 0.5 - 0.1, 2.35, "n", MAT.shaker, MAT.shakerIn, { vert: true, y: 1.6, off: 0.4 });
+    shakerDoor(x1, 1.6, zN + (zS - zN) * 0.28, (zS - zN) * 0.5 - 0.1, 2.35, "w", MAT.shaker, MAT.shakerIn, { vert: true, y: 1.6, off: 0.4 });
   }
   function buildTallWhite(r, face) {
     var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]), cx = (x1 + x2) / 2, w = x2 - x1;
@@ -1400,9 +1431,10 @@
     var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]), dep = x2 - x1, len = zS - zN;
     // Where the sheet had the ovens, y 249 to 289.6: now the range. z grows with
     // y, so the range's north end is the smaller y.
-    var rangeN = fz(249.0), rangeS = fz(289.6);
+    var RANGE_Y = [241.6, 275.4];                          // the plan's 30" range, between the two windows
+    var rangeN = fz(RANGE_Y[0]), rangeS = fz(RANGE_Y[1]);
     // bases either side of the range, on a black toe kick
-    box([r[0], r[1], r[2], 249.0], 0, 2.88, MAT.shaker); box([r[0], r[1], 289.6, r[3]], 0, 2.88, MAT.shaker);
+    box([r[0], r[1], r[2], RANGE_Y[0]], 0, 2.88, MAT.shaker); box([r[0], r[1], RANGE_Y[1], r[3]], 0, 2.88, MAT.shaker);
     plank(0.02, 0.33, len, x1 + 0.28, 0.165, (zN + zS) / 2, MAT.ironBlk);
     var top = new T.Mesh(new T.BoxGeometry(dep + 0.1, 0.12, len), MAT.quartz); top.position.set((x1 + x2) / 2 - 0.05, 2.94, (zN + zS) / 2); top.castShadow = true; scene.add(top);
     function bases(z0, z1) { var n = Math.max(1, Math.round((z1 - z0) / 1.6)), dw = (z1 - z0) / n; for (var i = 0; i < n; i++) { var cz = z0 + dw * (i + 0.5); shakerDoor(x1, 1.6, cz, dw - 0.08, 2.35, "w", MAT.shaker, MAT.shakerIn, { vert: false, y: 2.55 }); } }
@@ -1440,11 +1472,7 @@
       for (var i = 0; i < n; i++) { var cz = z0 + dw * (i + 0.5); shakerDoor(x2 - 1.0, 6.1, cz, dw - 0.08, 2.85, "w", MAT.shaker, MAT.glass, { vert: true, y: 5.0, off: 0 }); }
       plank(0.9, 0.03, z1 - z0 - 0.2, x2 - 0.55, 4.6, (z0 + z1) / 2, MAT.bulb);
     }
-    solid.forEach(function (sp) {
-      // carve the hood's span out of each solid stretch
-      var a = sp[0] + 0.1, b = sp[1] - 0.1, hN = rangeN - 0.35, hS = rangeS + 0.35;
-      if (b <= hN || a >= hS) uppers(a, b); else { uppers(a, Math.min(b, hN)); uppers(Math.max(a, hS), b); }
-    });
+    // the cabinet plan hangs no uppers on this wall: windows either side of the hood
     fixLabel("Range", x1 - 0.2, 7.9, hz);
   }
   function buildIsland(r) {
@@ -2362,7 +2390,9 @@
     if (s.dining) { buildDining(s.r); return; }
     if (s.couch) { buildCouch(s.r); return; }
     if (s.fridge) { buildFridge(s.r); return; }
-    if (s.pantry) { buildPantry(s.r); return; }
+    if (s.pantry) { buildPantry(s.r, s.face); return; }
+    if (s.drawerBase) { buildDrawerBase(s.r); return; }
+    if (s.cornerBase) { buildCornerBase(s.r); return; }
     if (s.coffee) { buildCoffee(s.r); return; }
     if (s.round) {
       var cx = fx((s.r[0] + s.r[1]) / 2), cz = fz((s.r[2] + s.r[3]) / 2), rad = (s.r[1] - s.r[0]) * PT / 2;
