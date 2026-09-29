@@ -854,7 +854,8 @@
     if (w.k === "rail") { deckRail(r); return; }
     if (w.k === "guard") { box(r, 0, 3.0, MAT.int); var gx1 = fx(r[0]), gx2 = fx(r[1]), gz1 = fz(r[2]), gz2 = fz(r[3]); var cap = new T.Mesh(new T.BoxGeometry(gx2 - gx1 + 0.2, 0.2, gz2 - gz1 + 0.2), MAT.pull); cap.position.set((gx1 + gx2) / 2, 3.1, (gz1 + gz2) / 2); scene.add(cap); return; }
     if (!w.door && !w.slider) baseboard(r);
-    if (w.k === "ext" || w.k === "add") { if (w.win) { cladOut(w, 0, w.win.sill); cladOut(w, w.win.head, CEIL); } else if (w.door) cladOut(w, DOOR_H, CEIL); else if (!w.slider) cladOut(w, 0, CEIL); }
+    var seam = w.r[2] >= 391.0 && w.r[3] <= 400.5;      // the old rear wall: an exterior wall once, now the seam between house and addition
+    if ((w.k === "ext" || w.k === "add") && !seam) { if (w.win) { cladOut(w, 0, w.win.sill); cladOut(w, w.win.head, CEIL); } else if (w.door) cladOut(w, DOOR_H, CEIL); else if (!w.slider) cladOut(w, 0, CEIL); }
     if (w.win) {
       box(r, 0, w.win.sill, mat); box(r, w.win.head, CEIL, mat);
       glassIn(r, w.win.sill, w.win.head);
