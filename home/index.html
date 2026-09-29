@@ -1431,7 +1431,7 @@
     var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]), dep = x2 - x1, len = zS - zN;
     // Where the sheet had the ovens, y 249 to 289.6: now the range. z grows with
     // y, so the range's north end is the smaller y.
-    var RANGE_Y = [241.6, 275.4];                          // the plan's 30" range, between the two windows
+    var RANGE_Y = [262.4, 296.1];                          // the 30" range centred between the two windows (235.2 to 323.3)
     var rangeN = fz(RANGE_Y[0]), rangeS = fz(RANGE_Y[1]);
     // bases either side of the range, on a black toe kick
     box([r[0], r[1], r[2], RANGE_Y[0]], 0, 2.88, MAT.shaker); box([r[0], r[1], RANGE_Y[1], r[3]], 0, 2.88, MAT.shaker);
