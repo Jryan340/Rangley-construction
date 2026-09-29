@@ -277,11 +277,11 @@ so that is a choice, not a reading.
 
 ## Deck stair
 
-Off the deck's east side, the driveway side: a railed landing outside the
-rail at the north-east corner, then thirteen risers south along the deck's
-east edge to a pad at the end of the driveway, a few steps from the side
-entry. Rails both sides. From the driveway you climb it; you cannot walk
-in under its lower half.
+Off the deck's east side: a railed landing outside the rail at the
+south-east corner, against the house, then thirteen risers north along the
+deck's east edge, down toward the back yard, to a pad just past the deck's
+end. Rails both sides. From the yard you climb it; you cannot walk in under
+its lower half.
 
 ## Under the deck
 
