@@ -274,10 +274,20 @@
   // back yard, to a pad past the deck's end.
   var DSTAIR = { x1: fx(801.6), x2: fx(801.6) + 4.0, zLand: fz(167.0), zTop: fz(167.0) - 4.0, len: 11.0 };
   var LOT = { x1: -14.4, x2: 45.6, zFront: 29.9, zRear: -102.1, walk: 34.9, curb: 39.1, streetFar: 69.9, drive: [34.1, 45.6, -30.0, 41.0] };
-  function grade(x, z) {
+  function surveyGrade(x, z) {
     var i = clamp((x - TERR.x0) / TERR.d, 0, TERR.nx - 1.001), j = clamp((z - TERR.z0) / TERR.d, 0, TERR.nz - 1.001);
     var i0 = Math.floor(i), j0 = Math.floor(j), fi = i - i0, fj = j - j0, h = TERR.h, n = TERR.nx;
     return (h[j0 * n + i0] * (1 - fi) + h[j0 * n + i0 + 1] * fi) * (1 - fj) + (h[(j0 + 1) * n + i0] * (1 - fi) + h[(j0 + 1) * n + i0 + 1] * fi) * fj;
+  }
+  // The one regrade in the design: the driveway is cut to a straight fall from
+  // the curb to the side entry, so the door is truly at grade. The cut is held
+  // by the house's foundation on one side and a retaining wall on the lot line.
+  var REGRADE = { x1: fx(822.0), x2: 45.6, zDoor: -25.0, zCurb: 39.1, atCurb: -3.8 };
+  function regradeProfile(z) { if (z >= REGRADE.zCurb) return REGRADE.atCurb; if (z <= REGRADE.zDoor) return BASE; return REGRADE.atCurb + (z - REGRADE.zCurb) / (REGRADE.zDoor - REGRADE.zCurb) * (BASE - REGRADE.atCurb); }
+  function grade(x, z) {
+    var g = surveyGrade(x, z);
+    if (x >= REGRADE.x1 && x <= REGRADE.x2 && z >= -31.5 && z <= REGRADE.zCurb) return Math.min(g, regradeProfile(z));
+    return g;
   }
   var FLOOR2 = CEIL + 1.0;                             // floor to floor: the ceiling plus a foot of structure, assumed
 
@@ -1058,6 +1068,17 @@
     ground(fx(570.0) + 1.8, fx(658.0) - 1.8, fz(745.0) - 0.2, LOT.zFront, MAT.stoop, 0.07);
     // the driveway, where the survey has it: down the east side to the side entry, and a pad at its door
     ground(D[0], D[1], D[2], D[3], MAT.asphalt, 0.06);
+    // the retaining wall on the lot line where the driveway is cut below the neighbour's ground
+    (function () {
+      var wx = REGRADE.x2 + 0.35, cap = new T.MeshStandardMaterial({ color: 0xb8b3aa, roughness: 0.9 });
+      for (var z = -31.0; z < REGRADE.zCurb - 1; z += 2.0) {
+        var lowSide = grade(REGRADE.x2 - 0.5, z + 1.0), highSide = surveyGrade(REGRADE.x2 + 1.5, z + 1.0);
+        if (highSide - lowSide < 0.25) continue;
+        var wall = new T.Mesh(new T.BoxGeometry(0.7, highSide - lowSide + 0.6, 2.02), MAT.fnd); wall.position.set(wx, (highSide + lowSide) / 2 + 0.3, z + 1.0); wall.castShadow = true; wall.receiveShadow = true; scene.add(wall);
+        var c = new T.Mesh(new T.BoxGeometry(0.9, 0.15, 2.02), cap); c.position.set(wx, highSide + 0.62, z + 1.0); scene.add(c);
+      }
+      colliders.push([REGRADE.x2, REGRADE.x2 + 0.7, -31.0, REGRADE.zCurb]);
+    })();
     // a basketball hoop at the top of the driveway: pole, backboard facing down the drive, rim and net
     (function () {
       var hx = (D[0] + D[1]) / 2, hz = D[2] - 1.2, g0 = grade(hx, hz);   // centred on the driveway
