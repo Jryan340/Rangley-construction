@@ -107,7 +107,7 @@
   <button id="bReset" type="button">Back to entry</button>
 </div>
 
-<div class="hud" id="help"><b>W A S D</b> walk &nbsp;·&nbsp; <b>mouse</b> look &nbsp;·&nbsp; <b>shift</b> hurry &nbsp;·&nbsp; <b>P</b> plan view &nbsp;·&nbsp; <b>esc</b> release mouse</div>
+<div class="hud" id="help"><b>W A S D</b> walk &nbsp;·&nbsp; <b>Q E</b> turn &nbsp;·&nbsp; <b>R F</b> look up, down &nbsp;·&nbsp; <b>mouse</b> look &nbsp;·&nbsp; <b>shift</b> hurry &nbsp;·&nbsp; <b>P</b> plan view &nbsp;·&nbsp; <b>esc</b> release mouse</div>
 
 <div class="hud" id="scale">
   <div class="k">Scale</div>
@@ -2619,7 +2619,7 @@
      ================================================================ */
   var keys = {}, locked = false, planMode = false, showDraw = false, showCeil = true;
   var prompt = document.getElementById("prompt"), help = document.getElementById("help");
-  document.addEventListener("keydown", function (e) { keys[e.code] = true; if (e.code === "KeyP") togglePlan(); if (["Space", "ArrowUp", "ArrowDown"].indexOf(e.code) >= 0) e.preventDefault(); });
+  document.addEventListener("keydown", function (e) { keys[e.code] = true; if (e.code === "KeyP") togglePlan(); if (["Space", "ArrowUp", "ArrowDown", "PageUp", "PageDown"].indexOf(e.code) >= 0) e.preventDefault(); });
   document.addEventListener("keyup", function (e) { keys[e.code] = false; });
   prompt.addEventListener("click", function () { prompt.classList.add("hidden"); canvas.requestPointerLock && canvas.requestPointerLock(); });
   canvas.addEventListener("click", function () { if (!planMode && !locked) canvas.requestPointerLock && canvas.requestPointerLock(); });
@@ -2765,6 +2765,7 @@
     var f = 0, r = 0;
     if (keys.KeyW || keys.ArrowUp) f += 1; if (keys.KeyS || keys.ArrowDown) f -= 1; if (keys.KeyD || keys.ArrowRight) r += 1; if (keys.KeyA || keys.ArrowLeft) r -= 1;
     if (keys.KeyQ) pl.yaw += 1.6 * dt; if (keys.KeyE) pl.yaw -= 1.6 * dt;
+    if (keys.KeyR || keys.PageUp) pl.pitch = clamp(pl.pitch + 1.2 * dt, -1.2, 1.2); if (keys.KeyF || keys.PageDown) pl.pitch = clamp(pl.pitch - 1.2 * dt, -1.2, 1.2);   // look up and down without a mouse
     var s = stick(); if (s) { f -= s.y; r += s.x; }
     var len = Math.hypot(f, r); if (len > 1) { f /= len; r /= len; }
     if (len > 0.01) {

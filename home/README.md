@@ -393,6 +393,13 @@ that is what the model shows now. A 48" fridge was wanted earlier; it would
 take the drawer base's place (48 + 12" of filler + the 36" corner), so it is
 a one-line change if the plan is revised.
 
+## Keys
+
+W A S D or the arrow keys walk, Q and E turn, R and F (or Page Up and Page
+Down) look up and down, Shift hurries, P is the plan view, Esc releases the
+mouse. The mouse is optional: everything can be done from the keyboard, and
+on a phone there is a walking pad and drag to look.
+
 ## What was assumed
 
 The sheet is a plan. It has no heights on it, so:
