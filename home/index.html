@@ -581,6 +581,21 @@
     var tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; return tex;
   }
   var TEX = { plank: plankTexture(), tile: tileTexture(), deck: deckTexture(), subway: subwayTexture(), porchCeil: deckTexture("#8b8378", "#665f56"), lapBlack: shiplapTexture("#1e1f21", "#0c0c0d"), lapWhite: shiplapTexture("#f1eee8", "#cfcac2"), rug: rugTexture(), greyRug: greyRugTexture(), art: artTexture(), marble: marbleTexture(), frameArt: frameArtTexture(), warmArt: warmArtTexture(), botanical: botanicalTexture(), mono: monoTexture(), stripe: stripeRugTexture(), persian: persianRugTexture(), slate: slateTileTexture(), shingle: shingleTexture(), concrete: concreteTexture(), lap: lapTexture(), darkSubway: subwayTexture("#3b3e42", "#25272a"), pebble: pebbleTexture() };
+  function veinedQuartzTexture() {
+    // warm white quartz with soft taupe and gold veins, the Calacatta look, for the kitchen tops
+    var S = 512, cv = document.createElement("canvas"); cv.width = S; cv.height = S; var c = cv.getContext("2d");
+    c.fillStyle = "#f2eee6"; c.fillRect(0, 0, S, S);
+    var seed = 37; function rnd() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
+    for (var b = 0; b < 30; b++) { c.fillStyle = "rgba(220,212,198," + (0.12 + rnd() * 0.18) + ")"; c.beginPath(); c.ellipse(rnd() * S, rnd() * S, 30 + rnd() * 90, 10 + rnd() * 30, rnd() * 3, 0, 6.3); c.fill(); }
+    for (var v = 0; v < 9; v++) {
+      var gold = rnd() < 0.35; c.strokeStyle = gold ? "rgba(196,168,112," + (0.25 + rnd() * 0.25) + ")" : "rgba(150,140,128," + (0.22 + rnd() * 0.3) + ")"; c.lineWidth = 0.7 + rnd() * 2.6;
+      c.beginPath(); var x = rnd() * S, y = -20; c.moveTo(x, y);
+      for (var k = 0; k < 7; k++) { x += (rnd() - 0.5) * 110; y += 60 + rnd() * 50; c.quadraticCurveTo(x + (rnd() - 0.5) * 70, y - 30, x, y); }
+      c.stroke();
+      c.strokeStyle = "rgba(150,140,128,0.12)"; c.lineWidth = 6 + rnd() * 6; c.stroke();
+    }
+    var tex = new T.CanvasTexture(cv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 4; return tex;
+  }
   function marbleTexture() {
     var S = 512, cv = document.createElement("canvas"); cv.width = S; cv.height = S; var c = cv.getContext("2d");
     c.fillStyle = "#efece6"; c.fillRect(0, 0, S, S);
@@ -741,7 +756,7 @@
     shakerIn: new T.MeshStandardMaterial({ color: 0xe6e2da, roughness: 0.7 }),
     islandDk: new T.MeshStandardMaterial({ color: 0x22262b, roughness: 0.55 }),
     islandIn: new T.MeshStandardMaterial({ color: 0x2d3237, roughness: 0.6 }),
-    quartz: new T.MeshStandardMaterial({ color: 0xe6e3dd, roughness: 0.3 }),
+    quartz: new T.MeshStandardMaterial({ map: veinedQuartzTexture(), color: 0xffffff, roughness: 0.28 }),   // warm-veined white quartz
     pull: new T.MeshStandardMaterial({ color: 0x141414, roughness: 0.4, metalness: 0.6 }),
     ironBlk: new T.MeshStandardMaterial({ color: 0x1b1b1b, roughness: 0.5, metalness: 0.4 }),
     seatWood: new T.MeshStandardMaterial({ color: 0xa97e56, roughness: 0.6 }),

@@ -381,7 +381,10 @@ hood between the two windows, more bases and a 36" corner cabinet, with no
 uppers on that wall; along the seam wall a 36" fridge with a cabinet over it,
 a 24" drawer base and the corner, with uppers above; the island (18" base,
 33" sink base, 24" dishwasher, 24" deep plus the seating overhang) 42" off
-the east run and 40" off the seam run, stools on the dining side.
+the east run and 40" off the seam run, stools on the dining side. The tops are a
+warm-veined white quartz, the Calacatta look, on the perimeter and the
+island: it ties to the coffee bar's marble and warms the white cabinets
+against the oak floor, and it is quartz, not marble.
 
 ## The fridge
 
