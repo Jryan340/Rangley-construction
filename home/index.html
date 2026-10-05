@@ -171,6 +171,18 @@
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function ft(v) { var f = Math.floor(v + 1e-6), i = Math.round((v - f) * 12); if (i === 12) { f++; i = 0; } return f + "'-" + i + '"'; }
 
+  // The owner asked the architect on 2026-10-05 for two more feet of depth on
+  // the addition. Everything that moves is written as the sheet's own number
+  // minus GP rather than retyped, so each changed coordinate still shows what
+  // PR-01 drew and one constant moves the whole thing when the number changes.
+  // The rear wall and the deck move north bodily; the addition's side walls,
+  // floor, ceiling, roof and rooms only reach that line at one end, so they
+  // stretch. The lot and its ground are the surveyor's and do not move, and
+  // PLAN_LINES is the sheet itself, so the plan view now draws the model two
+  // feet proud of the drawing underneath -- which is the point.
+  var GROW = 2.0;                                      // feet added to the addition's depth
+  var GP = GROW / PT;                                  // the same in the sheet's points, 27
+
   // Heights are not on the sheet. Everything the eye uses as a ruler is set to
   // the standard size: 6'-8" doors, window heads level with the door heads,
   // 36" counters, 7-1/2" risers. Ceilings are a guess you can change on the page.
@@ -219,19 +231,19 @@
     { r: [412.7, 458.5, 392.2, 399.5], k: "ext" },                       // opening 458.5 to 692.9 into the kitchen
     { r: [692.9, 822.0, 392.2, 399.5], k: "ext" },
     // ---- addition: left (west) ----
-    { r: [422.4, 432.8, 167.0, 201.4], k: "add" }, { r: [422.4, 432.8, 201.4, 235.2], k: "add", win: AWIN },
+    { r: [422.4, 432.8, 167.0 - GP, 201.4], k: "add" }, { r: [422.4, 432.8, 201.4, 235.2], k: "add", win: AWIN },
     { r: [422.4, 432.8, 235.2, 262.3], k: "add" }, { r: [422.4, 432.8, 262.3, 296.2], k: "add", win: AWIN },
     { r: [422.4, 432.8, 296.2, 323.3], k: "add" }, { r: [422.4, 432.8, 323.3, 357.1], k: "add", win: AWIN },
     { r: [422.4, 432.8, 357.1, 392.2], k: "add" },
     // ---- addition: right (east) ----
-    { r: [801.6, 812.0, 167.0, 201.4], k: "add" }, { r: [801.6, 812.0, 201.4, 235.2], k: "add", win: AWIN },
+    { r: [801.6, 812.0, 167.0 - GP, 201.4], k: "add" }, { r: [801.6, 812.0, 201.4, 235.2], k: "add", win: AWIN },
     { r: [801.6, 812.0, 235.2, 323.3], k: "add" }, { r: [801.6, 812.0, 323.3, 357.1], k: "add", win: AWIN },
     { r: [801.6, 812.0, 357.1, 392.2], k: "add" },
     // ---- addition: rear (north), onto the deck ----
-    { r: [422.4, 451.3, 167.0, 177.5], k: "add" }, { r: [451.3, 615.4, 167.0, 177.5], k: "add", slider: true },
-    { r: [615.4, 650.6, 167.0, 177.5], k: "add" }, { r: [650.6, 684.5, 167.0, 177.5], k: "add", win: AWIN },
-    { r: [684.5, 721.7, 167.0, 177.5], k: "add" }, { r: [721.7, 755.4, 167.0, 177.5], k: "add", win: AWIN },
-    { r: [755.4, 812.0, 167.0, 177.5], k: "add" },
+    { r: [422.4, 451.3, 167.0 - GP, 177.5 - GP], k: "add" }, { r: [451.3, 615.4, 167.0 - GP, 177.5 - GP], k: "add", slider: true },
+    { r: [615.4, 650.6, 167.0 - GP, 177.5 - GP], k: "add" }, { r: [650.6, 684.5, 167.0 - GP, 177.5 - GP], k: "add", win: AWIN },
+    { r: [684.5, 721.7, 167.0 - GP, 177.5 - GP], k: "add" }, { r: [721.7, 755.4, 167.0 - GP, 177.5 - GP], k: "add", win: AWIN },
+    { r: [755.4, 812.0, 167.0 - GP, 177.5 - GP], k: "add" },
     // ---- partitions ----
     { r: [587.5, 593.2, 454.2, 629.9], k: "int" },                       // living | hall
     { r: [634.1, 640.3, 457.0, 558.0], k: "int" },                       // stair | hall
@@ -255,19 +267,19 @@
     { r: [634.9, 640.4, 361.9, 397.4], k: "int", coffee: true },
     // ---- the deck: screened porch on the west half, where the slider opens, and
     //      open deck on the east half, split at the sheet's middle post ----
-    { r: [427.6, 632.8, 39.7, 43.7], k: "screen" },                      // porch, north
-    { r: [427.6, 431.6, 43.7, 167.0], k: "screen" },                     // porch, west
-    { r: [630.8, 634.8, 39.7, 92.0], k: "screen" },                      // partition to the deck
-    { r: [630.8, 634.8, 92.0, 132.5], k: "screen", door: true, screenDoor: true },   // screen door, 3'-0"
-    { r: [630.8, 634.8, 132.5, 167.0], k: "screen" },
-    { r: [634.8, 801.6, 39.7, 43.7], k: "rail" },                        // deck rail, north
-    { r: [797.6, 801.6, 43.7, 113.0], k: "rail" }                        // deck rail, east; open at its south end onto the stair landing
+    { r: [427.6, 632.8, 39.7 - GP, 43.7 - GP], k: "screen" },                      // porch, north
+    { r: [427.6, 431.6, 43.7 - GP, 167.0 - GP], k: "screen" },                     // porch, west
+    { r: [630.8, 634.8, 39.7 - GP, 92.0 - GP], k: "screen" },                      // partition to the deck
+    { r: [630.8, 634.8, 92.0 - GP, 132.5 - GP], k: "screen", door: true, screenDoor: true },   // screen door, 3'-0"
+    { r: [630.8, 634.8, 132.5 - GP, 167.0 - GP], k: "screen" },
+    { r: [634.8, 801.6, 39.7 - GP, 43.7 - GP], k: "rail" },                        // deck rail, north
+    { r: [797.6, 801.6, 43.7 - GP, 113.0 - GP], k: "rail" }                        // deck rail, east; open at its south end onto the stair landing
   ];
 
   // Rooms as rectangles, for the readout and the labels. Sizes are the clear
   // interior, which is what the sheet's labels give.
   var ROOMS = [
-    { n: "Kitchen / Dining", r: [432.8, 801.6, 177.5, 392.2], label: "27' x 16' on the sheet" },
+    { n: "Kitchen / Dining", r: [432.8, 801.6, 177.5 - GP, 392.2], label: "27' x 18' with the added 2'; 27' x 16' on the sheet" },
     { n: "Living", r: [419.5, 587.5, 399.5, 685.1], label: "21' x 12'-6\" on the sheet", paint: "acacia" },
     { n: "Hall", r: [593.2, 687.8, 399.5, 576.0], paint: "illusion" },
     { n: "Entry", r: [593.2, 687.8, 576.0, 685.1], label: "7' x 8'-6\" on the sheet", paint: "illusion" },
@@ -275,8 +287,8 @@
     { n: "Vestibule", r: [692.9, 815.2, 484.1, 531.4], paint: "illusion" },
     { n: "Closet", r: [692.9, 758.9, 536.4, 563.5] },
     { n: "Study", r: [692.9, 815.2, 536.4, 685.1], label: "9' x 8'-6\" on the sheet", dimsR: [692.9, 815.2, 568.6, 685.1] },
-    { n: "Screened porch", r: [427.6, 632.8, 39.7, 167.0], outside: true, label: "roofed and screened" },
-    { n: "Deck", r: [632.8, 801.6, 39.7, 167.0], outside: true, label: "open deck" },
+    { n: "Screened porch", r: [427.6, 632.8, 39.7 - GP, 167.0 - GP], outside: true, label: "roofed and screened" },
+    { n: "Deck", r: [632.8, 801.6, 39.7 - GP, 167.0 - GP], outside: true, label: "open deck" },
     { n: "Front stoop", r: [570.0, 658.0, 691.8, 760.0], outside: true }
   ];
 
@@ -288,7 +300,7 @@
     // east run and 40" off the seam run. Finishes, chairs and counters as before.
     { n: "island", r: [686.4, 723.4, 235.2, 319.6], h: 3.0, m: "stone", island: true },
     { n: "counter", r: [774.6, 801.6, 201.1, 351.7], h: 3.0, m: "cab", eastRun: true },
-    { n: "pantry", r: [774.6, 801.6, 177.5, 201.1], h: 7.0, m: "cab", pantry: true, face: "w" },
+    { n: "pantry", r: [774.6, 801.6, 177.5 - GP, 201.1 - GP], h: 7.0, m: "cab", pantry: true, face: "w" },   // a 24" cabinet: it moves with the wall rather than stretching
     { n: "drawers", r: [733.4, 760.4, 365.2, 392.2], h: 3.0, m: "cab", drawerBase: true },
     { n: "corner", r: [760.4, 801.6, 351.7, 392.2], h: 3.0, m: "cab", cornerBase: true },
     // the sheet draws a 36" fridge and a 36" pantry in this 8'-0" run; the owner wants a big fridge, so it is a 48" built-in and the pantry is a 24" cabinet
@@ -304,14 +316,14 @@
     { n: "console", r: [640.7, 684.0, 666.0, 681.0], console: true },
     { n: "study", r: [692.9, 815.2, 568.6, 685.1], study: true },
     { n: "bath", r: [692.9, 815.2, 399.5, 478.9], bath: true },
-    { n: "porch", r: [431.6, 630.8, 43.7, 167.0], porch: true },
+    { n: "porch", r: [431.6, 630.8, 43.7 - GP, 167.0 - GP], porch: true },
     // the sheet's deck sofa sat just east of the split, which now puts it behind
     // the screen door, so it moves to the east rail
-    { n: "deck dining", r: [634.8, 797.6, 43.7, 167.0], deckDining: true }
+    { n: "deck dining", r: [634.8, 797.6, 43.7 - GP, 167.0 - GP], deckDining: true }
   ];
   var STAIR = { r: [593.2, 634.1, 457.4, 576.0], risers: 16 };   // 16 risers to the second floor over the sheet's run: steep, and noted
   var FIREPLACE = { chimney: [400.1, 412.7, 508.6, 574.7], surround: [419.5, 425.2, 504.8, 580.6] };
-  var DECK = { r: [427.6, 801.6, 39.7, 167.0], posts: [[428.8, 438.8], [627.8, 637.9], [791.4, 801.6]] };
+  var DECK = { r: [427.6, 801.6, 39.7 - GP, 167.0 - GP], posts: [[428.8, 438.8], [627.8, 637.9], [791.4, 801.6]] };
   var STOOP = { r: [570.0, 658.0, 691.8, 745.0] };
   var GRADE = -2.5;                                    // ground at the front: a few steps below the floor, assumed
   var BASE = -7.83;                                    // basement floor: 7'-10" below the first floor, from the existing-conditions set
@@ -329,7 +341,7 @@
   // A landing at the deck's south-east corner against the house, outside the
   // rail, then 13 risers north along the deck's east edge, down toward the
   // back yard, to a pad past the deck's end.
-  var DSTAIR = { x1: fx(801.6), x2: fx(801.6) + 4.0, zLand: fz(167.0), zTop: fz(167.0) - 4.0, len: 11.0 };
+  var DSTAIR = { x1: fx(801.6), x2: fx(801.6) + 4.0, zLand: fz(167.0 - GP), zTop: fz(167.0 - GP) - 4.0, len: 11.0 };
   var LOT = { x1: -14.4, x2: 45.6, zFront: 29.9, zRear: -102.1, walk: 34.9, curb: 39.1, streetFar: 69.9, drive: [34.1, 45.6, -30.0, 41.0] };
   function surveyGrade(x, z) {
     var i = clamp((x - TERR.x0) / TERR.d, 0, TERR.nx - 1.001), j = clamp((z - TERR.z0) / TERR.d, 0, TERR.nz - 1.001);
@@ -374,22 +386,22 @@
     { r: [412.7, 638.8, 392.2, 399.5], k: "ext" }, { r: [638.8, 677.2, 392.2, 399.5], k: "ext", door: true, leaf: false },
     { r: [677.2, 821.9, 392.2, 399.5], k: "ext" },
     // ---- addition: west, three windows over the bed ----
-    { r: [422.4, 432.7, 166.6, 200.9], k: "add" }, { r: [422.4, 432.7, 200.9, 234.7], k: "add", win: AWIN },
+    { r: [422.4, 432.7, 166.6 - GP, 200.9], k: "add" }, { r: [422.4, 432.7, 200.9, 234.7], k: "add", win: AWIN },
     { r: [422.4, 432.7, 234.7, 322.8], k: "add" },                       // the sheet's middle window is dropped: the television goes here
     { r: [422.4, 432.7, 322.8, 356.6], k: "add", win: AWIN },
     { r: [422.4, 432.7, 356.6, 392.2], k: "add" },
     // ---- addition: east, one window in the closet ----
-    { r: [801.6, 812.1, 166.6, 326.2], k: "add" }, { r: [801.6, 812.1, 326.2, 360.0], k: "add", win: AWIN },
+    { r: [801.6, 812.1, 166.6 - GP, 326.2], k: "add" }, { r: [801.6, 812.1, 326.2, 360.0], k: "add", win: AWIN },
     { r: [801.6, 812.1, 360.0, 392.2], k: "add" },
     // ---- addition: rear, three windows over the bed, one in the bath, one in the shower ----
-    { r: [422.4, 479.5, 166.6, 176.9], k: "add" }, { r: [479.5, 513.4, 166.6, 176.9], k: "add", win: AWIN },
-    { r: [513.4, 514.8, 166.6, 176.9], k: "add" }, { r: [514.8, 548.7, 166.6, 176.9], k: "add", win: AWIN },
-    { r: [548.7, 550.3, 166.6, 176.9], k: "add" }, { r: [550.3, 584.2, 166.6, 176.9], k: "add", win: AWIN },
-    { r: [584.2, 650.7, 166.6, 176.9], k: "add" }, { r: [650.7, 684.5, 166.6, 176.9], k: "add", win: AWIN },
-    { r: [684.5, 721.6, 166.6, 176.9], k: "add" }, { r: [721.6, 755.4, 166.6, 176.9], k: "add", win: AWIN },
-    { r: [755.4, 812.1, 166.6, 176.9], k: "add" },
+    { r: [422.4, 479.5, 166.6 - GP, 176.9 - GP], k: "add" }, { r: [479.5, 513.4, 166.6 - GP, 176.9 - GP], k: "add", win: AWIN },
+    { r: [513.4, 514.8, 166.6 - GP, 176.9 - GP], k: "add" }, { r: [514.8, 548.7, 166.6 - GP, 176.9 - GP], k: "add", win: AWIN },
+    { r: [548.7, 550.3, 166.6 - GP, 176.9 - GP], k: "add" }, { r: [550.3, 584.2, 166.6 - GP, 176.9 - GP], k: "add", win: AWIN },
+    { r: [584.2, 650.7, 166.6 - GP, 176.9 - GP], k: "add" }, { r: [650.7, 684.5, 166.6 - GP, 176.9 - GP], k: "add", win: AWIN },
+    { r: [684.5, 721.6, 166.6 - GP, 176.9 - GP], k: "add" }, { r: [721.6, 755.4, 166.6 - GP, 176.9 - GP], k: "add", win: AWIN },
+    { r: [755.4, 812.1, 166.6 - GP, 176.9 - GP], k: "add" },
     // ---- primary suite partitions ----
-    { r: [601.8, 609.1, 176.9, 347.9], k: "int" }, { r: [601.8, 609.1, 347.9, 392.2], k: "int", door: true, leaf: false },   // bed | vest
+    { r: [601.8, 609.1, 176.9 - GP, 347.9], k: "int" }, { r: [601.8, 609.1, 347.9, 392.2], k: "int", door: true, leaf: false },   // bed | vest
     { r: [609.1, 638.8, 292.7, 297.7], k: "int" }, { r: [638.8, 677.2, 292.7, 297.7], k: "int", door: true, leaf: false },   // bath | vest
     { r: [677.2, 801.6, 292.7, 297.7], k: "int" },                                                                         // bath | closet
     { r: [682.2, 689.5, 297.7, 326.2], k: "int" }, { r: [682.2, 689.5, 326.2, 365.0], k: "int", door: true, leaf: false },   // vest | closet
@@ -417,8 +429,8 @@
     { r: [732.5, 793.3, 500.9, 506.0], k: "int", door: true, dbl: true, swing: 1 }, { r: [793.3, 815.2, 500.9, 506.0], k: "int" }
   ];
   var ROOMS2 = [
-    { n: "Primary bedroom", r: [432.7, 601.8, 176.9, 392.2], label: "12'6\" x 16' on the sheet" },
-    { n: "Primary bath", r: [609.1, 801.6, 176.9, 292.7], label: "8'6\" x 14' on the sheet", paint: "sunbleached" },
+    { n: "Primary bedroom", r: [432.7, 601.8, 176.9 - GP, 392.2], label: "12'6\" x 18' with the added 2'; 16' on the sheet" },
+    { n: "Primary bath", r: [609.1, 801.6, 176.9 - GP, 292.7], label: "8'6\" x 16' with the added 2'; 14' on the sheet", paint: "sunbleached" },
     { n: "Vestibule", r: [609.1, 682.2, 297.7, 392.2], label: "5' x 7' on the sheet", paint: "illusion" },
     { n: "Primary closet", r: [689.5, 801.6, 297.7, 393.8], label: "8'6\" x 7' on the sheet" },
     { n: "Bedroom", r: [419.4, 588.0, 399.5, 532.6], label: "north-west", paint: "fog" },
@@ -431,8 +443,8 @@
     { n: "Linen", r: [687.3, 706.2, 473.9, 500.9] }, { n: "Closet", r: [711.3, 815.2, 473.9, 500.9] }
   ];
   var STUFF2 = [
-    { n: "primary bedroom", r: [432.7, 601.8, 176.9, 392.2], masterBed: true },
-    { n: "master bath", r: [609.1, 801.6, 176.9, 292.7], masterBath: true },
+    { n: "primary bedroom", r: [432.7, 601.8, 176.9 - GP, 392.2], masterBed: true },
+    { n: "master bath", r: [609.1, 801.6, 176.9 - GP, 292.7], masterBath: true },
     { n: "toilet", r: [742.0, 764.0, 252.0, 284.0], toilet: true, face: "s" },
     { n: "primary closet", r: [689.5, 801.6, 297.7, 393.8], primaryCloset: true },
     { n: "bed", r: [440.0, 519.0, 402.0, 497.0], bed: true, head: "n" },
@@ -467,15 +479,15 @@
   var BWIN = { sill: 5.0, head: 6.4 }, AW0 = { sill: 3.0, head: 6.4 }, FULL0 = { sill: 0.15, head: 6.4 };
   var WALLS0 = [
     // ---- addition, rear: the rec room's slider with a panel slid open, the gym's three windows ----
-    { r: [463.3, 487.1, 181.0, 192.2], k: "add" }, { r: [487.1, 528.0, 181.0, 192.2], k: "add", door: true, leaf: false }, { r: [528.0, 651.0, 181.0, 192.2], k: "add", win: FULL0 },
-    { r: [651.0, 686.4, 181.0, 192.2], k: "add" }, { r: [686.4, 720.2, 181.0, 192.2], k: "add", win: AW0 }, { r: [720.2, 721.9, 181.0, 192.2], k: "add" },
-    { r: [721.9, 755.6, 181.0, 192.2], k: "add", win: AW0 }, { r: [755.6, 757.3, 181.0, 192.2], k: "add" }, { r: [757.3, 791.2, 181.0, 192.2], k: "add", win: AW0 }, { r: [791.2, 843.6, 181.0, 192.2], k: "add" },
+    { r: [463.3, 487.1, 181.0 - GP, 192.2 - GP], k: "add" }, { r: [487.1, 528.0, 181.0 - GP, 192.2 - GP], k: "add", door: true, leaf: false }, { r: [528.0, 651.0, 181.0 - GP, 192.2 - GP], k: "add", win: FULL0 },
+    { r: [651.0, 686.4, 181.0 - GP, 192.2 - GP], k: "add" }, { r: [686.4, 720.2, 181.0 - GP, 192.2 - GP], k: "add", win: AW0 }, { r: [720.2, 721.9, 181.0 - GP, 192.2 - GP], k: "add" },
+    { r: [721.9, 755.6, 181.0 - GP, 192.2 - GP], k: "add", win: AW0 }, { r: [755.6, 757.3, 181.0 - GP, 192.2 - GP], k: "add" }, { r: [757.3, 791.2, 181.0 - GP, 192.2 - GP], k: "add", win: AW0 }, { r: [791.2, 843.6, 181.0 - GP, 192.2 - GP], k: "add" },
     // ---- addition, west and east; the side entry door on the east, at grade ----
-    { r: [463.3, 474.6, 192.2, 209.2], k: "add" }, { r: [463.3, 474.6, 209.2, 242.9], k: "add", win: AW0 }, { r: [463.3, 474.6, 242.9, 403.4], k: "add" },
-    { r: [832.3, 843.6, 192.2, 211.4], k: "add" }, { r: [832.3, 843.6, 211.4, 245.2], k: "add", win: AW0 }, { r: [832.3, 843.6, 245.2, 344.5], k: "add" },
+    { r: [463.3, 474.6, 192.2 - GP, 209.2], k: "add" }, { r: [463.3, 474.6, 209.2, 242.9], k: "add", win: AW0 }, { r: [463.3, 474.6, 242.9, 403.4], k: "add" },
+    { r: [832.3, 843.6, 192.2 - GP, 211.4], k: "add" }, { r: [832.3, 843.6, 211.4, 245.2], k: "add", win: AW0 }, { r: [832.3, 843.6, 245.2, 344.5], k: "add" },
     { r: [832.3, 843.6, 344.5, 387.4], k: "add", door: true, leaf: false }, { r: [832.3, 843.6, 387.4, 401.3], k: "add" },
     // ---- rec room | gym, gym | entry ----
-    { r: [667.8, 672.8, 192.2, 400.3], k: "int" },
+    { r: [667.8, 672.8, 192.2 - GP, 400.3], k: "int" },      // rec room | gym: stretches to the new rear wall
     { r: [672.8, 680.2, 327.6, 332.8], k: "int" }, { r: [680.2, 716.3, 327.6, 332.8], k: "int", door: true, leaf: false }, { r: [716.3, 832.3, 327.6, 332.8], k: "int" },
     // ---- the line between the addition and the existing house: open from the vestibule to the rec room, and from the mudroom to the entry ----
     { r: [451.0, 585.0, 402.0, 414.7], k: "fnd" }, { r: [625.0, 720.7, 400.3, 411.6], k: "fnd" }, { r: [772.7, 856.0, 399.7, 411.6], k: "fnd" },   // the vestibule opens to the rec room between 585 and 625
@@ -498,8 +510,8 @@
     { r: [808.0, 835.7, 483.0, 488.0], k: "int" }
   ].map(function (w) { w.r = b0(w.r); return w; });
   var ROOMS0 = [
-    { n: "Rec room", r: [474.6, 667.8, 192.2, 403.4], label: "14'-4\" x 16'-4\" on the sheet", paint: "sunbleached" },
-    { n: "Gym", r: [672.8, 832.3, 192.2, 327.6], label: "10' x 12' on the sheet", paint: "fog" },
+    { n: "Rec room", r: [474.6, 667.8, 192.2 - GP, 403.4], label: "14'-4\" x 18'-4\" with the added 2'; 16'-4\" on the sheet", paint: "sunbleached" },
+    { n: "Gym", r: [672.8, 832.3, 192.2 - GP, 327.6], label: "10' x 14' with the added 2'; 12' on the sheet", paint: "fog" },
     { n: "Side entry", r: [672.8, 832.3, 332.8, 400.3], label: "at grade, off the driveway", paint: "mushroom" },
     { n: "Vestibule", r: [574.6, 671.4, 414.7, 485.6], paint: "mushroom" },
     { n: "Mudroom", r: [686.5, 802.8, 411.6, 559.6], label: "11' x 8'-7\" on the sheet", paint: "beachcomber" },
@@ -515,7 +527,7 @@
     { n: "vanity", r: b0([798.0, 833.0, 656.0, 684.0]), h: 2.8, m: "cab" },
     { n: "couch", r: b0([476.0, 516.0, 258.0, 352.0]), recCouch: true },
     { n: "console", r: b0([645.0, 661.0, 229.0, 360.0]), h: 1.8, m: "cab" },
-    { n: "gym kit", r: b0([672.8, 832.3, 192.2, 327.6]), gymKit: true },
+    { n: "gym kit", r: b0([672.8, 832.3, 192.2 - GP, 327.6]), gymKit: true },
     { n: "bench", r: b0([690.0, 713.0, 474.0, 520.0]), h: 1.5, m: "cab" },   // short of the powder-room door
     { n: "laundry", r: b0([686.5, 757.0, 564.6, 684.6]), laundryStack: true },
     { n: "bench", r: b0([730.0, 830.0, 334.0, 350.0]), h: 1.5, m: "wood" },
@@ -1091,30 +1103,30 @@
     // the basement: a plank floor, drywall ceilings under the joists everywhere
     // but the existing hall and the foot of the stair, where the joists show
     var HALLJ = b0([569.5, 686.5, 490.7, 677.9]);
-    texSlab([412.7, 822.0, 392.2, 691.8], 0, "plank", 0.3); texSlab([422.4, 812.0, 167.0, 392.2], 0, "plank", 0.3);
+    texSlab([412.7, 822.0, 392.2, 691.8], 0, "plank", 0.3); texSlab([422.4, 812.0, 167.0 - GP, 392.2], 0, "plank", 0.3);
     var MECHR = b0([460.0, 569.5, 414.7, 677.9]);
     aroundWell([412.7, 822.0, 392.2, 691.8], HALLJ).forEach(function (p) { aroundWell(p, MECHR).forEach(function (q) { ceilings.push(slab(q, BASE_H + 0.3, MAT.ceil, 0.3)); }); });   // no ceiling over the hall or the mechanical room
-    ceilings.push(slab([422.4, 812.0, 167.0, 392.2], BASE_H + 0.3, MAT.ceil, 0.3));
+    ceilings.push(slab([422.4, 812.0, 167.0 - GP, 392.2], BASE_H + 0.3, MAT.ceil, 0.3));
   } else if (fi === 0) {
     aroundWell([412.7, 822.0, 392.2, 691.8], STAIR.r).forEach(function (p) { texSlab(p, 0, "plank", 0.6); });   // existing house floor, open over the basement stair
-    texSlab([422.4, 812.0, 167.0, 392.2], 0, "plank", 0.6);          // addition floor
+    texSlab([422.4, 812.0, 167.0 - GP, 392.2], 0, "plank", 0.6);          // addition floor
     texSlab([692.9, 815.2, 399.5, 478.9], 0.02, "tile", 0.02);       // bathroom tile
     texSlab(DECK.r, 0, "deck", 0.6);                                  // deck at floor level
     aroundWell([412.7, 822.0, 392.2, 691.8]).forEach(function (p) { ceilings.push(slab(p, CEIL + 0.5, MAT.ceil, 0.5)); });
-    ceilings.push(slab([422.4, 812.0, 167.0, 392.2], CEIL + 0.5, MAT.ceil, 0.5));
+    ceilings.push(slab([422.4, 812.0, 167.0 - GP, 392.2], CEIL + 0.5, MAT.ceil, 0.5));
   } else {
     aroundWell([412.7, 822.0, 392.2, 706.7]).forEach(function (p) { texSlab(p, 0, "plank", 0.6); });   // over the existing house, 13" proud at the front
-    texSlab([422.4, 812.0, 167.0, 392.2], 0, "plank", 0.6);
-    texSlab([689.5, 815.2, 399.5, 468.8], 0.02, "tile", 0.02); texSlab([609.1, 801.6, 176.9, 292.7], 0.02, "tile", 0.02);
+    texSlab([422.4, 812.0, 167.0 - GP, 392.2], 0, "plank", 0.6);
+    texSlab([689.5, 815.2, 399.5, 468.8], 0.02, "tile", 0.02); texSlab([609.1, 801.6, 176.9 - GP, 292.7], 0.02, "tile", 0.02);
     ceilings.push(slab([412.7, 822.0, 392.2, 706.7], CEIL + 0.5, MAT.ceil, 0.5));
-    ceilings.push(slab([422.4, 812.0, 167.0, 392.2], CEIL + 0.5, MAT.ceil, 0.5));
+    ceilings.push(slab([422.4, 812.0, 167.0 - GP, 392.2], CEIL + 0.5, MAT.ceil, 0.5));
     // The roofs, from the existing-conditions elevations: a 9-in-12 gable over
     // the house with its ridge east-west and gables on the side walls, eaves
     // at the top of the second-floor walls; over the addition a cross gable at
     // the same pitch, ridge north-south, gable to the back yard, as the rear
     // ell it replaces had. The two are let into each other.
     gableRoof([412.7, 822.0, 392.2, 706.7], "x", CEIL + 0.5, 0.75, 1.2, MAT.ext);
-    gableRoof([422.4, 812.0, 167.0, 392.2], "z", CEIL + 0.5, 0.75, 1.2, MAT.add);
+    gableRoof([422.4, 812.0, 167.0 - GP, 392.2], "z", CEIL + 0.5, 0.75, 1.2, MAT.add);
   }
   if (fi === 0) {
   // ground: a lawn that follows the lot's fall from the street to the back
@@ -1126,7 +1138,7 @@
       var p = g.attributes.position; for (var i = 0; i < p.count; i++) p.setY(i, grade(p.getX(i), p.getZ(i)) + (lift || 0)); g.computeVertexNormals();
       var m = new T.Mesh(g, mat); m.receiveShadow = true; scene.add(m); return m;
     }
-    var hx1 = fx(412.7), hx2 = fx(822.0), hz1 = fz(167.0), hz2 = fz(691.8);
+    var hx1 = fx(412.7), hx2 = fx(822.0), hz1 = fz(167.0 - GP), hz2 = fz(691.8);
     var X1 = -45, X2 = 95, Z1 = -125, Z2 = 80;                                       // the surveyed area; flat beyond it
     // lawn only where there is lawn: it stops at the sidewalk, the street and the driveway, so nothing shows through them
     var D = LOT.drive;
@@ -1188,7 +1200,7 @@
     // curb appeal: white corner boards, mulched foundation beds either side of the walk with boxwoods,
     // hydrangeas at the corners, an arborvitae at each end
     var topY = FLOOR2 + CEIL + 0.5;
-    [[fx(412.7) - 0.05, fz(691.8) + 0.05], [fx(822.0) + 0.05, fz(691.8) + 0.05], [fx(412.7) - 0.05, fz(392.2) - 0.3], [fx(822.0) + 0.05, fz(392.2) - 0.3], [fx(422.4) - 0.05, fz(167.0) - 0.05], [fx(812.0) + 0.05, fz(167.0) - 0.05]].forEach(function (c) { var g0 = grade(c[0], c[1]); var cb = new T.Mesh(new T.BoxGeometry(0.5, topY - g0, 0.5), MAT.trim); cb.position.set(c[0], (topY + g0) / 2, c[1]); scene.add(cb); });
+    [[fx(412.7) - 0.05, fz(691.8) + 0.05], [fx(822.0) + 0.05, fz(691.8) + 0.05], [fx(412.7) - 0.05, fz(392.2) - 0.3], [fx(822.0) + 0.05, fz(392.2) - 0.3], [fx(422.4) - 0.05, fz(167.0 - GP) - 0.05], [fx(812.0) + 0.05, fz(167.0) - 0.05]].forEach(function (c) { var g0 = grade(c[0], c[1]); var cb = new T.Mesh(new T.BoxGeometry(0.5, topY - g0, 0.5), MAT.trim); cb.position.set(c[0], (topY + g0) / 2, c[1]); scene.add(cb); });
     var mulch = new T.MeshStandardMaterial({ color: 0x4a3324, roughness: 1 }), box2 = new T.MeshStandardMaterial({ color: 0x3f6b35, roughness: 1 }), hyd = new T.MeshStandardMaterial({ color: 0x5f8a4a, roughness: 1 }), arb = new T.MeshStandardMaterial({ color: 0x2f5a30, roughness: 1 });
     var fz0 = fz(691.8), sx1 = fx(570.0) - 1.0, sx2 = fx(658.0) + 1.0;
     ground(fx(412.7) - 0.6, sx1, fz0, fz0 + 3.6, mulch, 0.05); ground(sx2, fx(822.0) + 0.6, fz0, fz0 + 3.6, mulch, 0.05);
@@ -1236,7 +1248,7 @@
     fixLabel("Back yard: 54' from the deck to the rear line", 15.0, grade(15, -75) + 9.0, -75.0);
   })();
   // the rim of the first floor, between the basement walls and the floor above
-  [[412.7, 822.0, 392.2, 691.8], [422.4, 812.0, 167.0, 392.2]].forEach(function (r) {
+  [[412.7, 822.0, 392.2, 691.8], [422.4, 812.0, 167.0 - GP, 392.2]].forEach(function (r) {
     [[r[0], r[0] + 8, r[2], r[3]], [r[1] - 8, r[1], r[2], r[3]], [r[0], r[1], r[2], r[2] + 8], [r[0], r[1], r[3] - 8, r[3]]].forEach(function (b) { box(b, BASE + BASE_H - 0.05, -0.55, MAT.ext, { solid: false, shadow: false }); });
   });
   // posts under the porch and the deck, down to the ground
@@ -1287,8 +1299,8 @@
     post(fx(431.6) - 0.3, zS - 0.35, PORCH_H + 0.5); post(split, zS - 0.35, PORCH_H + 0.5);
     post(fx(796.5), zN + 0.35, 3.4);
     // the porch roof, and a ceiling under it
-    ceilings.push(slab([427.6, 634.8, 39.7, 167.0], PORCH_H + 0.6, floorMat("porchCeil", (634.8 - 427.6) * PT, (167 - 39.7) * PT, MAT.roof), 0.1));
-    ceilings.push(slab([427.6, 634.8, 39.7, 167.0], PORCH_H + 1.1, MAT.roof, 0.5, { shadow: true }));
+    ceilings.push(slab([427.6, 634.8, 39.7 - GP, 167.0 - GP], PORCH_H + 0.6, floorMat("porchCeil", (634.8 - 427.6) * PT, (167 - 39.7) * PT, MAT.roof), 0.1));
+    ceilings.push(slab([427.6, 634.8, 39.7 - GP, 167.0 - GP], PORCH_H + 1.1, MAT.roof, 0.5, { shadow: true }));
   })();
 
   // ---- fireplace ----
@@ -2029,7 +2041,7 @@
     var bench = new T.Mesh(new T.BoxGeometry(1.4, 1.5, shS - N - 0.2), new T.MeshStandardMaterial({ map: bt, roughness: 0.35 })); bench.position.set(E - 0.7, 0.75, (N + shS) / 2); scene.add(bench);
     colliders.push([E - 1.4, E, N, shS]);
     // glass on the open side: a fixed panel at the north end, a thin black frame top and bottom
-    var glLen = fz(187.0) - N;
+    var glLen = fz(187.0 - GP) - N;
     var gl = new T.Mesh(new T.BoxGeometry(0.06, 7, glLen), MAT.glass); gl.position.set(shW - 0.2, 3.5, N + glLen / 2); scene.add(gl);
     plank(0.1, 0.1, glLen, shW - 0.2, 7.0, N + glLen / 2, MAT.pull); plank(0.1, 0.1, glLen, shW - 0.2, 0.35, N + glLen / 2, MAT.pull);
     plank(0.1, 6.7, 0.1, shW - 0.2, 3.65, N + glLen - 0.05, MAT.pull);
@@ -2120,7 +2132,7 @@
     colliders.push([ax - 1.2, ax + 1.2, az - 1.2, az + 1.2]);
     // the owner's exercise bike in the north-west corner, facing down the room
     (function () {
-      var px = fx(458), z1 = fz(190), z2 = fz(245), cz = (z1 + z2) / 2, blk = MAT.fire, red = new T.MeshStandardMaterial({ color: 0xb42a2a, roughness: 0.6 });
+      var px = fx(458), z1 = fz(190 - GP), z2 = fz(245 - GP), cz = (z1 + z2) / 2, blk = MAT.fire, red = new T.MeshStandardMaterial({ color: 0xb42a2a, roughness: 0.6 });
       plank(1.9, 0.15, 0.25, px, 0.08, z1 + 0.3, blk); plank(1.9, 0.15, 0.25, px, 0.08, z2 - 0.3, blk); plank(0.2, 0.15, z2 - z1 - 0.4, px, 0.08, cz, blk);   // stabilisers and base
       var mast = new T.Mesh(new T.BoxGeometry(0.25, 3.2, 0.25), blk); mast.position.set(px, 1.75, z2 - 0.9); mast.rotation.x = 0.35; scene.add(mast);            // front mast, leaning forward
       var post = new T.Mesh(new T.BoxGeometry(0.2, 2.6, 0.2), blk); post.position.set(px, 1.5, z1 + 1.1); post.rotation.x = -0.2; scene.add(post);               // seat post
@@ -2386,7 +2398,7 @@
     var blk = MAT.fire, steel = new T.MeshStandardMaterial({ color: 0xc9cbcf, roughness: 0.3, metalness: 0.8 });
     // treadmill: deck, belt, motor hood, two uprights, a console with a screen, handrails
     // the owner's treadmill is 3' by 7': along the west wall, its front to the windows, short of the door
-    var tx = fx(672.8 - 36.2) + 1.65, tz1 = fz(192.2 - 9.2) + 0.4, tz2 = tz1 + 7.0, tcz = (tz1 + tz2) / 2, tl = tz2 - tz1;
+    var tx = fx(672.8 - 36.2) + 1.65, tz1 = fz(192.2 - 9.2 - GP) + 0.4, tz2 = tz1 + 7.0, tcz = (tz1 + tz2) / 2, tl = tz2 - tz1;
     plank(3.0, 0.5, tl, tx, 0.3, tcz, blk); plank(2.0, 0.06, tl - 1.2, tx, 0.58, tcz + 0.4, new T.MeshStandardMaterial({ color: 0x232323, roughness: 1 }));
     plank(3.0, 1.1, 1.3, tx, 0.85, tz1 + 0.65, blk);                                              // motor hood at the front
     [tx - 1.3, tx + 1.3].forEach(function (ux) { var up = new T.Mesh(new T.BoxGeometry(0.2, 4.3, 0.2), blk); up.position.set(ux, 2.7, tz1 + 0.9); up.rotation.x = -0.3; scene.add(up); var hr = plank(0.15, 0.15, 1.6, ux, 3.5, tz1 + 1.9, blk); });
@@ -2396,7 +2408,7 @@
     // squat rack against the west wall, its bar running north-south: two uprights on splayed feet, a pull-up bar, j-hooks, the bar with two plates a side
     // the rack: the bar is 7'-2" and the room is 10' deep, so it runs north-south along the east wall with
     // about 2' beyond each end for loading plates, and 2'-6" between its south end and the door wall
-    var rx = fx(832.3 - 36.2) - 1.5, rz = (fz(192.2 - 9.2) + fz(327.6 - 9.2)) / 2;   // centred in the room's depth
+    var rx = fx(832.3 - 36.2) - 1.5, rz = (fz(192.2 - 9.2 - GP) + fz(327.6 - 9.2)) / 2;   // centred in the room's depth
     [rz - 1.6, rz + 1.6].forEach(function (uz) {
       plank(0.25, 7.6, 0.25, rx, 3.8, uz, blk);
       plank(3.0, 0.15, 0.25, rx, 0.08, uz, blk); plank(0.25, 0.15, 0.9, rx - 1.4, 0.08, uz + (uz < rz ? -0.35 : 0.35), blk); plank(0.25, 0.15, 0.9, rx + 1.4, 0.08, uz + (uz < rz ? -0.35 : 0.35), blk);
@@ -2695,14 +2707,14 @@
   function inFootprint(x, z) {
     var front = curFloor === 0 ? 691.8 : 706.7;
     var inHouse = x >= fx(412.7) && x <= fx(822) && z >= fz(392.2) && z <= fz(front);
-    var inAdd = x >= fx(422.4) && x <= fx(812) && z >= fz(167) && z <= fz(392.2);
-    var inDeck = curFloor === 0 && x >= fx(427.6) && x <= fx(801.6) && z >= fz(39.7) && z <= fz(167);
+    var inAdd = x >= fx(422.4) && x <= fx(812) && z >= fz(167 - GP) && z <= fz(392.2);
+    var inDeck = curFloor === 0 && x >= fx(427.6) && x <= fx(801.6) && z >= fz(39.7 - GP) && z <= fz(167 - GP);
     return inHouse || inAdd || inDeck;
   }
   function inBaseFootprint(x, z) {
-    return (x >= fx(412.7) && x <= fx(822) && z >= fz(392.2) && z <= fz(691.8)) || (x >= fx(422.4) && x <= fx(812) && z >= fz(167) && z <= fz(392.2));
+    return (x >= fx(412.7) && x <= fx(822) && z >= fz(392.2) && z <= fz(691.8)) || (x >= fx(422.4) && x <= fx(812) && z >= fz(167 - GP) && z <= fz(392.2));
   }
-  function inDeckRegion(x, z) { return x >= fx(427.6) && x <= fx(801.6) && z >= fz(39.7) && z <= fz(167); }
+  function inDeckRegion(x, z) { return x >= fx(427.6) && x <= fx(801.6) && z >= fz(39.7 - GP) && z <= fz(167 - GP); }
   // The stair is a ramp for the feet: height follows how far up the run you
   // are, and halfway up you are on the other floor, for rooms and collisions.
   // Two runs share the box: up from the entry (south end) to the second floor,
@@ -2867,7 +2879,7 @@
     oc.strokeStyle = "rgba(181,70,43,0.95)"; oc.lineWidth = Math.max(1, W / 1400);
     var lines = FL().lines; oc.beginPath(); for (var i = 0; i < lines.length; i++) { var L = lines[i]; oc.moveTo(sx(L[0]), sy(L[1])); oc.lineTo(sx(L[2]), sy(L[3])); } oc.stroke();
   }
-  var PB = { x1: 396, x2: 840, y1: 30, y2: 770 };      // plan bounds in points
+  var PB = { x1: 396, x2: 840, y1: 30 - GP, y2: 770 };      // plan bounds in points
   function drawPlan(ctx, W, H, opts) {
     var sx = W / (PB.x2 - PB.x1), sy = H / (PB.y2 - PB.y1), s = Math.min(sx, sy);
     var ox = (W - (PB.x2 - PB.x1) * s) / 2, oy = (H - (PB.y2 - PB.y1) * s) / 2;
@@ -2876,7 +2888,7 @@
     ctx.fillStyle = "#f3efe6"; ctx.fillRect(0, 0, W, H);
     // floors
     var fl = FL();
-    ctx.fillStyle = "#e6dccb"; [[422.4, 812.0, 167.0, 392.2], [412.7, 822.0, 392.2, curFloor === 1 ? 706.7 : 691.8]].forEach(function (r) { ctx.fillRect(px(r[0]), py(r[2]), (r[1] - r[0]) * s, (r[3] - r[2]) * s); });
+    ctx.fillStyle = "#e6dccb"; [[422.4, 812.0, 167.0 - GP, 392.2], [412.7, 822.0, 392.2, curFloor === 1 ? 706.7 : 691.8]].forEach(function (r) { ctx.fillRect(px(r[0]), py(r[2]), (r[1] - r[0]) * s, (r[3] - r[2]) * s); });
     if (curFloor === 0) { ctx.fillStyle = "#d8c7ad"; var d = DECK.r; ctx.fillRect(px(d[0]), py(d[2]), (d[1] - d[0]) * s, (d[3] - d[2]) * s); }
     if (opts.draw) {
       ctx.strokeStyle = "rgba(181,70,43,0.85)"; ctx.lineWidth = Math.max(0.6, 0.9 * s);
@@ -2908,7 +2920,7 @@
   var mRoomName = document.getElementById("mRoomName"), mRoomDims = document.getElementById("mRoomDims");
   var hudName = document.getElementById("roomName"), hudDims = document.getElementById("roomDims"), hudSub = document.getElementById("roomSub"), hudAhead = document.getElementById("roomAhead");
   var clock = new T.Clock(), moved = false, bobT = 0, camY = EYE, lastRoom = null, frameNo = 0;
-  var UNDER_DECK = { n: "Under the deck", dims: ft(fx(801.6) - fx(427.6)) + " \u00d7 " + ft(fz(167.0) - fz(39.7)), label: "covered outdoor lounge, at basement grade", outside: true };
+  var UNDER_DECK = { n: "Under the deck", dims: ft(fx(801.6) - fx(427.6)) + " \u00d7 " + ft(fz(167.0 - GP) - fz(39.7 - GP)), label: "covered outdoor lounge, at basement grade", outside: true };
   function resize() {
     var w = window.innerWidth, h = window.innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; applyLens();
     var pw = (PB.x2 - PB.x1) * PT, ph = (PB.y2 - PB.y1) * PT, ar = w / h; var hw = Math.max(pw / 2, ph / 2 * ar) * 1.04, hh = hw / ar;

@@ -45,6 +45,60 @@ Read back from the model, against the sheet's labels:
 The entry reads 8'-1" rather than 8'-6" because the model takes the stair's
 bottom riser as the room's edge; the sheet's 8'-6" runs under the stair.
 
+## Two more feet on the addition
+
+The owner asked the architect on 2026-10-05 for two more feet of depth on the
+addition, and this branch is that change ahead of a new drawing set. One
+constant carries it:
+
+```js
+var GROW = 2.0;        // feet added to the addition's depth
+var GP = GROW / PT;    // the same in the sheet's points, 27
+```
+
+Every coordinate that moves is written as the sheet's own number minus `GP`,
+so it still shows what PR-01 drew and one line moves the whole thing when the
+architect comes back with a different number.
+
+What moves and what stretches:
+
+- The rear wall of the addition moves north bodily on all three levels, with
+  its windows and the slider.
+- The side walls, the floor, the ceiling, the roof and every room in the
+  addition only reach that line at one end, so they stretch.
+- The deck and the screened porch move north bodily and keep their full
+  9'-5", along with the deck stair, the rail, the screen door, the dining
+  set, the string lights and the porch roof.
+- The pantry at the rear wall moves bodily rather than stretching: it is a
+  24" cabinet, not a room.
+- The lawn stops at the house, so its north edge follows the wall. The ground
+  itself is the surveyor's 170 spot elevations and does not move: the terrain
+  does not care how big the house is.
+- `PLAN_LINES` is the sheet's own vectors and is **not** touched, so the plan
+  view now draws the model two feet proud of the drawing underneath. That is
+  the point: the overlay shows the delta against the drawn set.
+
+Depths before and after:
+
+| room | on the sheet | with the 2' |
+|---|---|---|
+| Kitchen / Dining | 15'-11" | 17'-11" |
+| Primary bedroom | 15'-11" | 17'-11" |
+| Primary bath | 8'-7" | 10'-7" |
+| Rec room | 15'-8" | 17'-8" |
+| Gym | 10'-0" | 12'-0" |
+
+### What this costs in approvals
+
+The deck keeps its depth, so the whole footprint moves two feet toward the
+rear lot line. Rear setback and lot coverage both change, and the lot is
+already undersized for S-15 at 7,919 sf against 15,000, which is why the
+addition needs a ZBA special permit under 7.3.2 in the first place. The two
+feet have to be in that package, not added after it. The other version -- the
+addition eating into the deck, so the footprint does not move at all -- is
+`GROW` applied to the rear wall but not the deck, and worth pricing against
+the setback answer before the drawings are redone.
+
 ## The second floor
 
 Sheet PR-02 is drawn 9 points higher and 2.3 points to the left of PR-01.
