@@ -386,6 +386,75 @@ warm-veined white quartz, the Calacatta look, on the perimeter and the
 island: it ties to the coffee bar's marble and warms the white cabinets
 against the oak floor, and it is quartz, not marble.
 
+## The kitchen seam, in four versions
+
+The button on the right, or the **C** key, cycles that corner:
+
+- **Coffee bar in** -- the alcove as the sheet draws it.
+- **Alcove out** -- gone, nothing in the opening. The default.
+- **Beam only** -- gone, one beam over the whole opening, no column.
+- **Beam + column** -- gone, propped at mid-span with a shallower beam.
+
+The second is the look and nothing more, which is why the third exists.
+The alcove's back wall sits on the old rear wall line, 390.1 to 397.4 on the
+sheet, and on PR-02 that same line carries a solid wall from 412.7 to 638.8:
+the second floor's rear wall stands on it. The first floor is already open
+from 458.5 to 692.9 beside the alcove, so a beam is in that line somewhere
+regardless, propped mid-span by the alcove wall. Take the wall out and the
+beam has the whole 17'-4" to carry in one go. That is the real cost of the
+open kitchen, and the third version is what it looks like: 14" deep, painted
+like the trim, bearing buried in the wall at either end so nothing stands in
+the room. The depth is a guess until the engineer sizes it; everything else
+on the sheet is not.
+
+The fourth version is the cheap way: a post at mid-span halves the span, and
+the beam comes down from 14" to 9-1/4", barely a header. The post stands at
+575.7 on the sheet, which is where mid-span falls, not where one could
+actually land -- that depends on the basement, and the model puts the
+mechanical room's walls near this line but not under this point. It is drawn
+to answer one question: whether a post in the middle of the sightline is
+tolerable. The reason to look at it is that it may also save a footing, since
+each end of the clear-span beam lands a large point load on footings that were
+poured for a distributed one.
+
+### How it switches
+
+The alcove's pieces are tagged `coffee: true` in `WALLS` and `STUFF`. The main
+build loops skip them (`notSeam`), and a section at the end of the first floor
+builds each version into its own `T.Group` with its own collider list and its
+own boxes for the range finder. `applySeam()` then shows one group, hides the
+others and swaps which lists the floor hands out.
+
+The first cut rebuilt all three floors on every press instead, which meant
+re-cloning every floor slab's texture, every band of siding and every room
+label, plus the lawn, the roofs and the survey ground -- a visible stall each
+time. Nothing is rebuilt now. `rebuild()` is still there for the ceiling
+height, and it now frees the materials and textures a build makes as well as
+the geometry; it used to keep them, so each call left a few hundred textures
+on the GPU.
+
+## The basement stair's door
+
+A white door, kept shut, at the head of the basement stair where it opens off
+the hall -- the 3'-0" the stair box leaves clear at its north end, 457.4 to
+462.5 on the sheet. It is `closed: true` for the shut leaf, `white: true` to
+paint it the trim colour rather than the oak every other door uses, and
+`thru: true` so no collider is pushed: the stair down is behind it and has to
+stay walkable, so you walk through the door. It is the only shut door in the
+house you can pass through; the attic stair's door stops you.
+
+## The dining table
+
+The sheet draws a 9'-6" x 3'-2" table. The model now has the owner's own,
+**7'-0" x 3'-6"**, on the same centre the sheet's table had so the room reads
+the same around it -- this is to see how the real table sits in the new
+kitchen, not a change to the drawing.
+
+Chairs a side follow the length rather than being fixed at four: one per 2'-2"
+of place setting, so three a side here and four again if the table goes back
+to the sheet's size. Only the top is a collider, so the chairs never block the
+walk; shrinking the table only opens the room up.
+
 ## The fridge
 
 The cabinet plan draws a 36" fridge with a 24" drawer base beside it, and
@@ -396,8 +465,8 @@ a one-line change if the plan is revised.
 ## Keys
 
 W A S D or the arrow keys walk, Q and E turn, R and F (or Page Up and Page
-Down) look up and down, Shift hurries, P is the plan view, Esc releases the
-mouse. The mouse is optional: everything can be done from the keyboard, and
+Down) look up and down, Shift hurries, P is the plan view, C cycles the kitchen
+seam (alcove, out, beam, beam + column), Esc releases the mouse. The mouse is optional: everything can be done from the keyboard, and
 on a phone there is a walking pad and drag to look.
 
 ## What was assumed
