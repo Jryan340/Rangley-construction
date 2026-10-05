@@ -300,18 +300,19 @@
     // east run and 40" off the seam run. Finishes, chairs and counters as before.
     { n: "island", r: [686.4, 723.4, 235.2, 319.6], h: 3.0, m: "stone", island: true },
     { n: "counter", r: [774.6, 801.6, 201.1, 351.7], h: 3.0, m: "cab", eastRun: true },
-    { n: "pantry", r: [774.6, 801.6, 177.5 - GP, 201.1 - GP], h: 7.0, m: "cab", pantry: true, face: "w" },   // a 24" cabinet: it moves with the wall rather than stretching
-    // the deeper addition left exactly 2'-0" of wall between the pantry and the
-    // head of the counter run; a second tall cabinet fills it, labelled once for the pair
-    { n: "pantry 2", r: [774.6, 801.6, 201.1 - GP, 201.1], h: 7.0, m: "cab", pantry: true, face: "w", noLabel: true },
+    // one pantry over the whole run: the sheet's 24" cabinet plus the 2'-0" the
+    // deeper addition opened up behind it, so 3'-9" on a pair of doors
+    { n: "pantry", r: [774.6, 801.6, 177.5 - GP, 201.1], h: 7.0, m: "cab", pantry: true, face: "w" },
     { n: "drawers", r: [733.4, 760.4, 365.2, 392.2], h: 3.0, m: "cab", drawerBase: true },
     { n: "corner", r: [760.4, 801.6, 351.7, 392.2], h: 3.0, m: "cab", cornerBase: true },
     // the sheet draws a 36" fridge and a 36" pantry in this 8'-0" run; the owner wants a big fridge, so it is a 48" built-in and the pantry is a 24" cabinet
     { n: "fridge", r: [692.9, 733.4, 361.9, 392.2], h: 7.0, m: "steel", fridge: true },
     { n: "coffee bar", r: [552.4, 634.9, 364.0, 390.1], h: 3.0, m: "cab", coffee: true },
-    // the owner's own table, 7'-0" x 3'-6", kept on the centre the sheet's
-    // table had (543.05, 278.55) so the room reads the same around it
-    { n: "table", r: [495.8, 590.3, 254.9, 302.2], h: 2.5, m: "wood", dining: true },
+    // the owner's own table, 7'-0" x 3'-6". The sheet's table was centred on
+    // (543.05, 278.55); with a shorter table and two more feet of room it sits
+    // centred in the dining half instead -- between the west wall and the
+    // island, and between the rear wall and the seam -- which is (559.6, 271.35)
+    { n: "table", r: [512.4, 606.9, 247.7, 295.0], h: 2.5, m: "wood", dining: true },
     { n: "runner", r: [645.0, 680.0, 406.0, 569.0], h: 0.04, m: "rug", rug: true },
     { n: "couch", r: [540.0, 586.0, 478.0, 602.0], h: 2.6, m: "cloth", couch: true },
     { n: "living", r: [419.5, 587.5, 399.5, 685.1], living: true },
@@ -1524,7 +1525,7 @@
       pl2.position.set(cx + dx * 0.11 + (alongX ? off : 0), py, cz + dz * 0.11 + (alongX ? 0 : off)); scene.add(pl2);
     }
   }
-  function buildPantry(r, face, noLabel) {
+  function buildPantry(r, face) {
     var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]), cx = (x1 + x2) / 2, cz = (zN + zS) / 2, w = x2 - x1, d = zS - zN;
     box(r, 0, 7.0, MAT.shaker);
     if (face === "w") {
@@ -1534,7 +1535,7 @@
       shakerDoor(cx - w / 4, 3.55, zN, w / 2 - 0.08, 6.7, "n", MAT.shaker, MAT.shakerIn, { vert: true, y: 3.4, off: w / 4 - 0.25 });
       shakerDoor(cx + w / 4, 3.55, zN, w / 2 - 0.08, 6.7, "n", MAT.shaker, MAT.shakerIn, { vert: true, y: 3.4, off: -(w / 4 - 0.25) });
     }
-    if (!noLabel) fixLabel("Pantry", cx, 7.6, cz);
+    fixLabel("Pantry", cx, 7.6, cz);
   }
   // A base of drawers on the seam wall, quartz top, three drawer fronts facing the kitchen.
   function buildDrawerBase(r) {
@@ -2524,7 +2525,7 @@
     if (s.dining) { buildDining(s.r); return; }
     if (s.couch) { buildCouch(s.r); return; }
     if (s.fridge) { buildFridge(s.r); return; }
-    if (s.pantry) { buildPantry(s.r, s.face, s.noLabel); return; }
+    if (s.pantry) { buildPantry(s.r, s.face); return; }
     if (s.drawerBase) { buildDrawerBase(s.r); return; }
     if (s.cornerBase) { buildCornerBase(s.r); return; }
     if (s.coffee) { buildCoffee(s.r); return; }
@@ -2567,7 +2568,7 @@
   [[470, 215], [560, 215], [470, 330], [560, 330], [650, 215], [650, 340], [760, 215], [760, 330]].forEach(function (p) {
     var can = new T.Mesh(new T.CylinderGeometry(0.28, 0.28, 0.02, 16), MAT.bulb); can.position.set(fx(p[0]), CEIL - 0.015, fz(p[1])); scene.add(can);
   });
-  lamp(fx(520), fz(280), CEIL - 0.5, 0.7); lamp(fx(640), fz(630), CEIL - 0.6, 0.7);
+  lamp(fx(559.6), fz(271.35), CEIL - 0.5, 0.7); lamp(fx(640), fz(630), CEIL - 0.6, 0.7);
   lamp(fx(754), fz(440), CEIL - 0.6, 0.35); lamp(fx(754), fz(626), CEIL - 0.6, 0.6); lamp(fx(660), fz(470), CEIL - 0.6, 0.5);
 
   }   // end of first-floor lamps

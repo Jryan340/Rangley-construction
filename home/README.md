@@ -71,9 +71,9 @@ What moves and what stretches:
   set, the string lights and the porch roof.
 - The pantry at the rear wall moves bodily rather than stretching: it is a
   24" cabinet, not a room. That left exactly 2'-0" of bare wall between it
-  and the head of the counter run, so a second tall cabinet fills it and the
-  east wall is continuous again from the rear wall to the corner base. The
-  pair carries one label.
+  and the head of the counter run, so the pantry takes the whole run instead
+  and is one 3'-9" unit on a pair of doors, 2'-0" deep and 7'-0" tall. The
+  east wall is continuous from the rear wall to the corner base.
 - The shower in the primary bath stands against the rear wall, so it moves
   with it and stays 5'-0" deep; the two feet show up as floor in the bath.
 - The deck's furniture moves with the deck. Left behind, the string-light
@@ -508,9 +508,15 @@ house you can pass through; the attic stair's door stops you.
 ## The dining table
 
 The sheet draws a 9'-6" x 3'-2" table. The model now has the owner's own,
-**7'-0" x 3'-6"**, on the same centre the sheet's table had so the room reads
-the same around it -- this is to see how the real table sits in the new
-kitchen, not a change to the drawing.
+**7'-0" x 3'-6"** -- to see how the real table sits in the new kitchen, not a
+change to the drawing.
+
+The sheet centred its table on (543.05, 278.55). A shorter table in a room
+two feet deeper wants recentring, so it now sits in the middle of the dining
+half -- between the west wall and the island, and between the rear wall and
+the seam -- at (559.6, 271.35). That gives 5'-11" each side to the wall and
+the island, and 5'-4" and 5'-3" fore and aft with the chairs pulled out. The
+light over it moved with it.
 
 Chairs a side follow the length rather than being fixed at four: one per 2'-2"
 of place setting, so three a side here and four again if the table goes back
