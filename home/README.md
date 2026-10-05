@@ -70,7 +70,15 @@ What moves and what stretches:
   9'-5", along with the deck stair, the rail, the screen door, the dining
   set, the string lights and the porch roof.
 - The pantry at the rear wall moves bodily rather than stretching: it is a
-  24" cabinet, not a room.
+  24" cabinet, not a room. That left exactly 2'-0" of bare wall between it
+  and the head of the counter run, so a second tall cabinet fills it and the
+  east wall is continuous again from the rear wall to the corner base. The
+  pair carries one label.
+- The shower in the primary bath stands against the rear wall, so it moves
+  with it and stays 5'-0" deep; the two feet show up as floor in the bath.
+- The deck's furniture moves with the deck. Left behind, the string-light
+  posts and the striped rug ended up two feet inside the kitchen, standing
+  up through the floor at the rear wall -- which is how they were spotted.
 - The lawn stops at the house, so its north edge follows the wall. The ground
   itself is the surveyor's 170 spot elevations and does not move: the terrain
   does not care how big the house is.
