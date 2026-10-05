@@ -442,8 +442,12 @@ east wall a 24" pantry at the north end, bases, the 30" range and its plaster
 hood between the two windows, more bases and a 36" corner cabinet, with no
 uppers on that wall; along the seam wall a 36" fridge with a cabinet over it,
 a 24" drawer base and the corner, with uppers above; the island (18" base,
-33" sink base, 24" dishwasher, 24" deep plus the seating overhang) 42" off
-the east run and 40" off the seam run, stools on the dining side. The tops are a
+33" sink base, 24" dishwasher, 24" deep plus the seating overhang), stools on
+the dining side. The cabinet plan set it 42" off the east run and 40" off the
+seam run; the east aisle still measures 3'-10", but the addition's two extra
+feet all landed north of the island, so it moves north to sit centred between
+the rear wall and the seam run, 4'-8" each way, rather than 6'-3" against
+3'-2". The tops are a
 warm-veined white quartz, the Calacatta look, on the perimeter and the
 island: it ties to the coffee bar's marble and warms the white cabinets
 against the oak floor, and it is quartz, not marble.
