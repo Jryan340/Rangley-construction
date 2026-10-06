@@ -186,11 +186,10 @@
   // Heights are not on the sheet. Everything the eye uses as a ruler is set to
   // the standard size: 6'-8" doors, window heads level with the door heads,
   // 36" counters, 7-1/2" risers. Ceilings are a guess you can change on the page.
-  var CEIL = 8.0;                                      // the owner's default, 2026-10-06; was 9'-0"
+  var CEIL = 9.0;
   var WIN = { sill: 2.6, head: 6.667 };                // existing house
-  var AWIN = { sill: 3.0, head: 7.333 };               // addition, a taller sash: its head is 8" under the ceiling
+  var AWIN = { sill: 3.0, head: 7.333 };               // addition, a taller sash under a 9' ceiling
   var DOOR_H = 6.667;
-  function doorH(w) { return w.h || DOOR_H; }          // a feature door can stand taller than 6'-8"
   try { var savedCeil = parseFloat(localStorage.getItem("ts_ceil")); if (savedCeil >= 7.5 && savedCeil <= 10.5) CEIL = savedCeil; } catch (e) {}
 
   // The coffee bar alcove can be taken out to see the kitchen run straight
@@ -207,7 +206,7 @@
   // toggle crawl. The main build loops always skip the tagged pieces, since
   // the seam section builds them itself.
   var SEAMS = ["in", "open", "beam", "column"];
-  var seam = "in";                                     // the alcove in, the owner's default from 2026-10-06
+  var seam = "open";                                   // out is the default the owner asked for
   try { var sv = localStorage.getItem("ts_seam"); if (SEAMS.indexOf(sv) >= 0) seam = sv; } catch (e) {}
   function notSeam(o) { return !o.coffee; }            // for the build loops
   function seamDrawn(o) { return !o.coffee || seam === "in"; }   // for the plan view
@@ -230,8 +229,7 @@
     { r: [755.2, 822.0, 685.1, 691.8], k: "ext" },
     // ---- the old rear wall, now the seam between house and addition ----
     { r: [412.7, 458.5, 392.2, 399.5], k: "ext" },                       // opening 458.5 to 692.9 into the kitchen
-    { r: [692.9, 732.6, 392.2, 399.5], k: "ext", door: true, leaf: false, h: 7.0 },   // the pantry runs through the seam, on a header
-    { r: [732.6, 822.0, 392.2, 399.5], k: "ext" },
+    { r: [692.9, 822.0, 392.2, 399.5], k: "ext" },
     // ---- addition: left (west) ----
     { r: [422.4, 432.8, 167.0 - GP, 201.4], k: "add" }, { r: [422.4, 432.8, 201.4, 235.2], k: "add", win: AWIN },
     { r: [422.4, 432.8, 235.2, 262.3], k: "add" }, { r: [422.4, 432.8, 262.3, 296.2], k: "add", win: AWIN },
@@ -253,21 +251,14 @@
     // box leaves open there. White like the trim, kept shut, and with no collider:
     // the stair down is behind it and has to stay walkable.
     { r: [593.2, 634.1, 457.4, 462.5], k: "int", door: true, closed: true, white: true, thru: true },
-    // hall | bath. The first floor loses its shower and the corner becomes a
-    // walk-in pantry, entered from the hall through a glazed door, so this wall
-    // is split for it: 2'-6" of opening centred on the old shower.
-    { r: [687.8, 692.9, 361.9, 484.1], k: "int" },                       // hall | pantry and bath, solid again: the pantry opens off the kitchen
+    { r: [687.8, 692.9, 361.9, 484.1], k: "int" },                       // hall | bath, runs up as the pantry end wall
     { r: [687.8, 692.9, 531.4, 685.1], k: "int" },                       // hall | closet and study
-    // The pantry steps forward into the kitchen to sit flush with the drawer
-    // base beside it, which buys it two more feet of depth; its glazed door is
-    // in that face. The old shower partition's line is now pantry | bathroom.
-    { r: [692.9, 732.6, 365.2, 370.3], k: "int", door: true, closed: true, lite: true, thru: true, h: 7.0 },
-    { r: [732.6, 737.6, 365.2, 478.9], k: "int" },
     { r: [692.9, 770.2, 478.9, 484.1], k: "int" }, { r: [770.2, 815.2, 478.9, 484.1], k: "int", door: true, hinge: "e", swing: -1, leaf: false },
     { r: [755.5, 770.2, 531.4, 536.4], k: "int" }, { r: [770.2, 815.2, 531.4, 536.4], k: "int", door: true, hinge: "e", swing: 1, leaf: false },
     { r: [692.9, 755.5, 531.4, 536.4], k: "int", door: true, dbl: true, swing: -1 },     // closet double doors
     { r: [692.9, 758.9, 563.5, 568.6], k: "int" },                       // closet | study
     { r: [758.9, 763.9, 536.4, 568.6], k: "int" },                       // closet east side
+    { r: [732.6, 737.6, 399.5, 440.5], k: "int" },                       // shower | toilet
     // the coffee bar alcove at the kitchen seam: a back wall on the old wall
     // line and two short returns, drawn on the sheet at wall weight. Tagged
     // `coffee` so the "Coffee bar out" button can take the whole alcove away.
@@ -292,10 +283,7 @@
     { n: "Living", r: [419.5, 587.5, 399.5, 685.1], label: "21' x 12'-6\" on the sheet", paint: "acacia" },
     { n: "Hall", r: [593.2, 687.8, 399.5, 576.0], paint: "illusion" },
     { n: "Entry", r: [593.2, 687.8, 576.0, 685.1], label: "7' x 8'-6\" on the sheet", paint: "illusion" },
-    // the sheet's first-floor bathroom, split: the pantry takes the west and
-    // opens off the kitchen, the powder room keeps the east and the vestibule door
-    { n: "Pantry", r: [692.9, 732.6, 365.2, 478.9], label: "off the kitchen, flush with the cabinets" },
-    { n: "Bathroom", r: [737.6, 815.2, 399.5, 478.9], label: "the sheet's bathroom, less the shower" },
+    { n: "Bathroom", r: [692.9, 815.2, 399.5, 478.9], label: "9' x 6' on the sheet" },
     { n: "Vestibule", r: [692.9, 815.2, 484.1, 531.4], paint: "illusion" },
     { n: "Closet", r: [692.9, 758.9, 536.4, 563.5] },
     { n: "Study", r: [692.9, 815.2, 536.4, 685.1], label: "9' x 8'-6\" on the sheet", dimsR: [692.9, 815.2, 568.6, 685.1] },
@@ -316,13 +304,13 @@
     // north to sit centred between the rear wall and the seam run: 4'-8" each way.
     { n: "island", r: [686.4, 723.4, 214.0, 298.4], h: 3.0, m: "stone", island: true },
     { n: "counter", r: [774.6, 801.6, 201.1, 351.7], h: 3.0, m: "cab", eastRun: true },
-    // The fridge moves here, into the tall slot at the head of the east run that
-    // the pantry cabinet had: 3'-9" wide and 2'-0" deep, which is built-in depth.
-    // The cabinet itself goes -- the walk-in off the kitchen replaces it.
-    { n: "fridge", r: [774.6, 801.6, 177.5 - GP, 201.1], h: 7.0, m: "steel", fridge: true, face: "w" },
-    { n: "drawers", r: [737.6, 760.4, 365.2, 392.2], h: 3.0, m: "cab", drawerBase: true },
-    { n: "seam uppers", r: [737.6, 801.6, 365.2, 392.2], seamUppers: true },
+    // one pantry over the whole run: the sheet's 24" cabinet plus the 2'-0" the
+    // deeper addition opened up behind it, so 3'-9" on a pair of doors
+    { n: "pantry", r: [774.6, 801.6, 177.5 - GP, 201.1], h: 7.0, m: "cab", pantry: true, face: "w" },
+    { n: "drawers", r: [733.4, 760.4, 365.2, 392.2], h: 3.0, m: "cab", drawerBase: true },
     { n: "corner", r: [760.4, 801.6, 351.7, 392.2], h: 3.0, m: "cab", cornerBase: true },
+    // the sheet draws a 36" fridge and a 36" pantry in this 8'-0" run; the owner wants a big fridge, so it is a 48" built-in and the pantry is a 24" cabinet
+    { n: "fridge", r: [692.9, 733.4, 361.9, 392.2], h: 7.0, m: "steel", fridge: true },
     { n: "coffee bar", r: [552.4, 634.9, 364.0, 390.1], h: 3.0, m: "cab", coffee: true },
     // the owner's own table, 7'-0" x 3'-6". The sheet's table was centred on
     // (543.05, 278.55); with a shorter table and two more feet of room it sits
@@ -335,8 +323,7 @@
 
     { n: "console", r: [640.7, 684.0, 666.0, 681.0], console: true },
     { n: "study", r: [692.9, 815.2, 568.6, 685.1], study: true },
-    { n: "larder", r: [692.9, 732.6, 365.2, 478.9], larder: true },
-    { n: "bath", r: [737.6, 815.2, 399.5, 478.9], bath: true },
+    { n: "bath", r: [692.9, 815.2, 399.5, 478.9], bath: true },
     { n: "porch", r: [431.6, 630.8, 43.7 - GP, 167.0 - GP], porch: true },
     // the sheet's deck sofa sat just east of the split, which now puts it behind
     // the screen door, so it moves to the east rail
@@ -839,9 +826,6 @@
     trim: new T.MeshStandardMaterial({ color: 0xf7f4ee, roughness: 0.7 }),
     shaker: new T.MeshStandardMaterial({ color: 0xf2efe9, roughness: 0.6 }),
     shakerIn: new T.MeshStandardMaterial({ color: 0xe6e2da, roughness: 0.7 }),
-    larder: new T.MeshStandardMaterial({ color: 0xc6bba9, roughness: 0.72 }),          // the pantry's greige cabinets
-    larderIn: new T.MeshStandardMaterial({ color: 0xbbae9b, roughness: 0.78 }),
-    palOak: new T.MeshStandardMaterial({ color: 0xc49a6c, roughness: 0.65 }),          // its floating shelves
     islandDk: new T.MeshStandardMaterial({ color: 0x22262b, roughness: 0.55 }),
     islandIn: new T.MeshStandardMaterial({ color: 0x2d3237, roughness: 0.6 }),
     quartz: new T.MeshStandardMaterial({ map: veinedQuartzTexture(), color: 0xffffff, roughness: 0.28 }),   // warm-veined white quartz
@@ -976,7 +960,7 @@
     if (w.k === "guard") { box(r, 0, 3.0, MAT.int); var gx1 = fx(r[0]), gx2 = fx(r[1]), gz1 = fz(r[2]), gz2 = fz(r[3]); var cap = new T.Mesh(new T.BoxGeometry(gx2 - gx1 + 0.2, 0.2, gz2 - gz1 + 0.2), MAT.pull); cap.position.set((gx1 + gx2) / 2, 3.1, (gz1 + gz2) / 2); scene.add(cap); return; }
     if (!w.door && !w.slider) baseboard(r);
     var seam = w.r[2] >= 391.0 && w.r[3] <= 400.5;      // the old rear wall: an exterior wall once, now the seam between house and addition
-    if ((w.k === "ext" || w.k === "add") && !seam) { if (w.win) { cladOut(w, 0, w.win.sill); cladOut(w, w.win.head, CEIL); } else if (w.door) cladOut(w, doorH(w), CEIL); else if (!w.slider) cladOut(w, 0, CEIL); }
+    if ((w.k === "ext" || w.k === "add") && !seam) { if (w.win) { cladOut(w, 0, w.win.sill); cladOut(w, w.win.head, CEIL); } else if (w.door) cladOut(w, DOOR_H, CEIL); else if (!w.slider) cladOut(w, 0, CEIL); }
     if (w.win) {
       box(r, 0, w.win.sill, mat); box(r, w.win.head, CEIL, mat);
       glassIn(r, w.win.sill, w.win.head);
@@ -984,7 +968,7 @@
       box(r, 8.0, CEIL, mat, { solid: false });          // a header is above your head, not in your way
       slider(r);
     } else if (w.door) {
-      box(r, doorH(w), CEIL, mat, { solid: false });
+      box(r, DOOR_H, CEIL, mat, { solid: false });
       doorIn(w);
     } else box(r, 0, CEIL, mat);
   });
@@ -1037,70 +1021,37 @@
   }
   function doorIn(w) {
     var r = w.r, x1 = fx(r[0]), x2 = fx(r[1]), z1 = fz(r[2]), z2 = fz(r[3]);
-    var wide = x2 - x1, t = z2 - z1, cz = (z1 + z2) / 2, DH = doorH(w);
+    var wide = x2 - x1, t = z2 - z1, cz = (z1 + z2) / 2;
     // An open doorway gets nothing but its opening: no jambs, no leaf. Only the
     // closets' double doors are drawn.
     if (w.leaf === false) return;
-    // Jambs stand at the two ends of the opening, whichever way the wall runs.
-    // Written for an east-west wall only, they came out in a north-south one as
-    // two black slabs filling the doorway.
-    if (t > wide) [z1 + 0.1, z2 - 0.1].forEach(function (jz) { var j = new T.Mesh(new T.BoxGeometry(wide + 0.15, DH, 0.2), MAT.frame); j.position.set((x1 + x2) / 2, DH / 2, jz); scene.add(j); });
-    else [x1 + 0.1, x2 - 0.1].forEach(function (jx) { var j = new T.Mesh(new T.BoxGeometry(0.2, DH, t + 0.15), MAT.frame); j.position.set(jx, DH / 2, cz); scene.add(j); });
+    [x1 + 0.1, x2 - 0.1].forEach(function (jx) { var j = new T.Mesh(new T.BoxGeometry(0.2, DOOR_H, t + 0.15), MAT.frame); j.position.set(jx, DOOR_H / 2, cz); scene.add(j); });
     if (w.dbl) {
       // The closet's pair of doors, drawn closed. Open, the west leaf would stand
       // in the hall opening, which is exactly where the closet's west jamb sits.
       [[x1 + 0.2, x1 + wide / 2 - 0.03], [x1 + wide / 2 + 0.03, x2 - 0.2]].forEach(function (p) {
-        var leaf = new T.Mesh(new T.BoxGeometry(p[1] - p[0], DH - 0.1, 0.15), MAT.door);
-        leaf.position.set((p[0] + p[1]) / 2, DH / 2, cz); scene.add(leaf);
+        var leaf = new T.Mesh(new T.BoxGeometry(p[1] - p[0], DOOR_H - 0.1, 0.15), MAT.door);
+        leaf.position.set((p[0] + p[1]) / 2, DOOR_H / 2, cz); scene.add(leaf);
         var knob = new T.Mesh(new T.SphereGeometry(0.07, 10, 8), MAT.steel); knob.position.set(p[0] < x1 + wide / 2 ? p[1] - 0.3 : p[0] + 0.3, 3.1, cz + 0.12); scene.add(knob);
       });
       colliders.push([x1, x2, Math.min(z1, z2), Math.max(z1, z2)]);
       return;
     }
     if (w.leaf === false) return;                                // an open doorway: jambs and header only
-    // A half-glass door: a wooden stile-and-rail frame with a divided light over
-    // a solid lower panel, after the reference the owner gave for the pantry.
-    // Built in the leaf's own width-and-height axes, then laid into the wall.
-    function liteDoor(alongZ, cxm, cz, span, mat) {
-      var LW = span - 0.1, LH = DH - 0.05, TH = 0.15;
-      function piece(u0, u1, v0, v1, m, th) {
-        var w = u1 - u0, h = v1 - v0; if (w <= 0.002 || h <= 0.002) return;
-        var t = th || TH, uc = (u0 + u1) / 2 - LW / 2;
-        var g = new T.Mesh(new T.BoxGeometry(alongZ ? t : w, h, alongZ ? w : t), m);
-        g.position.set(alongZ ? cxm : cxm + uc, (v0 + v1) / 2, alongZ ? cz + uc : cz);   // cxm, cz are this leaf's centre
-        g.castShadow = true; scene.add(g);
-      }
-      var stile = 0.36, botR = 1.2, lockR = 0.28, topR = 0.26;
-      var gU0 = stile, gU1 = LW - stile, gV0 = botR + lockR, gV1 = LH - topR;
-      piece(0, stile, 0, LH, mat); piece(LW - stile, LW, 0, LH, mat);          // stiles
-      piece(stile, gU1, 0, botR, mat);                                          // the solid lower panel
-      piece(stile, gU1, botR, gV0, mat);                                        // lock rail
-      piece(stile, gU1, gV1, LH, mat);                                          // top rail
-      piece(gU0, gU1, gV0, gV1, MAT.glass, 0.04);                               // the light
-      var gw = gU1 - gU0, gh = gV1 - gV0;                                       // muntins, on roughly square lites
-      var cols = Math.max(1, Math.round(gw / 0.55)), rows = Math.max(1, Math.round(gh / 1.0));
-      for (var c = 1; c < cols; c++) { var u = gU0 + gw * c / cols; piece(u - 0.03, u + 0.03, gV0, gV1, mat, 0.085); }
-      for (var rr = 1; rr < rows; rr++) { var v = gV0 + gh * rr / rows; piece(gU0, gU1, v - 0.03, v + 0.03, mat, 0.085); }
-    }
     if (w.closed) {
       // a solid door kept shut, in the plane of the wall, whichever way the wall runs.
       // `white` paints it the trim colour instead of oak, and `thru` leaves the
       // collider off, so a shut door can still be walked through to what is behind it.
       var alongZ = (z2 - z1) > (x2 - x1), span = alongZ ? z2 - z1 : x2 - x1, cxm = (x1 + x2) / 2;
-      if (w.lite && w.dbl) {
-        var half = span / 2;
-        if (alongZ) { liteDoor(true, cxm, cz - half / 2, half, MAT.door); liteDoor(true, cxm, cz + half / 2, half, MAT.door); }
-        else { liteDoor(false, cxm - half / 2, cz, half, MAT.door); liteDoor(false, cxm + half / 2, cz, half, MAT.door); }
-      } else if (w.lite) liteDoor(alongZ, cxm, cz, span, MAT.door);
-      else { var shut = new T.Mesh(new T.BoxGeometry(alongZ ? 0.15 : span - 0.1, DH - 0.05, alongZ ? span - 0.1 : 0.15), w.white ? MAT.trim : MAT.door); shut.position.set(cxm, DH / 2, cz); scene.add(shut); }
+      var shut = new T.Mesh(new T.BoxGeometry(alongZ ? 0.15 : span - 0.1, DOOR_H - 0.05, alongZ ? span - 0.1 : 0.15), w.white ? MAT.trim : MAT.door); shut.position.set(cxm, DOOR_H / 2, cz); scene.add(shut);
       var kb = new T.Mesh(new T.SphereGeometry(0.07, 10, 8), MAT.pull); kb.position.set(alongZ ? cxm + 0.12 : cxm + span / 2 - 0.4, 3.1, alongZ ? cz + span / 2 - 0.4 : cz + 0.12); scene.add(kb);
       if (!w.thru) colliders.push([x1, x2, Math.min(z1, z2), Math.max(z1, z2)]);
       return;
     }
     var hingeX = w.hinge === "e" ? x2 : x1, dir = w.hinge === "e" ? -1 : 1;
     var swing = w.swing || 1;                                   // +1 opens toward +z (south), -1 toward north
-    var leaf = new T.Mesh(new T.BoxGeometry(0.15, DH - 0.1, wide - 0.2), MAT.door);
-    leaf.position.set(hingeX + dir * 0.12, DH / 2, cz + swing * (wide / 2));
+    var leaf = new T.Mesh(new T.BoxGeometry(0.15, DOOR_H - 0.1, wide - 0.2), MAT.door);
+    leaf.position.set(hingeX + dir * 0.12, DOOR_H / 2, cz + swing * (wide / 2));
     scene.add(leaf);
     var knob = new T.Mesh(new T.SphereGeometry(0.08, 10, 8), MAT.steel); knob.position.set(hingeX + dir * 0.2, 3.1, cz + swing * (wide - 0.5)); scene.add(knob);
     colliders.push([hingeX + dir * 0.12 - 0.1, hingeX + dir * 0.12 + 0.1, Math.min(cz, cz + swing * wide), Math.max(cz, cz + swing * wide)]);
@@ -1167,7 +1118,7 @@
   } else if (fi === 0) {
     aroundWell([412.7, 822.0, 392.2, 691.8], STAIR.r).forEach(function (p) { texSlab(p, 0, "plank", 0.6); });   // existing house floor, open over the basement stair
     texSlab([422.4, 812.0, 167.0 - GP, 392.2], 0, "plank", 0.6);          // addition floor
-    texSlab([737.6, 815.2, 399.5, 478.9], 0.02, "tile", 0.02);       // bathroom tile; the pantry keeps the oak
+    texSlab([692.9, 815.2, 399.5, 478.9], 0.02, "tile", 0.02);       // bathroom tile
     texSlab(DECK.r, 0, "deck", 0.6);                                  // deck at floor level
     aroundWell([412.7, 822.0, 392.2, 691.8]).forEach(function (p) { ceilings.push(slab(p, CEIL + 0.5, MAT.ceil, 0.5)); });
     ceilings.push(slab([422.4, 812.0, 167.0 - GP, 392.2], CEIL + 0.5, MAT.ceil, 0.5));
@@ -1547,49 +1498,24 @@
     var sp = new T.Sprite(new T.SpriteMaterial({ map: tex, transparent: true })); sp.scale.set(2.4, 0.6, 1); sp.position.set(x, y, z); scene.add(sp); fixLabels.push(sp); return sp;
   }
   function plank(w, h, d, x, y, z, mat) { var m = new T.Mesh(new T.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; scene.add(m); return m; }
-  // The fridge, now in the tall slot at the head of the east run: built-in
-  // depth, doors on the face that looks into the kitchen, and a cabinet over it
-  // that works to whatever the ceiling is rather than a 9'-0" one.
-  function buildFridge(r, face) {
-    var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]);
-    var cx = (x1 + x2) / 2, cz = (zN + zS) / 2, H = 7.0;
-    var west = face === "w";                                  // otherwise it faces north, off the seam wall
-    var span = west ? zS - zN : x2 - x1;                      // what you see of it
-    var dep = west ? x2 - x1 : zS - zN;
-    var f = west ? x1 - 0.02 : zN - 0.02;                     // the face itself
-    box(r, 0, H, MAT.steel);
-    function front(wd, ht, u, y, out, mat) {                  // u runs across the face
-      var px = west ? f - out : cx + u, pz = west ? cz + u : f - out;
-      plank(west ? 0.06 : wd, ht, west ? wd : 0.06, px, y, pz, mat);
-    }
-    front(span / 2 - 0.08, 4.2, -span / 4 - 0.02, 4.85, 0.03, MAT.steel);     // french doors
-    front(span / 2 - 0.08, 4.2, span / 4 + 0.02, 4.85, 0.03, MAT.steel);
-    front(span - 0.1, 2.5, 0, 1.35, 0.03, MAT.steel);                          // freezer drawer
-    front(0.12, 2.2, -0.16, 4.6, 0.12, MAT.frame); front(0.12, 2.2, 0.16, 4.6, 0.12, MAT.frame);
-    front(0.12, 0.07, 0, 2.35, 0.12, MAT.frame);
-    // the cabinet over it: whatever is left between the fridge and the ceiling
-    var oh = Math.max(0.4, CEIL - H);
-    plank(west ? dep : span, oh, west ? span : dep, cx, H + oh / 2, cz, MAT.shaker);
-    if (oh > 0.7) {
-      var dn = west ? cz : cx;
-      [-span / 4, span / 4].forEach(function (u) {
-        shakerDoor(west ? f : cx + u, H + oh / 2, west ? dn + u : f, span / 2 - 0.08, oh - 0.15,
-                   west ? "w" : "n", MAT.shaker, MAT.shakerIn, null);
-      });
-    }
-    fixLabel("Fridge", cx, CEIL - 0.6, cz);
+  function buildFridge(r) {
+    var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]), cx = (x1 + x2) / 2, w = x2 - x1;
+    box(r, 0, 7.0, MAT.steel);
+    var face = zN - 0.02;                                     // doors on the face that looks into the kitchen
+    plank(w / 2 - 0.08, 4.2, 0.06, cx - w / 4 - 0.02, 4.85, face - 0.03, MAT.steel);   // french doors
+    plank(w / 2 - 0.08, 4.2, 0.06, cx + w / 4 + 0.02, 4.85, face - 0.03, MAT.steel);
+    plank(w - 0.1, 2.5, 0.06, cx, 1.35, face - 0.03, MAT.steel);                       // freezer drawer
+    plank(0.07, 2.2, 0.12, cx - 0.16, 4.6, face - 0.12, MAT.frame); plank(0.07, 2.2, 0.12, cx + 0.16, 4.6, face - 0.12, MAT.frame);
+    plank(1.6, 0.07, 0.12, cx, 2.35, face - 0.12, MAT.frame);
+    // the cabinet over the fridge, and the uppers along the seam wall over the drawers and the corner
+    plank(w, 1.5, zS - zN, cx, 7.75, (zN + zS) / 2, MAT.shaker); shakerDoor(cx - w / 4, 7.75, zN, w / 2 - 0.08, 1.35, "n", MAT.shaker, MAT.shakerIn, null); shakerDoor(cx + w / 4, 7.75, zN, w / 2 - 0.08, 1.35, "n", MAT.shaker, MAT.shakerIn, null);
+    var ux1 = x2 + 0.05, ux2 = fx(801.6), uz = fz(392.2) - 0.5;
+    plank(ux2 - ux1, 3.0, 1.0, (ux1 + ux2) / 2, 6.1, uz, MAT.shaker);
+    var nu = Math.max(1, Math.round((ux2 - ux1) / 1.5)), du = (ux2 - ux1) / nu;
+    for (var i = 0; i < nu; i++) shakerDoor(ux1 + du * (i + 0.5), 6.1, uz - 0.5, du - 0.08, 2.85, "n", MAT.shaker, MAT.shakerIn, { vert: true, y: 5.0, off: 0 });
+    plank(ux2 - ux1 - 0.2, 0.03, 0.9, (ux1 + ux2) / 2, 4.6, uz, MAT.bulb);
+    fixLabel("Fridge", cx, 9.2, (zN + zS) / 2);
   }
-  // The uppers along the seam wall, over the drawer base and the corner, which
-  // used to be built with the fridge when the fridge stood on that wall.
-  function buildSeamUppers(r) {
-    var x1 = fx(r[0]), x2 = fx(r[1]), z = fz(r[3]) - 0.5, top = CEIL - 0.1, bot = 4.5;
-    if (top - bot < 1.0) return;
-    plank(x2 - x1, top - bot, 1.0, (x1 + x2) / 2, (bot + top) / 2, z, MAT.shaker);
-    var nu = Math.max(1, Math.round((x2 - x1) / 1.5)), du = (x2 - x1) / nu;
-    for (var i = 0; i < nu; i++) shakerDoor(x1 + du * (i + 0.5), (bot + top) / 2, z - 0.5, du - 0.08, top - bot - 0.15, "n", MAT.shaker, MAT.shakerIn, { vert: true, y: (bot + top) / 2 - 0.4, off: 0 });
-    plank(x2 - x1 - 0.2, 0.03, 0.9, (x1 + x2) / 2, bot - 0.1, z, MAT.bulb);     // under-cabinet light
-  }
-
   // A shaker door: a frame standing 1/2" proud with the centre panel set back,
   // and a black pull. `n` is the direction the door faces: "w", "e", "n" or "s".
   function shakerDoor(cx, cy, cz, w, h, n, outer, inner, pullAt) {
@@ -1822,84 +1748,31 @@
     var dx = n === "w" ? -0.02 : n === "e" ? 0.02 : 0, dz = n === "n" ? -0.02 : n === "s" ? 0.02 : 0;
     m.position.set((x1 + x2) / 2 + dx, (y0 + y1) / 2, (z1 + z2) / 2 + dz); m.receiveShadow = true; scene.add(m);
   }
-  // The walk-in pantry in the old shower corner: painted shelves down the north
-  // and east walls on standards, with the hall's light through the glazed door.
-  // The shelves carry no collider: the room is 2'-11" by 3'-0" and a body is
-  // 1'-4" across, so solid shelving would leave nothing to stand in.
-  // The walk-in pantry, after the owner's reference: greige shaker cabinets with
-  // brass bar pulls under a quartz counter, floating oak shelves above with LED
-  // strip under each, jars and baskets on them, and a recessed downlight.
-  // The reference runs its cabinets down the long wall as well; at 2'-11" wide
-  // this one cannot, so the base run is the end wall and the long wall is shelf.
-  function buildLarder(r) {
-    var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]), cx = (W + E) / 2, wd = E - W;
-    var SD = 0.85, CD = 2.0, SN = N + 1.6, CT = 2.95;
-    var TIERS = [4.15, 5.2, 6.25];
-
-    // ---- the base run across the far end ----
-    box([r[0], r[1], r[3] - CD / PT, r[3]], 0, 2.88, MAT.larder);
-    plank(wd, 0.3, 0.02, cx, 0.15, S - 0.26, MAT.larderIn);                      // toe kick
-    var bays = Math.max(2, Math.round(wd / 1.6)), bw = wd / bays;
-    for (var b = 0; b < bays; b++) {
-      var bx = W + bw * (b + 0.5);
-      shakerDoor(bx, 1.95, S - CD, bw - 0.09, 1.65, "n", MAT.larder, MAT.larderIn, null);
-      plank(0.06, 0.06, 0.5, bx, 2.5, S - CD - 0.08, MAT.brass);                 // a brass bar pull
-    }
-    plank(wd + 0.06, 0.14, CD + 0.08, cx, CT, S - CD / 2 + 0.04, MAT.quartz);
-    plank(wd, 0.28, 0.05, cx, CT + 0.21, S - 0.025, MAT.quartz);                 // the counter turns up the wall
-    colliders.push([W, E, S - CD, S]);
-
-    // ---- floating oak shelves: across the end, and down the east wall ----
-    function strip(w2, d2, x, y, z) { plank(w2, 0.05, d2, x, y, z, MAT.bulb); }  // the LED under a shelf
-    TIERS.forEach(function (y) {
-      plank(wd, 0.17, 1.0, cx, y, S - 0.5, MAT.palOak);                          // the end wall
-      strip(wd - 0.2, 0.12, cx, y - 0.12, S - 0.95);
-      var L = S - CD - SN - 0.15;
-      plank(SD, 0.17, L, E - SD / 2, y, (SN + S - CD) / 2, MAT.palOak);          // the east wall
-      strip(0.12, L - 0.2, E - SD + 0.06, y - 0.12, (SN + S - CD) / 2);
-    });
-    colliders.push([E - SD, E, SN, S - CD]);
-
-    // ---- what is on them: jars down the shelves, baskets up top ----
-    var JAR = [MAT.glass, MAT.porcelain, MAT.wicker];
-    TIERS.forEach(function (y, ti) {
-      for (var j = 0; j < 7; j++) {
-        var h = 0.5 + (j % 3) * 0.17, rr = 0.15 + (j % 2) * 0.04;
-        var m = new T.Mesh(new T.CylinderGeometry(rr, rr, h, 12), JAR[(j + ti) % 3]);
-        m.position.set(W + 0.3 + (wd - 0.6) * j / 6, y + 0.09 + h / 2, S - 0.5); scene.add(m);
-      }
-      for (var k = 0; k < 4; k++) {
-        var hh = 0.45 + (k % 2) * 0.15;
-        var m2 = new T.Mesh(new T.CylinderGeometry(0.14, 0.14, hh, 12), ti === 2 ? MAT.wicker : JAR[k % 3]);
-        m2.position.set(E - SD / 2, y + 0.09 + hh / 2, SN + 0.5 + k * 1.15); scene.add(m2);
-      }
-    });
-    [0, 1].forEach(function (i) { plank(0.95, 0.55, 0.8, W + 0.6 + i * 1.3, TIERS[2] + 0.37, S - 0.5, MAT.wicker); });
-
-    // ---- on the counter: a board, a plant, a framed print ----
-    plank(0.1, 1.1, 0.75, W + 0.45, CT + 0.62, S - 0.75, MAT.seatWood);
-    var pot = new T.Mesh(new T.CylinderGeometry(0.2, 0.16, 0.36, 12), MAT.porcelain); pot.position.set(E - 0.5, CT + 0.25, S - 0.7); scene.add(pot);
-    for (var f = 0; f < 7; f++) { var lf = new T.Mesh(new T.SphereGeometry(0.12, 7, 5), MAT.leaf); lf.position.set(E - 0.5 + Math.cos(f * 0.9) * 0.22, CT + 0.55 + (f % 3) * 0.13, S - 0.7 + Math.sin(f * 0.9) * 0.2); lf.scale.set(1.3, 0.6, 1); scene.add(lf); }
-
-    // ---- a recessed downlight, as the reference has ----
-    var can = new T.Mesh(new T.CylinderGeometry(0.3, 0.3, 0.02, 16), MAT.bulb);
-    can.position.set(cx, CEIL - 0.015, (SN + S - CD) / 2); scene.add(can);
-    lamp(cx, (SN + S - CD) / 2, CEIL - 0.1, 0.5);
-    fixLabel("Pantry", cx, CEIL - 0.5, (N + S) / 2);
-  }
-
-  // The bathroom as the sheet draws it and as it was built, with the shower
-  // taken out and the pantry behind its west wall: black shiplap on the vanity
-  // wall, white on the rest, the open rustic vanity, round mirror, lanterns.
+  // The bathroom, after the reference: black shiplap behind the vanity, white
+  // shiplap on the other walls, an open rustic vanity, round mirror, lanterns.
   function buildBath(r) {
     var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]);       // clear faces of the room
+    var partE = fx(737.6), partS = fz(440.5);                           // the shower partition
     var winN = fz(428.4), winS = fz(473.4);                             // the east window
+    // the shower stays: tiled floor, glass on its open side, tile on its walls
+    box([692.9, 732.6, 399.5, 440.5], 0, 0.3, MAT.tile, { solid: false });
+    // The partition closes the shower's east side; it opens south into the room.
+    // A fixed glass panel at the west end of that edge, and the opening beside it.
+    var glassLen = 1.0, gz = partS;
+    var gl = new T.Mesh(new T.BoxGeometry(glassLen, 7, 0.06), MAT.glass); gl.position.set(W + glassLen / 2, 3.5, gz); scene.add(gl);
+    var glTop = new T.Mesh(new T.BoxGeometry(glassLen, 0.1, 0.1), MAT.bronze); glTop.position.set(W + glassLen / 2, 7.0, gz); scene.add(glTop);
+    colliders.push([W, W + glassLen, gz - 0.05, gz + 0.05]);
+    var showerTile = function (x1, x2, z1, z2, n) { var t = TEX.subway.clone(); t.needsUpdate = true; var horiz = n === "n" || n === "s", len = horiz ? x2 - x1 : z2 - z1; t.repeat.set(len, 7); var m = new T.Mesh(new T.BoxGeometry(horiz ? len : 0.03, 7, horiz ? 0.03 : len), new T.MeshStandardMaterial({ map: t, roughness: 0.3 })); var dx = n === "w" ? -0.015 : n === "e" ? 0.015 : 0, dz = n === "n" ? -0.015 : n === "s" ? 0.015 : 0; m.position.set((x1 + x2) / 2 + dx, 3.5, (z1 + z2) / 2 + dz); scene.add(m); };
+    showerTile(W, fx(732.6), N, N, "s"); showerTile(W, W, N, partS, "e"); showerTile(fx(732.6), fx(732.6), N, partS, "w");
+    var head = new T.Mesh(new T.CylinderGeometry(0.3, 0.3, 0.05, 16), MAT.bronze); head.position.set(W + 1.5, 6.6, N + 0.5); scene.add(head);
+    var arm = new T.Mesh(new T.CylinderGeometry(0.04, 0.04, 0.6, 8), MAT.bronze); arm.rotation.x = Math.PI / 2; arm.position.set(W + 1.5, 6.6, N + 0.25); scene.add(arm);
     // walls: black shiplap on the vanity wall, white on the rest, crown at the ceiling
-    clad(TEX.lapBlack, W, E, N, N, 0, CEIL, "s");
+    clad(TEX.lapBlack, partE, E, N, N, 0, CEIL, "s");
     clad(TEX.lapWhite, E, E, N, winN, 0, CEIL, "w"); clad(TEX.lapWhite, E, E, winS, S, 0, CEIL, "w");
     clad(TEX.lapWhite, E, E, winN, winS, 0, WIN.sill, "w"); clad(TEX.lapWhite, E, E, winN, winS, WIN.head, CEIL, "w");
     clad(TEX.lapWhite, W, fx(770.2), S, S, 0, CEIL, "n"); clad(TEX.lapWhite, fx(770.2), E, S, S, DOOR_H, CEIL, "n");   // stops at the doorway
-    clad(TEX.lapWhite, W, W, N, S, 0, CEIL, "e");                        // the wall the pantry is behind
+    clad(TEX.lapWhite, W, W, partS, S, 0, CEIL, "e");
+    clad(TEX.lapWhite, partE, partE, N, partS, 0, CEIL, "e"); clad(TEX.lapWhite, fx(732.6), partE, partS, partS, 0, CEIL, "s");
     [[W, E, N, N], [W, E, S, S], [W, W, N, S], [E, E, N, S]].forEach(function (c) { var horiz = c[2] === c[3]; var m = new T.Mesh(new T.BoxGeometry(horiz ? c[1] - c[0] : 0.3, 0.3, horiz ? 0.3 : c[3] - c[2]), MAT.trim); m.position.set((c[0] + c[1]) / 2 + (horiz ? 0 : (c[0] === W ? 0.15 : -0.15)), CEIL - 0.15, (c[2] + c[3]) / 2 + (horiz ? (c[2] === N ? 0.15 : -0.15) : 0)); scene.add(m); });
     // toilet: tank, bowl, seat
     var tx = (fx(743) + fx(764)) / 2;
@@ -1949,10 +1822,8 @@
     plank(0.08, 1.8, 1.1, E - 0.17, 3.4, vz2 + 0.7, MAT.white);
     // patterned rug on marble tile in front of the vanity
     var rugM = new T.Mesh(new T.BoxGeometry(2.0, 0.03, 3.0), new T.MeshStandardMaterial({ map: TEX.rug, roughness: 1 })); rugM.rotation.y = Math.PI / 2; rugM.position.set(vcx - 0.2, 0.05, vz2 + 1.2); scene.add(rugM);
-    fixLabel("Bath", (W + E) / 2, CEIL - 0.5, (N + S) / 2);
+    fixLabel("Bath", (partE + E) / 2, 7.9, (N + S) / 2);
   }
-
-
 
   // The study, after the reference: charcoal built-ins with lit shelves and a
   // painting along the west wall, a walnut desk on a black frame floated in
@@ -2651,17 +2522,15 @@
     if (s.glassWall) { box(s.r, 0, 7, MAT.glass, { shadow: false }); return; }
     if (s.porch) { buildPorch(s.r); return; }
     if (s.study) { buildStudy(s.r); return; }
-    if (s.larder) { buildLarder(s.r); return; }
     if (s.bath) { buildBath(s.r); return; }
     if (s.island) { buildIsland(s.r); return; }
     if (s.eastRun) { buildEastRun(s.r); return; }
     if (s.tallWhite) { buildTallWhite(s.r, s.face); return; }
     if (s.dining) { buildDining(s.r); return; }
     if (s.couch) { buildCouch(s.r); return; }
-    if (s.fridge) { buildFridge(s.r, s.face); return; }
+    if (s.fridge) { buildFridge(s.r); return; }
     if (s.pantry) { buildPantry(s.r, s.face); return; }
     if (s.drawerBase) { buildDrawerBase(s.r); return; }
-    if (s.seamUppers) { buildSeamUppers(s.r); return; }
     if (s.cornerBase) { buildCornerBase(s.r); return; }
     if (s.coffee) { buildCoffee(s.r); return; }
     if (s.round) {
@@ -2731,7 +2600,7 @@
       var fixed = n === "e" ? fx(r[1]) : n === "w" ? fx(r[0]) : n === "s" ? fz(r[3]) : fz(r[2]);
       var A = horiz ? fx(a) : fz(a), B = horiz ? fx(b) : fz(b);
       var lo = 0, hi = CEIL, bands = [];
-      if (w.win) bands = [[0, w.win.sill], [w.win.head, CEIL]]; else if (w.door) bands = [[doorH(w), CEIL]]; else bands = [[0, CEIL]];
+      if (w.win) bands = [[0, w.win.sill], [w.win.head, CEIL]]; else if (w.door) bands = [[DOOR_H, CEIL]]; else bands = [[0, CEIL]];
       bands.forEach(function (bd) { if (horiz) face(A, B, fixed, fixed, n, bd[0], bd[1]); else face(fixed, fixed, A, B, n, bd[0], bd[1]); });
     });
   });
