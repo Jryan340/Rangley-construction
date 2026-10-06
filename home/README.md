@@ -145,44 +145,58 @@ which makes it steep; the sheet's stair is shorter than a straight run to a
 placed from the sheet: beds with headboards, dressers, nightstands, vanities,
 toilets, tiled showers with glass, wardrobes in the closet.
 
-## The first floor loses its shower and gains a pantry
+## The first floor loses its bathroom and gains a walk-in pantry
 
 The owner does not need a shower on the first floor but does want a pantry,
-so the shower corner is walled off and opens on the hall instead.
+and then asked for the whole space. So the sheet's first-floor bathroom is
+the pantry: **9'-1" x 5'-11", 53.3 sf**, entered from the hall through a pair
+of glazed doors.
 
-- The shower comes out: its tiled floor, glass panel, tile walls and head.
-- A new wall, `[692.9, 737.6, 440.5, 445.5]`, closes what was the shower's
-  opening into the bathroom. The old shower partition stays and is now the
-  pantry's east wall; the seam wall and the hall wall are already there, so
-  this is the only wall the change needs.
-- The hall wall is split for a **2'-6" door**, centred on the old shower.
-- The bathroom's tile floor is laid in two pieces around the corner, so the
-  pantry keeps the oak.
-- Six painted shelves on standards down the north and east walls.
+The shower, toilet, vanity and the shower partition all come out, with the
+bathroom's shiplap. The hall wall is split for a **4'-0" opening**. The tile
+floor stays -- it suits a pantry -- and the east window stays, which is the
+one thing that shapes the fit-out.
 
-### The door
+**The house now has no first-floor bathroom.** The powder room is in the
+basement, off the mudroom at the front right, where the existing-conditions
+set puts it.
 
-A half-glass door after the reference the owner gave, in oak rather than
-painted: a stile-and-rail frame with a solid lower panel, a lock rail, and a
-divided light above it. `liteDoor` builds it in the leaf's own width and
-height and then lays it into the wall, so it works in a wall running either
-way. Muntins are counted from the glass opening to keep the lites roughly
-square -- 3 across and 6 up on this door.
+### The fit-out
 
-The door carries `thru: true`, like the basement stair's, so it is drawn shut
-and you walk through it. Nothing in the model opens a door.
+After the owner's reference: wood base cabinets down the long north wall
+under a quartz counter, four bays with black bar pulls and a black toe kick,
+three open shelves above on black standards, tall open shelving opposite, and
+a dome pendant over the aisle.
 
-### How big it actually is
+It is a single run rather than the reference's U because of the east window:
+its sill is at 2'-7" and a counter stands at 3'-0", so a run under it would
+cross the glass. The shelving opposite is 12" deep and stops at the vestibule
+door. That leaves a **2'-11" aisle**, which is a working galley width.
 
-**2'-11" deep by 3'-0" wide, 8.9 sf.** With 10" shelves on two walls that
-leaves about 2'-1" by 2'-2" to stand in. You can step inside and turn around,
-but this is a reach-in larder rather than what most people mean by a walk-in
-pantry, because it is exactly the footprint the shower had. Taking it further
-east, into the toilet bay, is where the space would come from -- the toilet
-and vanity both sit on the north wall and would have to be replanned.
+The vestibule door into the old bathroom is left alone, so the pantry has a
+second way in from the vestibule. Easy to wall up if it is not wanted.
 
-The shelves carry no collider for that reason: solid shelving in a room this
-size would leave nothing to stand in, and the point is to be able to look.
+### The doors
+
+A pair of glazed leaves, 2'-0" each, in oak rather than painted: a
+stile-and-rail frame with a solid lower panel and a divided light from 1'-6"
+up, so you see the pantry through them. `liteDoor` builds one leaf in its own
+width and height and lays it into the wall; the pair is two calls either side
+of the opening's centre. Muntins are counted off the glass to keep the lites
+roughly square. `thru: true`, so they are drawn shut and you walk through.
+
+### Two bugs this turned up
+
+`doorIn` drew its jambs as though every door sat in a wall running east-west:
+`BoxGeometry(0.2, DOOR_H, t + 0.15)` where `t` is the wall's thickness in that
+case but the door's **width** in a north-south one. In the hall wall that made
+two black slabs filling the doorway, which is what the first pantry door
+looked like. Jambs now stand at the two ends of the opening whichever way the
+wall runs -- which also fixes the attic stair's door.
+
+The first cut of the pantry was the shower's footprint, 2'-11" by 3'-0" and
+8.9 sf. That is a reach-in larder, not a walk-in, which is why the whole room
+is the pantry now.
 
 ## What is on the floor
 
