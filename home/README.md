@@ -145,40 +145,41 @@ which makes it steep; the sheet's stair is shorter than a straight run to a
 placed from the sheet: beds with headboards, dressers, nightstands, vanities,
 toilets, tiled showers with glass, wardrobes in the closet.
 
-## The pantry and the powder room, from the owner's sketch
-
-The sheet's first-floor bathroom is split in two, to the owner's hand plan of
-2026-10-06:
+## The pantry and the bathroom, from the owner's sketch
 
 | | size | entered from |
 |---|---|---|
-| **Pantry** | 4'-9" x 5'-11", 27.9 sf | the kitchen, through the seam |
-| **Powder room** | 3'-11" x 5'-11", 23.2 sf | the vestibule, as before |
+| **Pantry** | 2'-11" x 8'-5", 24.8 sf | the kitchen |
+| **Bathroom** | 5'-9" x 5'-11", 33.8 sf | the vestibule, as before |
 
-The shower is gone for good. The fridge leaves the seam wall for the tall
-slot at the head of the east run -- 3'-9" wide and 2'-0" deep, which is
-built-in depth -- and the tall pantry cabinet that was there goes, since the
-walk-in replaces it. The pantry then takes the fridge's old place in the seam
-as its door, so it opens off the kitchen where you want it rather than off
-the hall.
+The bathroom is **the sheet's bathroom with the shower taken out and nothing
+else changed**: the toilet still at x 743-764 and the vanity at 780-812, the
+east window, black shiplap on the vanity wall and white on the rest, the open
+rustic vanity on its four legs, the round mirror, the lantern sconces, the
+shelf over the toilet, the towel bar and the rug. The shower's old partition
+line is now the wall the pantry sits behind.
 
-The hall wall closes up again, and the hall gets its pair of botanical prints
-back: the first of them hung exactly where the old hall door was cut.
+The pantry takes the shower's corner and the full depth beside it, then
+**steps forward through the seam** to sit flush with the drawer base in the
+kitchen, which buys it another 2'-0". That step is the one in the owner's
+sketch. Its glazed door is in that forward face, full width at 2'-11" and
+7'-0" tall, so from the kitchen the door line and the cabinet line are one.
 
-### The pantry
+Inside: a 24" base run with a quartz counter across the far end and three
+shelves over it, and 10" open shelving on black standards down the east wall,
+starting 1'-7" past the door so it never stands in the opening. That leaves a
+2'-1" aisle -- narrow, but it is a galley larder, not a room to stand about
+in. A pendant over the aisle.
 
-A 3'-0" glazed door in the seam, 7'-0" tall. Inside, a 24" base run with a
-quartz counter across the south end and three shelves over it, and 12" open
-shelving on black standards down the east wall. A dome pendant over the
-aisle. Nothing on the west wall: the door is at that end of the seam, so a
-run there would stand in it. That leaves a 3'-9" aisle and 3'-11" from the
-door to the counter.
+Two knock-on changes: the seam is crossed on a cased header where the pantry
+runs through it, and the drawer base beside the door shortens to 1'-8" to
+clear the pantry's wall.
 
-### The powder room
-
-Toilet on the north wall, a small vanity down the west with a round mirror
-over it, and the existing east window. A 2'-8" painted door off the
-vestibule, drawn shut.
+The fridge is in the tall slot at the head of the east run, 3'-9" wide and
+2'-0" deep, which is built-in depth; the pantry cabinet that was there is
+gone. `buildFridge` had the seam's uppers built into it and faced north only,
+so it now takes a facing, sizes its over-cabinet to whatever is left under the
+ceiling, and the uppers are their own piece.
 
 ## Ceilings are 8'-0"
 
