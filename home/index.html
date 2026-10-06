@@ -251,14 +251,20 @@
     // box leaves open there. White like the trim, kept shut, and with no collider:
     // the stair down is behind it and has to stay walkable.
     { r: [593.2, 634.1, 457.4, 462.5], k: "int", door: true, closed: true, white: true, thru: true },
-    { r: [687.8, 692.9, 361.9, 484.1], k: "int" },                       // hall | bath, runs up as the pantry end wall
+    // hall | bath. The first floor loses its shower and the corner becomes a
+    // walk-in pantry, entered from the hall through a glazed door, so this wall
+    // is split for it: 2'-6" of opening centred on the old shower.
+    { r: [687.8, 692.9, 361.9, 403.1], k: "int" },
+    { r: [687.8, 692.9, 403.1, 436.9], k: "int", door: true, closed: true, lite: true, thru: true },
+    { r: [687.8, 692.9, 436.9, 484.1], k: "int" },
     { r: [687.8, 692.9, 531.4, 685.1], k: "int" },                       // hall | closet and study
     { r: [692.9, 770.2, 478.9, 484.1], k: "int" }, { r: [770.2, 815.2, 478.9, 484.1], k: "int", door: true, hinge: "e", swing: -1, leaf: false },
     { r: [755.5, 770.2, 531.4, 536.4], k: "int" }, { r: [770.2, 815.2, 531.4, 536.4], k: "int", door: true, hinge: "e", swing: 1, leaf: false },
     { r: [692.9, 755.5, 531.4, 536.4], k: "int", door: true, dbl: true, swing: -1 },     // closet double doors
     { r: [692.9, 758.9, 563.5, 568.6], k: "int" },                       // closet | study
     { r: [758.9, 763.9, 536.4, 568.6], k: "int" },                       // closet east side
-    { r: [732.6, 737.6, 399.5, 440.5], k: "int" },                       // shower | toilet
+    { r: [732.6, 737.6, 399.5, 440.5], k: "int" },                       // was shower | toilet, now the pantry's east wall
+    { r: [692.9, 737.6, 440.5, 445.5], k: "int" },                       // closes the old shower opening: the pantry's south wall
     // the coffee bar alcove at the kitchen seam: a back wall on the old wall
     // line and two short returns, drawn on the sheet at wall weight. Tagged
     // `coffee` so the "Coffee bar out" button can take the whole alcove away.
@@ -283,7 +289,10 @@
     { n: "Living", r: [419.5, 587.5, 399.5, 685.1], label: "21' x 12'-6\" on the sheet", paint: "acacia" },
     { n: "Hall", r: [593.2, 687.8, 399.5, 576.0], paint: "illusion" },
     { n: "Entry", r: [593.2, 687.8, 576.0, 685.1], label: "7' x 8'-6\" on the sheet", paint: "illusion" },
-    { n: "Bathroom", r: [692.9, 815.2, 399.5, 478.9], label: "9' x 6' on the sheet" },
+    // the pantry comes first: it sits inside the bathroom's rectangle, and the
+    // room readout takes the first rectangle it falls in
+    { n: "Pantry", r: [692.9, 732.6, 399.5, 440.5], label: "walk-in, off the hall" },
+    { n: "Bathroom", r: [692.9, 815.2, 399.5, 478.9], label: "9' x 6' on the sheet, less the pantry corner" },
     { n: "Vestibule", r: [692.9, 815.2, 484.1, 531.4], paint: "illusion" },
     { n: "Closet", r: [692.9, 758.9, 536.4, 563.5] },
     { n: "Study", r: [692.9, 815.2, 536.4, 685.1], label: "9' x 8'-6\" on the sheet", dimsR: [692.9, 815.2, 568.6, 685.1] },
@@ -324,6 +333,7 @@
     { n: "console", r: [640.7, 684.0, 666.0, 681.0], console: true },
     { n: "study", r: [692.9, 815.2, 568.6, 685.1], study: true },
     { n: "bath", r: [692.9, 815.2, 399.5, 478.9], bath: true },
+    { n: "larder", r: [692.9, 732.6, 399.5, 440.5], larder: true },
     { n: "porch", r: [431.6, 630.8, 43.7 - GP, 167.0 - GP], porch: true },
     // the sheet's deck sofa sat just east of the split, which now puts it behind
     // the screen door, so it moves to the east rail
@@ -1038,12 +1048,37 @@
       return;
     }
     if (w.leaf === false) return;                                // an open doorway: jambs and header only
+    // A half-glass door: a wooden stile-and-rail frame with a divided light over
+    // a solid lower panel, after the reference the owner gave for the pantry.
+    // Built in the leaf's own width-and-height axes, then laid into the wall.
+    function liteDoor(alongZ, cxm, cz, span, mat) {
+      var LW = span - 0.1, LH = DOOR_H - 0.05, TH = 0.15;
+      function piece(u0, u1, v0, v1, m, th) {
+        var w = u1 - u0, h = v1 - v0; if (w <= 0.002 || h <= 0.002) return;
+        var t = th || TH, uc = (u0 + u1) / 2 - LW / 2;
+        var g = new T.Mesh(new T.BoxGeometry(alongZ ? t : w, h, alongZ ? w : t), m);
+        g.position.set(alongZ ? cxm : cxm + uc, (v0 + v1) / 2, alongZ ? cz + uc : cz);
+        g.castShadow = true; scene.add(g);
+      }
+      var stile = 0.42, botR = 1.45, lockR = 0.33, topR = 0.3;
+      var gU0 = stile, gU1 = LW - stile, gV0 = botR + lockR, gV1 = LH - topR;
+      piece(0, stile, 0, LH, mat); piece(LW - stile, LW, 0, LH, mat);          // stiles
+      piece(stile, gU1, 0, botR, mat);                                          // the solid lower panel
+      piece(stile, gU1, botR, gV0, mat);                                        // lock rail
+      piece(stile, gU1, gV1, LH, mat);                                          // top rail
+      piece(gU0, gU1, gV0, gV1, MAT.glass, 0.04);                               // the light
+      var gw = gU1 - gU0, gh = gV1 - gV0;                                       // muntins, on roughly square lites
+      var cols = Math.max(1, Math.round(gw / 0.55)), rows = Math.max(1, Math.round(gh / 0.75));
+      for (var c = 1; c < cols; c++) { var u = gU0 + gw * c / cols; piece(u - 0.03, u + 0.03, gV0, gV1, mat, 0.085); }
+      for (var rr = 1; rr < rows; rr++) { var v = gV0 + gh * rr / rows; piece(gU0, gU1, v - 0.03, v + 0.03, mat, 0.085); }
+    }
     if (w.closed) {
       // a solid door kept shut, in the plane of the wall, whichever way the wall runs.
       // `white` paints it the trim colour instead of oak, and `thru` leaves the
       // collider off, so a shut door can still be walked through to what is behind it.
       var alongZ = (z2 - z1) > (x2 - x1), span = alongZ ? z2 - z1 : x2 - x1, cxm = (x1 + x2) / 2;
-      var shut = new T.Mesh(new T.BoxGeometry(alongZ ? 0.15 : span - 0.1, DOOR_H - 0.05, alongZ ? span - 0.1 : 0.15), w.white ? MAT.trim : MAT.door); shut.position.set(cxm, DOOR_H / 2, cz); scene.add(shut);
+      if (w.lite) liteDoor(alongZ, cxm, cz, span, MAT.door);
+      else { var shut = new T.Mesh(new T.BoxGeometry(alongZ ? 0.15 : span - 0.1, DOOR_H - 0.05, alongZ ? span - 0.1 : 0.15), w.white ? MAT.trim : MAT.door); shut.position.set(cxm, DOOR_H / 2, cz); scene.add(shut); }
       var kb = new T.Mesh(new T.SphereGeometry(0.07, 10, 8), MAT.pull); kb.position.set(alongZ ? cxm + 0.12 : cxm + span / 2 - 0.4, 3.1, alongZ ? cz + span / 2 - 0.4 : cz + 0.12); scene.add(kb);
       if (!w.thru) colliders.push([x1, x2, Math.min(z1, z2), Math.max(z1, z2)]);
       return;
@@ -1118,7 +1153,9 @@
   } else if (fi === 0) {
     aroundWell([412.7, 822.0, 392.2, 691.8], STAIR.r).forEach(function (p) { texSlab(p, 0, "plank", 0.6); });   // existing house floor, open over the basement stair
     texSlab([422.4, 812.0, 167.0 - GP, 392.2], 0, "plank", 0.6);          // addition floor
-    texSlab([692.9, 815.2, 399.5, 478.9], 0.02, "tile", 0.02);       // bathroom tile
+    // bathroom tile, in two pieces around the pantry corner, which keeps the oak
+    texSlab([737.6, 815.2, 399.5, 478.9], 0.02, "tile", 0.02);
+    texSlab([692.9, 737.6, 445.5, 478.9], 0.02, "tile", 0.02);
     texSlab(DECK.r, 0, "deck", 0.6);                                  // deck at floor level
     aroundWell([412.7, 822.0, 392.2, 691.8]).forEach(function (p) { ceilings.push(slab(p, CEIL + 0.5, MAT.ceil, 0.5)); });
     ceilings.push(slab([422.4, 812.0, 167.0 - GP, 392.2], CEIL + 0.5, MAT.ceil, 0.5));
@@ -1748,30 +1785,37 @@
     var dx = n === "w" ? -0.02 : n === "e" ? 0.02 : 0, dz = n === "n" ? -0.02 : n === "s" ? 0.02 : 0;
     m.position.set((x1 + x2) / 2 + dx, (y0 + y1) / 2, (z1 + z2) / 2 + dz); m.receiveShadow = true; scene.add(m);
   }
+  // The walk-in pantry in the old shower corner: painted shelves down the north
+  // and east walls on standards, with the hall's light through the glazed door.
+  // The shelves carry no collider: the room is 2'-11" by 3'-0" and a body is
+  // 1'-4" across, so solid shelving would leave nothing to stand in.
+  function buildLarder(r) {
+    var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]), dep = 0.85;
+    [1.15, 2.2, 3.25, 4.3, 5.35, 6.4].forEach(function (y) {
+      plank(E - W - 0.12, 0.09, dep, (W + E) / 2, y, N + dep / 2, MAT.white);
+      plank(dep, 0.09, S - N - dep - 0.12, E - dep / 2, y, (N + dep + S) / 2, MAT.white);
+    });
+    [[W + 0.09, N + dep - 0.06, 0.1, 0.07], [E - 0.09, N + dep - 0.06, 0.1, 0.07]].forEach(function (st) {
+      plank(st[2], 5.6, st[3], st[0], 3.75, st[1], MAT.white);
+    });
+    fixLabel("Pantry", (W + E) / 2, 7.3, (N + S) / 2);
+  }
   // The bathroom, after the reference: black shiplap behind the vanity, white
   // shiplap on the other walls, an open rustic vanity, round mirror, lanterns.
   function buildBath(r) {
     var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]);       // clear faces of the room
-    var partE = fx(737.6), partS = fz(440.5);                           // the shower partition
+    var partE = fx(737.6), partS = fz(440.5);                           // the partition that was the shower's east side
     var winN = fz(428.4), winS = fz(473.4);                             // the east window
-    // the shower stays: tiled floor, glass on its open side, tile on its walls
-    box([692.9, 732.6, 399.5, 440.5], 0, 0.3, MAT.tile, { solid: false });
-    // The partition closes the shower's east side; it opens south into the room.
-    // A fixed glass panel at the west end of that edge, and the opening beside it.
-    var glassLen = 1.0, gz = partS;
-    var gl = new T.Mesh(new T.BoxGeometry(glassLen, 7, 0.06), MAT.glass); gl.position.set(W + glassLen / 2, 3.5, gz); scene.add(gl);
-    var glTop = new T.Mesh(new T.BoxGeometry(glassLen, 0.1, 0.1), MAT.bronze); glTop.position.set(W + glassLen / 2, 7.0, gz); scene.add(glTop);
-    colliders.push([W, W + glassLen, gz - 0.05, gz + 0.05]);
-    var showerTile = function (x1, x2, z1, z2, n) { var t = TEX.subway.clone(); t.needsUpdate = true; var horiz = n === "n" || n === "s", len = horiz ? x2 - x1 : z2 - z1; t.repeat.set(len, 7); var m = new T.Mesh(new T.BoxGeometry(horiz ? len : 0.03, 7, horiz ? 0.03 : len), new T.MeshStandardMaterial({ map: t, roughness: 0.3 })); var dx = n === "w" ? -0.015 : n === "e" ? 0.015 : 0, dz = n === "n" ? -0.015 : n === "s" ? 0.015 : 0; m.position.set((x1 + x2) / 2 + dx, 3.5, (z1 + z2) / 2 + dz); scene.add(m); };
-    showerTile(W, fx(732.6), N, N, "s"); showerTile(W, W, N, partS, "e"); showerTile(fx(732.6), fx(732.6), N, partS, "w");
-    var head = new T.Mesh(new T.CylinderGeometry(0.3, 0.3, 0.05, 16), MAT.bronze); head.position.set(W + 1.5, 6.6, N + 0.5); scene.add(head);
-    var arm = new T.Mesh(new T.CylinderGeometry(0.04, 0.04, 0.6, 8), MAT.bronze); arm.rotation.x = Math.PI / 2; arm.position.set(W + 1.5, 6.6, N + 0.25); scene.add(arm);
+    // No shower on this floor any more: the corner is walled off and opens on
+    // the hall as a pantry instead. What was its opening into the room is now
+    // the bathroom's north wall west of the partition.
     // walls: black shiplap on the vanity wall, white on the rest, crown at the ceiling
     clad(TEX.lapBlack, partE, E, N, N, 0, CEIL, "s");
     clad(TEX.lapWhite, E, E, N, winN, 0, CEIL, "w"); clad(TEX.lapWhite, E, E, winS, S, 0, CEIL, "w");
     clad(TEX.lapWhite, E, E, winN, winS, 0, WIN.sill, "w"); clad(TEX.lapWhite, E, E, winN, winS, WIN.head, CEIL, "w");
     clad(TEX.lapWhite, W, fx(770.2), S, S, 0, CEIL, "n"); clad(TEX.lapWhite, fx(770.2), E, S, S, DOOR_H, CEIL, "n");   // stops at the doorway
-    clad(TEX.lapWhite, W, W, partS, S, 0, CEIL, "e");
+    clad(TEX.lapWhite, W, W, fz(445.5), S, 0, CEIL, "e");
+    clad(TEX.lapWhite, W, partE, fz(445.5), fz(445.5), 0, CEIL, "s");    // the new wall where the shower opened
     clad(TEX.lapWhite, partE, partE, N, partS, 0, CEIL, "e"); clad(TEX.lapWhite, fx(732.6), partE, partS, partS, 0, CEIL, "s");
     [[W, E, N, N], [W, E, S, S], [W, W, N, S], [E, E, N, S]].forEach(function (c) { var horiz = c[2] === c[3]; var m = new T.Mesh(new T.BoxGeometry(horiz ? c[1] - c[0] : 0.3, 0.3, horiz ? 0.3 : c[3] - c[2]), MAT.trim); m.position.set((c[0] + c[1]) / 2 + (horiz ? 0 : (c[0] === W ? 0.15 : -0.15)), CEIL - 0.15, (c[2] + c[3]) / 2 + (horiz ? (c[2] === N ? 0.15 : -0.15) : 0)); scene.add(m); });
     // toilet: tank, bowl, seat
@@ -2523,6 +2567,7 @@
     if (s.porch) { buildPorch(s.r); return; }
     if (s.study) { buildStudy(s.r); return; }
     if (s.bath) { buildBath(s.r); return; }
+    if (s.larder) { buildLarder(s.r); return; }
     if (s.island) { buildIsland(s.r); return; }
     if (s.eastRun) { buildEastRun(s.r); return; }
     if (s.tallWhite) { buildTallWhite(s.r, s.face); return; }

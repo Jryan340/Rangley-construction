@@ -145,6 +145,45 @@ which makes it steep; the sheet's stair is shorter than a straight run to a
 placed from the sheet: beds with headboards, dressers, nightstands, vanities,
 toilets, tiled showers with glass, wardrobes in the closet.
 
+## The first floor loses its shower and gains a pantry
+
+The owner does not need a shower on the first floor but does want a pantry,
+so the shower corner is walled off and opens on the hall instead.
+
+- The shower comes out: its tiled floor, glass panel, tile walls and head.
+- A new wall, `[692.9, 737.6, 440.5, 445.5]`, closes what was the shower's
+  opening into the bathroom. The old shower partition stays and is now the
+  pantry's east wall; the seam wall and the hall wall are already there, so
+  this is the only wall the change needs.
+- The hall wall is split for a **2'-6" door**, centred on the old shower.
+- The bathroom's tile floor is laid in two pieces around the corner, so the
+  pantry keeps the oak.
+- Six painted shelves on standards down the north and east walls.
+
+### The door
+
+A half-glass door after the reference the owner gave, in oak rather than
+painted: a stile-and-rail frame with a solid lower panel, a lock rail, and a
+divided light above it. `liteDoor` builds it in the leaf's own width and
+height and then lays it into the wall, so it works in a wall running either
+way. Muntins are counted from the glass opening to keep the lites roughly
+square -- 3 across and 6 up on this door.
+
+The door carries `thru: true`, like the basement stair's, so it is drawn shut
+and you walk through it. Nothing in the model opens a door.
+
+### How big it actually is
+
+**2'-11" deep by 3'-0" wide, 8.9 sf.** With 10" shelves on two walls that
+leaves about 2'-1" by 2'-2" to stand in. You can step inside and turn around,
+but this is a reach-in larder rather than what most people mean by a walk-in
+pantry, because it is exactly the footprint the shower had. Taking it further
+east, into the toilet bay, is where the space would come from -- the toilet
+and vanity both sit on the north wall and would have to be replanned.
+
+The shelves carry no collider for that reason: solid shelving in a room this
+size would leave nothing to stand in, and the point is to be able to look.
+
 ## What is on the floor
 
 The addition is the kitchen and dining room across the back, 27' wide, with
