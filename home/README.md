@@ -165,11 +165,17 @@ kitchen, which buys it another 2'-0". That step is the one in the owner's
 sketch. Its glazed door is in that forward face, full width at 2'-11" and
 7'-0" tall, so from the kitchen the door line and the cabinet line are one.
 
-Inside: a 24" base run with a quartz counter across the far end and three
-shelves over it, and 10" open shelving on black standards down the east wall,
-starting 1'-7" past the door so it never stands in the opening. That leaves a
-2'-1" aisle -- narrow, but it is a galley larder, not a room to stand about
-in. A pendant over the aisle.
+Inside, after the owner's reference: **greige shaker cabinets with brass bar
+pulls** under a quartz counter that turns up the wall, **floating oak shelves**
+in three tiers at 4'-2", 5'-2" and 6'-3" with an **LED strip under each**,
+glass and stoneware jars along them, woven baskets on the top tier, a board
+and a plant on the counter, and a **recessed downlight** rather than a pendant.
+
+The base run is the far end wall only, 2'-0" deep in two bays. The reference
+carries its cabinets down the long wall as well, and at 2'-11" wide this room
+cannot: 24" of cabinet against 24" of aisle needs 4'-0". So the long wall is
+10" shelf, starting 1'-7" past the door so it never stands in the opening,
+which leaves a 2'-1" aisle. It is a galley larder, not a room to stand about in.
 
 Two knock-on changes: the seam is crossed on a cased header where the pantry
 runs through it, and the drawer base beside the door shortens to 1'-8" to

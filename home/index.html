@@ -839,6 +839,9 @@
     trim: new T.MeshStandardMaterial({ color: 0xf7f4ee, roughness: 0.7 }),
     shaker: new T.MeshStandardMaterial({ color: 0xf2efe9, roughness: 0.6 }),
     shakerIn: new T.MeshStandardMaterial({ color: 0xe6e2da, roughness: 0.7 }),
+    larder: new T.MeshStandardMaterial({ color: 0xc6bba9, roughness: 0.72 }),          // the pantry's greige cabinets
+    larderIn: new T.MeshStandardMaterial({ color: 0xbbae9b, roughness: 0.78 }),
+    palOak: new T.MeshStandardMaterial({ color: 0xc49a6c, roughness: 0.65 }),          // its floating shelves
     islandDk: new T.MeshStandardMaterial({ color: 0x22262b, roughness: 0.55 }),
     islandIn: new T.MeshStandardMaterial({ color: 0x2d3237, roughness: 0.6 }),
     quartz: new T.MeshStandardMaterial({ map: veinedQuartzTexture(), color: 0xffffff, roughness: 0.28 }),   // warm-veined white quartz
@@ -1823,45 +1826,68 @@
   // and east walls on standards, with the hall's light through the glazed door.
   // The shelves carry no collider: the room is 2'-11" by 3'-0" and a body is
   // 1'-4" across, so solid shelving would leave nothing to stand in.
-  // The walk-in pantry: a galley 2'-11" wide and 8'-5" deep, stepping forward
-  // through the seam to sit flush with the drawer base beside it. A 24" base run
-  // with a counter across the far end and shelves over it, and 10" open shelving
-  // down the east wall, starting clear of the doorway.
+  // The walk-in pantry, after the owner's reference: greige shaker cabinets with
+  // brass bar pulls under a quartz counter, floating oak shelves above with LED
+  // strip under each, jars and baskets on them, and a recessed downlight.
+  // The reference runs its cabinets down the long wall as well; at 2'-11" wide
+  // this one cannot, so the base run is the end wall and the long wall is shelf.
   function buildLarder(r) {
-    var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]), cx = (W + E) / 2;
-    var SD = 0.85, CD = 2.0, SN = N + 1.6;                   // 10" of shelf, 24" of base, and the shelving starts 1'-7" in
-    // the base run across the south end
-    box([r[0], r[1], r[3] - CD / PT, r[3]], 0, 2.88, MAT.vanityWood);
-    plank(E - W, 0.33, 0.02, cx, 0.165, S - 0.26, MAT.ironBlk);
-    var bays = Math.max(2, Math.round((E - W) / 2.2)), bw = (E - W) / bays;
+    var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]), cx = (W + E) / 2, wd = E - W;
+    var SD = 0.85, CD = 2.0, SN = N + 1.6, CT = 2.95;
+    var TIERS = [4.15, 5.2, 6.25];
+
+    // ---- the base run across the far end ----
+    box([r[0], r[1], r[3] - CD / PT, r[3]], 0, 2.88, MAT.larder);
+    plank(wd, 0.3, 0.02, cx, 0.15, S - 0.26, MAT.larderIn);                      // toe kick
+    var bays = Math.max(2, Math.round(wd / 1.6)), bw = wd / bays;
     for (var b = 0; b < bays; b++) {
       var bx = W + bw * (b + 0.5);
-      plank(bw - 0.08, 0.72, 0.03, bx, 2.42, S - CD - 0.015, MAT.vanityWood);
-      plank(bw - 0.08, 1.5, 0.03, bx, 1.5, S - CD - 0.015, MAT.vanityWood);
-      plank(bw * 0.45, 0.07, 0.05, bx, 2.42, S - CD - 0.05, MAT.ironBlk);
-      plank(bw * 0.45, 0.07, 0.05, bx, 2.05, S - CD - 0.05, MAT.ironBlk);
+      shakerDoor(bx, 1.95, S - CD, bw - 0.09, 1.65, "n", MAT.larder, MAT.larderIn, null);
+      plank(0.06, 0.06, 0.5, bx, 2.5, S - CD - 0.08, MAT.brass);                 // a brass bar pull
     }
-    plank(E - W + 0.06, 0.14, CD + 0.1, cx, 2.95, S - CD / 2 + 0.05, MAT.quartz);
-    plank(E - W, 0.3, 0.05, cx, 3.17, S - 0.025, MAT.quartz);
+    plank(wd + 0.06, 0.14, CD + 0.08, cx, CT, S - CD / 2 + 0.04, MAT.quartz);
+    plank(wd, 0.28, 0.05, cx, CT + 0.21, S - 0.025, MAT.quartz);                 // the counter turns up the wall
     colliders.push([W, E, S - CD, S]);
-    [4.0, 4.9, 5.8].forEach(function (y) { plank(E - W - 0.3, 0.12, 1.0, cx, y, S - 0.55, MAT.seatWood); });
-    // Open shelving down the east side only. The door is at the west end of the
-    // north wall, where the fridge stood, so a west run would stand in it.
-    [[E, -1]].forEach(function (side) {
-      var x = side[0], d = side[1];
-      [1.3, 2.4, 3.5, 4.6, 5.7].forEach(function (y) {
-        plank(SD, 0.1, S - CD - SN - 0.2, x + d * SD / 2, y, (SN + S - CD) / 2, MAT.seatWood);
-      });
-      [SN + 0.2, (SN + S - CD) / 2, S - CD - 0.2].forEach(function (z) { plank(0.08, 5.9, 0.1, x + d * 0.08, 3.5, z, MAT.ironBlk); });
-      colliders.push([Math.min(x, x + d * SD), Math.max(x, x + d * SD), SN, S - CD]);
+
+    // ---- floating oak shelves: across the end, and down the east wall ----
+    function strip(w2, d2, x, y, z) { plank(w2, 0.05, d2, x, y, z, MAT.bulb); }  // the LED under a shelf
+    TIERS.forEach(function (y) {
+      plank(wd, 0.17, 1.0, cx, y, S - 0.5, MAT.palOak);                          // the end wall
+      strip(wd - 0.2, 0.12, cx, y - 0.12, S - 0.95);
+      var L = S - CD - SN - 0.15;
+      plank(SD, 0.17, L, E - SD / 2, y, (SN + S - CD) / 2, MAT.palOak);          // the east wall
+      strip(0.12, L - 0.2, E - SD + 0.06, y - 0.12, (SN + S - CD) / 2);
     });
-    var aisle = (SN + S - CD) / 2;
-    plank(0.06, 1.1, 0.06, cx, CEIL - 0.55, aisle, MAT.ironBlk);
-    var dome = new T.Mesh(new T.SphereGeometry(0.62, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), MAT.bloom);
-    dome.rotation.x = Math.PI; dome.position.set(cx, CEIL - 1.1, aisle); scene.add(dome);
-    lamp(cx, aisle, CEIL - 1.3, 0.5);
+    colliders.push([E - SD, E, SN, S - CD]);
+
+    // ---- what is on them: jars down the shelves, baskets up top ----
+    var JAR = [MAT.glass, MAT.porcelain, MAT.wicker];
+    TIERS.forEach(function (y, ti) {
+      for (var j = 0; j < 7; j++) {
+        var h = 0.5 + (j % 3) * 0.17, rr = 0.15 + (j % 2) * 0.04;
+        var m = new T.Mesh(new T.CylinderGeometry(rr, rr, h, 12), JAR[(j + ti) % 3]);
+        m.position.set(W + 0.3 + (wd - 0.6) * j / 6, y + 0.09 + h / 2, S - 0.5); scene.add(m);
+      }
+      for (var k = 0; k < 4; k++) {
+        var hh = 0.45 + (k % 2) * 0.15;
+        var m2 = new T.Mesh(new T.CylinderGeometry(0.14, 0.14, hh, 12), ti === 2 ? MAT.wicker : JAR[k % 3]);
+        m2.position.set(E - SD / 2, y + 0.09 + hh / 2, SN + 0.5 + k * 1.15); scene.add(m2);
+      }
+    });
+    [0, 1].forEach(function (i) { plank(0.95, 0.55, 0.8, W + 0.6 + i * 1.3, TIERS[2] + 0.37, S - 0.5, MAT.wicker); });
+
+    // ---- on the counter: a board, a plant, a framed print ----
+    plank(0.1, 1.1, 0.75, W + 0.45, CT + 0.62, S - 0.75, MAT.seatWood);
+    var pot = new T.Mesh(new T.CylinderGeometry(0.2, 0.16, 0.36, 12), MAT.porcelain); pot.position.set(E - 0.5, CT + 0.25, S - 0.7); scene.add(pot);
+    for (var f = 0; f < 7; f++) { var lf = new T.Mesh(new T.SphereGeometry(0.12, 7, 5), MAT.leaf); lf.position.set(E - 0.5 + Math.cos(f * 0.9) * 0.22, CT + 0.55 + (f % 3) * 0.13, S - 0.7 + Math.sin(f * 0.9) * 0.2); lf.scale.set(1.3, 0.6, 1); scene.add(lf); }
+
+    // ---- a recessed downlight, as the reference has ----
+    var can = new T.Mesh(new T.CylinderGeometry(0.3, 0.3, 0.02, 16), MAT.bulb);
+    can.position.set(cx, CEIL - 0.015, (SN + S - CD) / 2); scene.add(can);
+    lamp(cx, (SN + S - CD) / 2, CEIL - 0.1, 0.5);
     fixLabel("Pantry", cx, CEIL - 0.5, (N + S) / 2);
   }
+
   // The bathroom as the sheet draws it and as it was built, with the shower
   // taken out and the pantry behind its west wall: black shiplap on the vanity
   // wall, white on the rest, the open rustic vanity, round mirror, lanterns.
