@@ -145,69 +145,57 @@ which makes it steep; the sheet's stair is shorter than a straight run to a
 placed from the sheet: beds with headboards, dressers, nightstands, vanities,
 toilets, tiled showers with glass, wardrobes in the closet.
 
-## The first floor loses its bathroom and gains a walk-in pantry
+## The pantry and the powder room, from the owner's sketch
 
-The owner does not need a shower on the first floor but does want a pantry,
-and then asked for the whole space. So the sheet's first-floor bathroom is
-the pantry: **9'-1" x 5'-11", 53.3 sf**, entered from the hall through a pair
-of glazed doors.
+The sheet's first-floor bathroom is split in two, to the owner's hand plan of
+2026-10-06:
 
-The shower, toilet, vanity and the shower partition all come out, with the
-bathroom's shiplap. The hall wall is split for a **4'-0" opening**. The tile
-floor stays -- it suits a pantry -- and the east window stays, which is the
-one thing that shapes the fit-out.
+| | size | entered from |
+|---|---|---|
+| **Pantry** | 4'-9" x 5'-11", 27.9 sf | the kitchen, through the seam |
+| **Powder room** | 3'-11" x 5'-11", 23.2 sf | the vestibule, as before |
 
-**The house now has no first-floor bathroom.** The powder room is in the
-basement, off the mudroom at the front right, where the existing-conditions
-set puts it.
+The shower is gone for good. The fridge leaves the seam wall for the tall
+slot at the head of the east run -- 3'-9" wide and 2'-0" deep, which is
+built-in depth -- and the tall pantry cabinet that was there goes, since the
+walk-in replaces it. The pantry then takes the fridge's old place in the seam
+as its door, so it opens off the kitchen where you want it rather than off
+the hall.
 
-### The fit-out
+The hall wall closes up again, and the hall gets its pair of botanical prints
+back: the first of them hung exactly where the old hall door was cut.
 
-After the owner's reference: wood base cabinets down the long north wall
-under a quartz counter, four bays with black bar pulls and a black toe kick,
-three open shelves above on black standards, tall open shelving opposite, and
-a dome pendant over the aisle.
+### The pantry
 
-It is a single run rather than the reference's U because of the east window:
-its sill is at 2'-7" and a counter stands at 3'-0", so a run under it would
-cross the glass. The shelving opposite is 12" deep and stops at the vestibule
-door. That leaves a **2'-11" aisle**, which is a working galley width.
+A 3'-0" glazed door in the seam, 7'-0" tall. Inside, a 24" base run with a
+quartz counter across the south end and three shelves over it, and 12" open
+shelving on black standards down the east wall. A dome pendant over the
+aisle. Nothing on the west wall: the door is at that end of the seam, so a
+run there would stand in it. That leaves a 3'-9" aisle and 3'-11" from the
+door to the counter.
 
-The vestibule door into the old bathroom is left alone, so the pantry has a
-second way in from the vestibule. Easy to wall up if it is not wanted.
+### The powder room
 
-### The doors
+Toilet on the north wall, a small vanity down the west with a round mirror
+over it, and the existing east window. A 2'-8" painted door off the
+vestibule, drawn shut.
 
-A pair of glazed leaves, 2'-0" wide and **8'-0" tall**, in oak rather than
-painted: a stile-and-rail frame with a solid lower panel and a divided light
-from 1'-6" up, 6'-3" of it, so you see the pantry through them. Six lites up
-by two across on each leaf, about 7" by 12" each.
+## Ceilings are 8'-0"
 
-6'-8" is right for the rest of the house but reads short on a feature door
-under a 9'-0" ceiling, so a door may now carry its own `h` and this pair
-stands a foot under the ceiling. `doorH(w)` returns it, and the header, the
-jambs, every kind of leaf and the paint band above all work to it, so the
-same flag works on any door. `liteDoor` builds one leaf in its own
-width and height and lays it into the wall; the pair is two calls either side
-of the opening's centre. Muntins are counted off the glass to keep the lites
-roughly square. `thru: true`, so they are drawn shut and you walk through.
+The default was 9'-0" and is now **8'-0"**, which is what the owner wants.
+Everything that was written against `CEIL` follows it: the cabinet over the
+fridge sizes itself to whatever is left above, the seam uppers skip
+themselves if there is no room, and the pantry's doors stand 7'-0" rather
+than the 8'-0" they took under the taller ceiling.
 
-### Two bugs this turned up
+**One thing to watch**: the beam versions of the kitchen seam drop 14", which
+under a 9'-0" ceiling left 7'-10" of headroom and now leaves **6'-10"** --
+below a standard door head. Worth knowing before the beam is sized, since it
+is the one place the lower ceiling bites.
 
-`doorIn` drew its jambs as though every door sat in a wall running east-west:
-`BoxGeometry(0.2, DOOR_H, t + 0.15)` where `t` is the wall's thickness in that
-case but the door's **width** in a north-south one. In the hall wall that made
-two black slabs filling the doorway, which is what the first pantry door
-looked like. Jambs now stand at the two ends of the opening whichever way the
-wall runs -- which also fixes the attic stair's door.
+## The coffee bar is in by default
 
-The first cut of the pantry was the shower's footprint, 2'-11" by 3'-0" and
-8.9 sf. That is a reach-in larder, not a walk-in, which is why the whole room
-is the pantry now.
-
-And the hall's pair of botanical prints hung at 445 and 555 on the sheet. The
-first of those is inside the pantry's opening now, so the hall keeps one
-print rather than a pair.
+The alcove is the version the page opens on now. **C** still cycles all four.
 
 ## What is on the floor
 

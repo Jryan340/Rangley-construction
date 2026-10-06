@@ -186,9 +186,9 @@
   // Heights are not on the sheet. Everything the eye uses as a ruler is set to
   // the standard size: 6'-8" doors, window heads level with the door heads,
   // 36" counters, 7-1/2" risers. Ceilings are a guess you can change on the page.
-  var CEIL = 9.0;
+  var CEIL = 8.0;                                      // the owner's default, 2026-10-06; was 9'-0"
   var WIN = { sill: 2.6, head: 6.667 };                // existing house
-  var AWIN = { sill: 3.0, head: 7.333 };               // addition, a taller sash under a 9' ceiling
+  var AWIN = { sill: 3.0, head: 7.333 };               // addition, a taller sash: its head is 8" under the ceiling
   var DOOR_H = 6.667;
   function doorH(w) { return w.h || DOOR_H; }          // a feature door can stand taller than 6'-8"
   try { var savedCeil = parseFloat(localStorage.getItem("ts_ceil")); if (savedCeil >= 7.5 && savedCeil <= 10.5) CEIL = savedCeil; } catch (e) {}
@@ -207,7 +207,7 @@
   // toggle crawl. The main build loops always skip the tagged pieces, since
   // the seam section builds them itself.
   var SEAMS = ["in", "open", "beam", "column"];
-  var seam = "open";                                   // out is the default the owner asked for
+  var seam = "in";                                     // the alcove in, the owner's default from 2026-10-06
   try { var sv = localStorage.getItem("ts_seam"); if (SEAMS.indexOf(sv) >= 0) seam = sv; } catch (e) {}
   function notSeam(o) { return !o.coffee; }            // for the build loops
   function seamDrawn(o) { return !o.coffee || seam === "in"; }   // for the plan view
@@ -230,7 +230,8 @@
     { r: [755.2, 822.0, 685.1, 691.8], k: "ext" },
     // ---- the old rear wall, now the seam between house and addition ----
     { r: [412.7, 458.5, 392.2, 399.5], k: "ext" },                       // opening 458.5 to 692.9 into the kitchen
-    { r: [692.9, 822.0, 392.2, 399.5], k: "ext" },
+    { r: [692.9, 733.4, 392.2, 399.5], k: "ext", door: true, closed: true, lite: true, thru: true, h: 7.0 },   // into the pantry, where the fridge stood
+    { r: [733.4, 822.0, 392.2, 399.5], k: "ext" },
     // ---- addition: left (west) ----
     { r: [422.4, 432.8, 167.0 - GP, 201.4], k: "add" }, { r: [422.4, 432.8, 201.4, 235.2], k: "add", win: AWIN },
     { r: [422.4, 432.8, 235.2, 262.3], k: "add" }, { r: [422.4, 432.8, 262.3, 296.2], k: "add", win: AWIN },
@@ -255,11 +256,12 @@
     // hall | bath. The first floor loses its shower and the corner becomes a
     // walk-in pantry, entered from the hall through a glazed door, so this wall
     // is split for it: 2'-6" of opening centred on the old shower.
-    { r: [687.8, 692.9, 361.9, 412.2], k: "int" },
-    { r: [687.8, 692.9, 412.2, 466.2], k: "int", door: true, closed: true, lite: true, dbl: true, thru: true, h: 8.0 },   // a 4'-0" glazed pair, 8'-0" tall
-    { r: [687.8, 692.9, 466.2, 484.1], k: "int" },
+    { r: [687.8, 692.9, 361.9, 484.1], k: "int" },                       // hall | pantry and bath, solid again: the pantry opens off the kitchen
     { r: [687.8, 692.9, 531.4, 685.1], k: "int" },                       // hall | closet and study
-    { r: [692.9, 770.2, 478.9, 484.1], k: "int" }, { r: [770.2, 815.2, 478.9, 484.1], k: "int", door: true, hinge: "e", swing: -1, leaf: false },
+    { r: [757.0, 762.0, 399.5, 478.9], k: "int" },                       // pantry | powder room
+    { r: [692.9, 770.6, 478.9, 484.1], k: "int" },
+    { r: [770.6, 806.6, 478.9, 484.1], k: "int", door: true, closed: true, white: true, thru: true },   // the powder room, off the vestibule
+    { r: [806.6, 815.2, 478.9, 484.1], k: "int" },
     { r: [755.5, 770.2, 531.4, 536.4], k: "int" }, { r: [770.2, 815.2, 531.4, 536.4], k: "int", door: true, hinge: "e", swing: 1, leaf: false },
     { r: [692.9, 755.5, 531.4, 536.4], k: "int", door: true, dbl: true, swing: -1 },     // closet double doors
     { r: [692.9, 758.9, 563.5, 568.6], k: "int" },                       // closet | study
@@ -288,8 +290,10 @@
     { n: "Living", r: [419.5, 587.5, 399.5, 685.1], label: "21' x 12'-6\" on the sheet", paint: "acacia" },
     { n: "Hall", r: [593.2, 687.8, 399.5, 576.0], paint: "illusion" },
     { n: "Entry", r: [593.2, 687.8, 576.0, 685.1], label: "7' x 8'-6\" on the sheet", paint: "illusion" },
-    // the sheet's first-floor bathroom, whole, is the walk-in pantry
-    { n: "Pantry", r: [692.9, 815.2, 399.5, 478.9], label: "walk-in, off the hall" },
+    // the sheet's first-floor bathroom, split: the pantry takes the west and
+    // opens off the kitchen, the powder room keeps the east and the vestibule door
+    { n: "Pantry", r: [692.9, 757.0, 399.5, 478.9], label: "walk-in, off the kitchen" },
+    { n: "Powder room", r: [762.0, 815.2, 399.5, 478.9], label: "toilet and sink, off the vestibule" },
     { n: "Vestibule", r: [692.9, 815.2, 484.1, 531.4], paint: "illusion" },
     { n: "Closet", r: [692.9, 758.9, 536.4, 563.5] },
     { n: "Study", r: [692.9, 815.2, 536.4, 685.1], label: "9' x 8'-6\" on the sheet", dimsR: [692.9, 815.2, 568.6, 685.1] },
@@ -310,13 +314,13 @@
     // north to sit centred between the rear wall and the seam run: 4'-8" each way.
     { n: "island", r: [686.4, 723.4, 214.0, 298.4], h: 3.0, m: "stone", island: true },
     { n: "counter", r: [774.6, 801.6, 201.1, 351.7], h: 3.0, m: "cab", eastRun: true },
-    // one pantry over the whole run: the sheet's 24" cabinet plus the 2'-0" the
-    // deeper addition opened up behind it, so 3'-9" on a pair of doors
-    { n: "pantry", r: [774.6, 801.6, 177.5 - GP, 201.1], h: 7.0, m: "cab", pantry: true, face: "w" },
+    // The fridge moves here, into the tall slot at the head of the east run that
+    // the pantry cabinet had: 3'-9" wide and 2'-0" deep, which is built-in depth.
+    // The cabinet itself goes -- the walk-in off the kitchen replaces it.
+    { n: "fridge", r: [774.6, 801.6, 177.5 - GP, 201.1], h: 7.0, m: "steel", fridge: true, face: "w" },
     { n: "drawers", r: [733.4, 760.4, 365.2, 392.2], h: 3.0, m: "cab", drawerBase: true },
+    { n: "seam uppers", r: [733.4, 801.6, 365.2, 392.2], seamUppers: true },
     { n: "corner", r: [760.4, 801.6, 351.7, 392.2], h: 3.0, m: "cab", cornerBase: true },
-    // the sheet draws a 36" fridge and a 36" pantry in this 8'-0" run; the owner wants a big fridge, so it is a 48" built-in and the pantry is a 24" cabinet
-    { n: "fridge", r: [692.9, 733.4, 361.9, 392.2], h: 7.0, m: "steel", fridge: true },
     { n: "coffee bar", r: [552.4, 634.9, 364.0, 390.1], h: 3.0, m: "cab", coffee: true },
     // the owner's own table, 7'-0" x 3'-6". The sheet's table was centred on
     // (543.05, 278.55); with a shorter table and two more feet of room it sits
@@ -329,7 +333,8 @@
 
     { n: "console", r: [640.7, 684.0, 666.0, 681.0], console: true },
     { n: "study", r: [692.9, 815.2, 568.6, 685.1], study: true },
-    { n: "larder", r: [692.9, 815.2, 399.5, 478.9], larder: true },
+    { n: "larder", r: [692.9, 757.0, 399.5, 478.9], larder: true },
+    { n: "powder", r: [762.0, 815.2, 399.5, 478.9], powder: true },
     { n: "porch", r: [431.6, 630.8, 43.7 - GP, 167.0 - GP], porch: true },
     // the sheet's deck sofa sat just east of the split, which now puts it behind
     // the screen door, so it moves to the east rail
@@ -1537,24 +1542,49 @@
     var sp = new T.Sprite(new T.SpriteMaterial({ map: tex, transparent: true })); sp.scale.set(2.4, 0.6, 1); sp.position.set(x, y, z); scene.add(sp); fixLabels.push(sp); return sp;
   }
   function plank(w, h, d, x, y, z, mat) { var m = new T.Mesh(new T.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; scene.add(m); return m; }
-  function buildFridge(r) {
-    var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]), cx = (x1 + x2) / 2, w = x2 - x1;
-    box(r, 0, 7.0, MAT.steel);
-    var face = zN - 0.02;                                     // doors on the face that looks into the kitchen
-    plank(w / 2 - 0.08, 4.2, 0.06, cx - w / 4 - 0.02, 4.85, face - 0.03, MAT.steel);   // french doors
-    plank(w / 2 - 0.08, 4.2, 0.06, cx + w / 4 + 0.02, 4.85, face - 0.03, MAT.steel);
-    plank(w - 0.1, 2.5, 0.06, cx, 1.35, face - 0.03, MAT.steel);                       // freezer drawer
-    plank(0.07, 2.2, 0.12, cx - 0.16, 4.6, face - 0.12, MAT.frame); plank(0.07, 2.2, 0.12, cx + 0.16, 4.6, face - 0.12, MAT.frame);
-    plank(1.6, 0.07, 0.12, cx, 2.35, face - 0.12, MAT.frame);
-    // the cabinet over the fridge, and the uppers along the seam wall over the drawers and the corner
-    plank(w, 1.5, zS - zN, cx, 7.75, (zN + zS) / 2, MAT.shaker); shakerDoor(cx - w / 4, 7.75, zN, w / 2 - 0.08, 1.35, "n", MAT.shaker, MAT.shakerIn, null); shakerDoor(cx + w / 4, 7.75, zN, w / 2 - 0.08, 1.35, "n", MAT.shaker, MAT.shakerIn, null);
-    var ux1 = x2 + 0.05, ux2 = fx(801.6), uz = fz(392.2) - 0.5;
-    plank(ux2 - ux1, 3.0, 1.0, (ux1 + ux2) / 2, 6.1, uz, MAT.shaker);
-    var nu = Math.max(1, Math.round((ux2 - ux1) / 1.5)), du = (ux2 - ux1) / nu;
-    for (var i = 0; i < nu; i++) shakerDoor(ux1 + du * (i + 0.5), 6.1, uz - 0.5, du - 0.08, 2.85, "n", MAT.shaker, MAT.shakerIn, { vert: true, y: 5.0, off: 0 });
-    plank(ux2 - ux1 - 0.2, 0.03, 0.9, (ux1 + ux2) / 2, 4.6, uz, MAT.bulb);
-    fixLabel("Fridge", cx, 9.2, (zN + zS) / 2);
+  // The fridge, now in the tall slot at the head of the east run: built-in
+  // depth, doors on the face that looks into the kitchen, and a cabinet over it
+  // that works to whatever the ceiling is rather than a 9'-0" one.
+  function buildFridge(r, face) {
+    var x1 = fx(r[0]), x2 = fx(r[1]), zN = fz(r[2]), zS = fz(r[3]);
+    var cx = (x1 + x2) / 2, cz = (zN + zS) / 2, H = 7.0;
+    var west = face === "w";                                  // otherwise it faces north, off the seam wall
+    var span = west ? zS - zN : x2 - x1;                      // what you see of it
+    var dep = west ? x2 - x1 : zS - zN;
+    var f = west ? x1 - 0.02 : zN - 0.02;                     // the face itself
+    box(r, 0, H, MAT.steel);
+    function front(wd, ht, u, y, out, mat) {                  // u runs across the face
+      var px = west ? f - out : cx + u, pz = west ? cz + u : f - out;
+      plank(west ? 0.06 : wd, ht, west ? wd : 0.06, px, y, pz, mat);
+    }
+    front(span / 2 - 0.08, 4.2, -span / 4 - 0.02, 4.85, 0.03, MAT.steel);     // french doors
+    front(span / 2 - 0.08, 4.2, span / 4 + 0.02, 4.85, 0.03, MAT.steel);
+    front(span - 0.1, 2.5, 0, 1.35, 0.03, MAT.steel);                          // freezer drawer
+    front(0.12, 2.2, -0.16, 4.6, 0.12, MAT.frame); front(0.12, 2.2, 0.16, 4.6, 0.12, MAT.frame);
+    front(0.12, 0.07, 0, 2.35, 0.12, MAT.frame);
+    // the cabinet over it: whatever is left between the fridge and the ceiling
+    var oh = Math.max(0.4, CEIL - H);
+    plank(west ? dep : span, oh, west ? span : dep, cx, H + oh / 2, cz, MAT.shaker);
+    if (oh > 0.7) {
+      var dn = west ? cz : cx;
+      [-span / 4, span / 4].forEach(function (u) {
+        shakerDoor(west ? f : cx + u, H + oh / 2, west ? dn + u : f, span / 2 - 0.08, oh - 0.15,
+                   west ? "w" : "n", MAT.shaker, MAT.shakerIn, null);
+      });
+    }
+    fixLabel("Fridge", cx, CEIL - 0.6, cz);
   }
+  // The uppers along the seam wall, over the drawer base and the corner, which
+  // used to be built with the fridge when the fridge stood on that wall.
+  function buildSeamUppers(r) {
+    var x1 = fx(r[0]), x2 = fx(r[1]), z = fz(r[3]) - 0.5, top = CEIL - 0.1, bot = 4.5;
+    if (top - bot < 1.0) return;
+    plank(x2 - x1, top - bot, 1.0, (x1 + x2) / 2, (bot + top) / 2, z, MAT.shaker);
+    var nu = Math.max(1, Math.round((x2 - x1) / 1.5)), du = (x2 - x1) / nu;
+    for (var i = 0; i < nu; i++) shakerDoor(x1 + du * (i + 0.5), (bot + top) / 2, z - 0.5, du - 0.08, top - bot - 0.15, "n", MAT.shaker, MAT.shakerIn, { vert: true, y: (bot + top) / 2 - 0.4, off: 0 });
+    plank(x2 - x1 - 0.2, 0.03, 0.9, (x1 + x2) / 2, bot - 0.1, z, MAT.bulb);     // under-cabinet light
+  }
+
   // A shaker door: a frame standing 1/2" proud with the centre panel set back,
   // and a black pull. `n` is the direction the door faces: "w", "e", "n" or "s".
   function shakerDoor(cx, cy, cz, w, h, n, outer, inner, pullAt) {
@@ -1791,38 +1821,69 @@
   // and east walls on standards, with the hall's light through the glazed door.
   // The shelves carry no collider: the room is 2'-11" by 3'-0" and a body is
   // 1'-4" across, so solid shelving would leave nothing to stand in.
+  // The walk-in pantry, west of the powder room and entered from the kitchen
+  // through the seam where the fridge stood. The door is in the north wall, so
+  // the fit-out is a U around it: 12" open shelving down both sides and a 24"
+  // base run with a counter across the far end, shelves above.
   function buildLarder(r) {
-    var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]), len = E - W, cx = (W + E) / 2, cz = (N + S) / 2;
-    var CDEP = 2.0, SDEP = 1.0;                                        // 24" of base cabinet, 12" of open shelf opposite
-    // ---- the north run: wood base cabinets, quartz top, open shelves above ----
-    box([r[0], r[1], r[2], r[2] + CDEP / PT], 0, 2.88, MAT.vanityWood);
-    plank(len, 0.33, 0.02, cx, 0.165, N + 0.26, MAT.ironBlk);          // toe kick
-    var bays = Math.round(len / 2.2), bw = len / bays;
+    var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]), cx = (W + E) / 2;
+    var SD = 1.0, CD = 2.0;                                  // 12" of shelf a side, 24" of base at the end
+    // the base run across the south end
+    box([r[0], r[1], r[3] - CD / PT, r[3]], 0, 2.88, MAT.vanityWood);
+    plank(E - W, 0.33, 0.02, cx, 0.165, S - 0.26, MAT.ironBlk);
+    var bays = Math.max(2, Math.round((E - W) / 2.2)), bw = (E - W) / bays;
     for (var b = 0; b < bays; b++) {
       var bx = W + bw * (b + 0.5);
-      plank(bw - 0.08, 0.72, 0.03, bx, 2.42, N + CDEP + 0.015, MAT.vanityWood);     // a drawer over
-      plank(bw - 0.08, 1.5, 0.03, bx, 1.5, N + CDEP + 0.015, MAT.vanityWood);       // a door under
-      plank(bw * 0.45, 0.07, 0.05, bx, 2.42, N + CDEP + 0.05, MAT.ironBlk);         // black bar pulls
-      plank(bw * 0.45, 0.07, 0.05, bx, 2.05, N + CDEP + 0.05, MAT.ironBlk);
+      plank(bw - 0.08, 0.72, 0.03, bx, 2.42, S - CD - 0.015, MAT.vanityWood);
+      plank(bw - 0.08, 1.5, 0.03, bx, 1.5, S - CD - 0.015, MAT.vanityWood);
+      plank(bw * 0.45, 0.07, 0.05, bx, 2.42, S - CD - 0.05, MAT.ironBlk);
+      plank(bw * 0.45, 0.07, 0.05, bx, 2.05, S - CD - 0.05, MAT.ironBlk);
     }
-    plank(len + 0.06, 0.14, CDEP + 0.1, cx, 2.95, N + CDEP / 2 - 0.05, MAT.quartz); // counter
-    plank(len, 0.3, 0.05, cx, 3.17, N + 0.025, MAT.quartz);                          // backsplash lip
-    colliders.push([W, E, N, N + CDEP]);
-    [4.0, 4.95, 5.9].forEach(function (y) { plank(len - 0.3, 0.12, 1.1, cx, y, N + 0.6, MAT.seatWood); });
-    for (var st = 0; st <= 3; st++) { var sx = W + 0.25 + (len - 0.5) * st / 3; plank(0.12, 2.5, 0.09, sx, 4.75, N + 0.08, MAT.ironBlk); }
-    // ---- opposite: tall open shelving, stopping short of the vestibule door ----
-    var sx2 = fx(770.2);
-    [1.3, 2.5, 3.7, 4.9, 6.1].forEach(function (y) { plank(sx2 - W - 0.2, 0.1, SDEP, (W + sx2) / 2, y, S - SDEP / 2, MAT.seatWood); });
-    [W + 0.2, (W + sx2) / 2, sx2 - 0.2].forEach(function (x) { plank(0.1, 6.3, 0.08, x, 3.15, S - 0.08, MAT.ironBlk); });
-    colliders.push([W, sx2, S - SDEP, S]);
-    // ---- a pendant over the aisle, like the reference ----
-    var aisle = (N + CDEP + S - SDEP) / 2;
-    plank(0.06, 1.5, 0.06, cx, CEIL - 0.75, aisle, MAT.ironBlk);
-    var dome = new T.Mesh(new T.SphereGeometry(0.75, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), MAT.bloom);
-    dome.rotation.x = Math.PI; dome.position.set(cx, CEIL - 1.5, aisle); scene.add(dome);
-    lamp(cx, aisle, CEIL - 1.7, 0.55);
-    fixLabel("Pantry", cx, 7.4, cz);
+    plank(E - W + 0.06, 0.14, CD + 0.1, cx, 2.95, S - CD / 2 + 0.05, MAT.quartz);
+    plank(E - W, 0.3, 0.05, cx, 3.17, S - 0.025, MAT.quartz);
+    colliders.push([W, E, S - CD, S]);
+    [4.0, 4.9, 5.8].forEach(function (y) { plank(E - W - 0.3, 0.12, 1.0, cx, y, S - 0.55, MAT.seatWood); });
+    // Open shelving down the east side only. The door is at the west end of the
+    // north wall, where the fridge stood, so a west run would stand in it.
+    [[E, -1]].forEach(function (side) {
+      var x = side[0], d = side[1];
+      [1.3, 2.4, 3.5, 4.6, 5.7].forEach(function (y) {
+        plank(SD, 0.1, S - CD - N - 0.2, x + d * SD / 2, y, (N + S - CD) / 2, MAT.seatWood);
+      });
+      [N + 0.2, (N + S - CD) / 2, S - CD - 0.2].forEach(function (z) { plank(0.08, 5.9, 0.1, x + d * 0.08, 3.5, z, MAT.ironBlk); });
+      colliders.push([Math.min(x, x + d * SD), Math.max(x, x + d * SD), N, S - CD]);
+    });
+    var aisle = (N + S - CD) / 2;
+    plank(0.06, 1.1, 0.06, cx, CEIL - 0.55, aisle, MAT.ironBlk);
+    var dome = new T.Mesh(new T.SphereGeometry(0.62, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), MAT.bloom);
+    dome.rotation.x = Math.PI; dome.position.set(cx, CEIL - 1.1, aisle); scene.add(dome);
+    lamp(cx, aisle, CEIL - 1.3, 0.5);
+    fixLabel("Pantry", cx, CEIL - 0.5, (N + S) / 2);
   }
+  // The powder room the first floor keeps: toilet on the far wall, a small
+  // vanity down the side, the existing window over it. No shower.
+  function buildPowder(r) {
+    var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]), cx = (W + E) / 2;
+    // toilet against the north wall
+    var tx = cx + 0.35;
+    plank(1.5, 1.3, 0.6, tx, 1.95, N + 0.32, MAT.porcelain);
+    var bowl = new T.Mesh(new T.CylinderGeometry(0.62, 0.5, 1.2, 20), MAT.porcelain); bowl.scale.set(1, 1, 1.35); bowl.position.set(tx, 0.6, N + 1.35); scene.add(bowl);
+    var seat = new T.Mesh(new T.CylinderGeometry(0.66, 0.66, 0.08, 20), MAT.porcelain); seat.scale.set(1, 1, 1.35); seat.position.set(tx, 1.24, N + 1.35); scene.add(seat);
+    colliders.push([tx - 0.75, tx + 0.75, N, N + 2.2]);
+    // vanity down the west wall, clear of the door swing
+    var vx1 = W, vx2 = W + 1.6, vz1 = N + 2.6, vz2 = vz1 + 2.3, vcx = (vx1 + vx2) / 2, vcz = (vz1 + vz2) / 2;
+    plank(vx2 - vx1, 2.6, vz2 - vz1, vcx, 1.3, vcz, MAT.vanityWood);
+    plank(vx2 - vx1 + 0.08, 0.14, vz2 - vz1 + 0.08, vcx, 2.67, vcz, MAT.quartz);
+    plank(0.05, 0.3, vz2 - vz1, vx1 + 0.025, 2.89, vcz, MAT.quartz);
+    colliders.push([vx1, vx2, vz1, vz2]);
+    var sink = new T.Mesh(new T.CylinderGeometry(0.5, 0.4, 0.12, 20), MAT.porcelain); sink.scale.set(1, 1, 1.15); sink.position.set(vcx + 0.1, 2.72, vcz); scene.add(sink);
+    var spout = new T.Mesh(new T.CylinderGeometry(0.035, 0.035, 0.65, 8), MAT.bronze); spout.position.set(vx1 + 0.3, 3.05, vcz); scene.add(spout);
+    var neck = new T.Mesh(new T.TorusGeometry(0.2, 0.03, 8, 12, Math.PI), MAT.bronze); neck.position.set(vx1 + 0.5, 3.37, vcz); scene.add(neck);
+    hangMirror(vx1 + 0.05, 4.5, vcz, "e", 0.72, MAT.ironBlk);
+    lamp(cx, (N + S) / 2, CEIL - 0.5, 0.4);
+    fixLabel("Powder room", cx, CEIL - 0.5, (N + S) / 2);
+  }
+
 
   // The study, after the reference: charcoal built-ins with lit shelves and a
   // painting along the west wall, a walnut desk on a black frame floated in
@@ -2522,14 +2583,16 @@
     if (s.porch) { buildPorch(s.r); return; }
     if (s.study) { buildStudy(s.r); return; }
     if (s.larder) { buildLarder(s.r); return; }
+    if (s.powder) { buildPowder(s.r); return; }
     if (s.island) { buildIsland(s.r); return; }
     if (s.eastRun) { buildEastRun(s.r); return; }
     if (s.tallWhite) { buildTallWhite(s.r, s.face); return; }
     if (s.dining) { buildDining(s.r); return; }
     if (s.couch) { buildCouch(s.r); return; }
-    if (s.fridge) { buildFridge(s.r); return; }
+    if (s.fridge) { buildFridge(s.r, s.face); return; }
     if (s.pantry) { buildPantry(s.r, s.face); return; }
     if (s.drawerBase) { buildDrawerBase(s.r); return; }
+    if (s.seamUppers) { buildSeamUppers(s.r); return; }
     if (s.cornerBase) { buildCornerBase(s.r); return; }
     if (s.coffee) { buildCoffee(s.r); return; }
     if (s.round) {
@@ -2619,7 +2682,8 @@
   }
   if (fi === 0) {
     hangMirror(fx(662.35), 5.0, fz(685.1), "n", 1.1, MAT.ironBlk);                                      // over the entry bench
-    hangArt(fx(687.8), 5.2, fz(555), "w", 1.6, 2.0, TEX.mono, MAT.ironBlk);   // the hall's one print: its pair hung where the pantry doors are now
+    hangArt(fx(687.8), 5.2, fz(445), "w", 1.6, 2.0, TEX.botanical, MAT.seatWood);                       // down the hall, a pair
+    hangArt(fx(687.8), 5.2, fz(555), "w", 1.6, 2.0, TEX.mono, MAT.ironBlk);
     hangArt(fx(815.2), 5.2, fz(507.75), "w", 2.0, 1.5, TEX.frameArt, MAT.ironBlk);                     // the vestibule's east wall
   } else if (fi === 1) {
     hangArt(fx(616), 5.4, fz(399.5), "s", 2.6, 3.2, TEX.art, MAT.ironBlk);                              // facing you at the top of the stairs
