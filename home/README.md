@@ -178,9 +178,16 @@ second way in from the vestibule. Easy to wall up if it is not wanted.
 
 ### The doors
 
-A pair of glazed leaves, 2'-0" each, in oak rather than painted: a
-stile-and-rail frame with a solid lower panel and a divided light from 1'-6"
-up, so you see the pantry through them. `liteDoor` builds one leaf in its own
+A pair of glazed leaves, 2'-0" wide and **8'-0" tall**, in oak rather than
+painted: a stile-and-rail frame with a solid lower panel and a divided light
+from 1'-6" up, 6'-3" of it, so you see the pantry through them. Six lites up
+by two across on each leaf, about 7" by 12" each.
+
+6'-8" is right for the rest of the house but reads short on a feature door
+under a 9'-0" ceiling, so a door may now carry its own `h` and this pair
+stands a foot under the ceiling. `doorH(w)` returns it, and the header, the
+jambs, every kind of leaf and the paint band above all work to it, so the
+same flag works on any door. `liteDoor` builds one leaf in its own
 width and height and lays it into the wall; the pair is two calls either side
 of the opening's centre. Muntins are counted off the glass to keep the lites
 roughly square. `thru: true`, so they are drawn shut and you walk through.
@@ -197,6 +204,10 @@ wall runs -- which also fixes the attic stair's door.
 The first cut of the pantry was the shower's footprint, 2'-11" by 3'-0" and
 8.9 sf. That is a reach-in larder, not a walk-in, which is why the whole room
 is the pantry now.
+
+And the hall's pair of botanical prints hung at 445 and 555 on the sheet. The
+first of those is inside the pantry's opening now, so the hall keeps one
+print rather than a pair.
 
 ## What is on the floor
 

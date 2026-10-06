@@ -190,6 +190,7 @@
   var WIN = { sill: 2.6, head: 6.667 };                // existing house
   var AWIN = { sill: 3.0, head: 7.333 };               // addition, a taller sash under a 9' ceiling
   var DOOR_H = 6.667;
+  function doorH(w) { return w.h || DOOR_H; }          // a feature door can stand taller than 6'-8"
   try { var savedCeil = parseFloat(localStorage.getItem("ts_ceil")); if (savedCeil >= 7.5 && savedCeil <= 10.5) CEIL = savedCeil; } catch (e) {}
 
   // The coffee bar alcove can be taken out to see the kitchen run straight
@@ -255,7 +256,7 @@
     // walk-in pantry, entered from the hall through a glazed door, so this wall
     // is split for it: 2'-6" of opening centred on the old shower.
     { r: [687.8, 692.9, 361.9, 412.2], k: "int" },
-    { r: [687.8, 692.9, 412.2, 466.2], k: "int", door: true, closed: true, lite: true, dbl: true, thru: true },   // 4'-0" of glazed pair
+    { r: [687.8, 692.9, 412.2, 466.2], k: "int", door: true, closed: true, lite: true, dbl: true, thru: true, h: 8.0 },   // a 4'-0" glazed pair, 8'-0" tall
     { r: [687.8, 692.9, 466.2, 484.1], k: "int" },
     { r: [687.8, 692.9, 531.4, 685.1], k: "int" },                       // hall | closet and study
     { r: [692.9, 770.2, 478.9, 484.1], k: "int" }, { r: [770.2, 815.2, 478.9, 484.1], k: "int", door: true, hinge: "e", swing: -1, leaf: false },
@@ -965,7 +966,7 @@
     if (w.k === "guard") { box(r, 0, 3.0, MAT.int); var gx1 = fx(r[0]), gx2 = fx(r[1]), gz1 = fz(r[2]), gz2 = fz(r[3]); var cap = new T.Mesh(new T.BoxGeometry(gx2 - gx1 + 0.2, 0.2, gz2 - gz1 + 0.2), MAT.pull); cap.position.set((gx1 + gx2) / 2, 3.1, (gz1 + gz2) / 2); scene.add(cap); return; }
     if (!w.door && !w.slider) baseboard(r);
     var seam = w.r[2] >= 391.0 && w.r[3] <= 400.5;      // the old rear wall: an exterior wall once, now the seam between house and addition
-    if ((w.k === "ext" || w.k === "add") && !seam) { if (w.win) { cladOut(w, 0, w.win.sill); cladOut(w, w.win.head, CEIL); } else if (w.door) cladOut(w, DOOR_H, CEIL); else if (!w.slider) cladOut(w, 0, CEIL); }
+    if ((w.k === "ext" || w.k === "add") && !seam) { if (w.win) { cladOut(w, 0, w.win.sill); cladOut(w, w.win.head, CEIL); } else if (w.door) cladOut(w, doorH(w), CEIL); else if (!w.slider) cladOut(w, 0, CEIL); }
     if (w.win) {
       box(r, 0, w.win.sill, mat); box(r, w.win.head, CEIL, mat);
       glassIn(r, w.win.sill, w.win.head);
@@ -973,7 +974,7 @@
       box(r, 8.0, CEIL, mat, { solid: false });          // a header is above your head, not in your way
       slider(r);
     } else if (w.door) {
-      box(r, DOOR_H, CEIL, mat, { solid: false });
+      box(r, doorH(w), CEIL, mat, { solid: false });
       doorIn(w);
     } else box(r, 0, CEIL, mat);
   });
@@ -1026,21 +1027,21 @@
   }
   function doorIn(w) {
     var r = w.r, x1 = fx(r[0]), x2 = fx(r[1]), z1 = fz(r[2]), z2 = fz(r[3]);
-    var wide = x2 - x1, t = z2 - z1, cz = (z1 + z2) / 2;
+    var wide = x2 - x1, t = z2 - z1, cz = (z1 + z2) / 2, DH = doorH(w);
     // An open doorway gets nothing but its opening: no jambs, no leaf. Only the
     // closets' double doors are drawn.
     if (w.leaf === false) return;
     // Jambs stand at the two ends of the opening, whichever way the wall runs.
     // Written for an east-west wall only, they came out in a north-south one as
     // two black slabs filling the doorway.
-    if (t > wide) [z1 + 0.1, z2 - 0.1].forEach(function (jz) { var j = new T.Mesh(new T.BoxGeometry(wide + 0.15, DOOR_H, 0.2), MAT.frame); j.position.set((x1 + x2) / 2, DOOR_H / 2, jz); scene.add(j); });
-    else [x1 + 0.1, x2 - 0.1].forEach(function (jx) { var j = new T.Mesh(new T.BoxGeometry(0.2, DOOR_H, t + 0.15), MAT.frame); j.position.set(jx, DOOR_H / 2, cz); scene.add(j); });
+    if (t > wide) [z1 + 0.1, z2 - 0.1].forEach(function (jz) { var j = new T.Mesh(new T.BoxGeometry(wide + 0.15, DH, 0.2), MAT.frame); j.position.set((x1 + x2) / 2, DH / 2, jz); scene.add(j); });
+    else [x1 + 0.1, x2 - 0.1].forEach(function (jx) { var j = new T.Mesh(new T.BoxGeometry(0.2, DH, t + 0.15), MAT.frame); j.position.set(jx, DH / 2, cz); scene.add(j); });
     if (w.dbl) {
       // The closet's pair of doors, drawn closed. Open, the west leaf would stand
       // in the hall opening, which is exactly where the closet's west jamb sits.
       [[x1 + 0.2, x1 + wide / 2 - 0.03], [x1 + wide / 2 + 0.03, x2 - 0.2]].forEach(function (p) {
-        var leaf = new T.Mesh(new T.BoxGeometry(p[1] - p[0], DOOR_H - 0.1, 0.15), MAT.door);
-        leaf.position.set((p[0] + p[1]) / 2, DOOR_H / 2, cz); scene.add(leaf);
+        var leaf = new T.Mesh(new T.BoxGeometry(p[1] - p[0], DH - 0.1, 0.15), MAT.door);
+        leaf.position.set((p[0] + p[1]) / 2, DH / 2, cz); scene.add(leaf);
         var knob = new T.Mesh(new T.SphereGeometry(0.07, 10, 8), MAT.steel); knob.position.set(p[0] < x1 + wide / 2 ? p[1] - 0.3 : p[0] + 0.3, 3.1, cz + 0.12); scene.add(knob);
       });
       colliders.push([x1, x2, Math.min(z1, z2), Math.max(z1, z2)]);
@@ -1051,7 +1052,7 @@
     // a solid lower panel, after the reference the owner gave for the pantry.
     // Built in the leaf's own width-and-height axes, then laid into the wall.
     function liteDoor(alongZ, cxm, cz, span, mat) {
-      var LW = span - 0.1, LH = DOOR_H - 0.05, TH = 0.15;
+      var LW = span - 0.1, LH = DH - 0.05, TH = 0.15;
       function piece(u0, u1, v0, v1, m, th) {
         var w = u1 - u0, h = v1 - v0; if (w <= 0.002 || h <= 0.002) return;
         var t = th || TH, uc = (u0 + u1) / 2 - LW / 2;
@@ -1067,7 +1068,7 @@
       piece(stile, gU1, gV1, LH, mat);                                          // top rail
       piece(gU0, gU1, gV0, gV1, MAT.glass, 0.04);                               // the light
       var gw = gU1 - gU0, gh = gV1 - gV0;                                       // muntins, on roughly square lites
-      var cols = Math.max(1, Math.round(gw / 0.55)), rows = Math.max(1, Math.round(gh / 0.75));
+      var cols = Math.max(1, Math.round(gw / 0.55)), rows = Math.max(1, Math.round(gh / 1.0));
       for (var c = 1; c < cols; c++) { var u = gU0 + gw * c / cols; piece(u - 0.03, u + 0.03, gV0, gV1, mat, 0.085); }
       for (var rr = 1; rr < rows; rr++) { var v = gV0 + gh * rr / rows; piece(gU0, gU1, v - 0.03, v + 0.03, mat, 0.085); }
     }
@@ -1081,15 +1082,15 @@
         if (alongZ) { liteDoor(true, cxm, cz - half / 2, half, MAT.door); liteDoor(true, cxm, cz + half / 2, half, MAT.door); }
         else { liteDoor(false, cxm - half / 2, cz, half, MAT.door); liteDoor(false, cxm + half / 2, cz, half, MAT.door); }
       } else if (w.lite) liteDoor(alongZ, cxm, cz, span, MAT.door);
-      else { var shut = new T.Mesh(new T.BoxGeometry(alongZ ? 0.15 : span - 0.1, DOOR_H - 0.05, alongZ ? span - 0.1 : 0.15), w.white ? MAT.trim : MAT.door); shut.position.set(cxm, DOOR_H / 2, cz); scene.add(shut); }
+      else { var shut = new T.Mesh(new T.BoxGeometry(alongZ ? 0.15 : span - 0.1, DH - 0.05, alongZ ? span - 0.1 : 0.15), w.white ? MAT.trim : MAT.door); shut.position.set(cxm, DH / 2, cz); scene.add(shut); }
       var kb = new T.Mesh(new T.SphereGeometry(0.07, 10, 8), MAT.pull); kb.position.set(alongZ ? cxm + 0.12 : cxm + span / 2 - 0.4, 3.1, alongZ ? cz + span / 2 - 0.4 : cz + 0.12); scene.add(kb);
       if (!w.thru) colliders.push([x1, x2, Math.min(z1, z2), Math.max(z1, z2)]);
       return;
     }
     var hingeX = w.hinge === "e" ? x2 : x1, dir = w.hinge === "e" ? -1 : 1;
     var swing = w.swing || 1;                                   // +1 opens toward +z (south), -1 toward north
-    var leaf = new T.Mesh(new T.BoxGeometry(0.15, DOOR_H - 0.1, wide - 0.2), MAT.door);
-    leaf.position.set(hingeX + dir * 0.12, DOOR_H / 2, cz + swing * (wide / 2));
+    var leaf = new T.Mesh(new T.BoxGeometry(0.15, DH - 0.1, wide - 0.2), MAT.door);
+    leaf.position.set(hingeX + dir * 0.12, DH / 2, cz + swing * (wide / 2));
     scene.add(leaf);
     var knob = new T.Mesh(new T.SphereGeometry(0.08, 10, 8), MAT.steel); knob.position.set(hingeX + dir * 0.2, 3.1, cz + swing * (wide - 0.5)); scene.add(knob);
     colliders.push([hingeX + dir * 0.12 - 0.1, hingeX + dir * 0.12 + 0.1, Math.min(cz, cz + swing * wide), Math.max(cz, cz + swing * wide)]);
@@ -2598,7 +2599,7 @@
       var fixed = n === "e" ? fx(r[1]) : n === "w" ? fx(r[0]) : n === "s" ? fz(r[3]) : fz(r[2]);
       var A = horiz ? fx(a) : fz(a), B = horiz ? fx(b) : fz(b);
       var lo = 0, hi = CEIL, bands = [];
-      if (w.win) bands = [[0, w.win.sill], [w.win.head, CEIL]]; else if (w.door) bands = [[DOOR_H, CEIL]]; else bands = [[0, CEIL]];
+      if (w.win) bands = [[0, w.win.sill], [w.win.head, CEIL]]; else if (w.door) bands = [[doorH(w), CEIL]]; else bands = [[0, CEIL]];
       bands.forEach(function (bd) { if (horiz) face(A, B, fixed, fixed, n, bd[0], bd[1]); else face(fixed, fixed, A, B, n, bd[0], bd[1]); });
     });
   });
@@ -2618,8 +2619,7 @@
   }
   if (fi === 0) {
     hangMirror(fx(662.35), 5.0, fz(685.1), "n", 1.1, MAT.ironBlk);                                      // over the entry bench
-    hangArt(fx(687.8), 5.2, fz(445), "w", 1.6, 2.0, TEX.botanical, MAT.seatWood);                       // down the hall, a pair
-    hangArt(fx(687.8), 5.2, fz(555), "w", 1.6, 2.0, TEX.mono, MAT.ironBlk);
+    hangArt(fx(687.8), 5.2, fz(555), "w", 1.6, 2.0, TEX.mono, MAT.ironBlk);   // the hall's one print: its pair hung where the pantry doors are now
     hangArt(fx(815.2), 5.2, fz(507.75), "w", 2.0, 1.5, TEX.frameArt, MAT.ironBlk);                     // the vestibule's east wall
   } else if (fi === 1) {
     hangArt(fx(616), 5.4, fz(399.5), "s", 2.6, 3.2, TEX.art, MAT.ironBlk);                              // facing you at the top of the stairs
