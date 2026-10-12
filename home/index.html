@@ -526,38 +526,44 @@
     // ---- the existing mechanical room keeps the whole west side, rear wall to front, as it is; its two doors open to the vestibule and the hall ----
     { r: [623.4, 629.0, 485.6, 588.6], k: "int" },                                 // hall | stair
     { r: [629.0, 671.4, 467.6, 472.6], k: "int" },                                 // the back of the stair, closed toward the vestibule
-    { r: [671.4, 686.5, 411.6, 426.2], k: "int" }, { r: [671.4, 686.5, 467.6, 596.5], k: "int" }, { r: [671.4, 686.5, 596.5, 684.6], k: "int" },   // vestibule | mudroom with the opening between; stair and nook | east storage
+    { r: [671.4, 686.5, 411.6, 426.2], k: "int" }, { r: [671.4, 686.5, 467.6, 596.5], k: "int" }, { r: [671.4, 686.5, 596.5, 613.1], k: "int" },   // vestibule | mudroom with the opening between
+    { r: [671.4, 686.5, 613.1, 652.4], k: "int", door: true, leaf: false }, { r: [671.4, 686.5, 652.4, 684.6], k: "int" },   // the 2'-11" opening PR-00 of 2026-10-11 cuts east of the stair foot
     { r: [569.5, 574.6, 414.7, 437.0], k: "int" }, { r: [569.5, 574.6, 437.0, 473.0], k: "int", door: true, leaf: false }, { r: [569.5, 574.6, 473.0, 630.0], k: "int" },
     { r: [569.5, 574.6, 630.0, 666.0], k: "int", door: true, leaf: false }, { r: [569.5, 574.6, 666.0, 677.9], k: "int" },   // mechanical | vestibule and hall, with the existing room's two doors
-    // ---- mudroom and its closets ----
-    { r: [686.5, 700.0, 559.6, 564.6], k: "int" }, { r: [700.0, 736.0, 559.6, 564.6], k: "int", door: true, leaf: false }, { r: [736.0, 762.0, 559.6, 564.6], k: "int" },
-    { r: [762.0, 798.0, 559.6, 564.6], k: "int", door: true, leaf: false }, { r: [798.0, 835.7, 559.6, 564.6], k: "int" },   // mudroom | powder room and laundry, a door to each
-    { r: [757.0, 762.0, 564.6, 684.6], k: "int" },                                                                          // powder room | laundry
-    { r: [802.8, 808.0, 411.6, 412.4], k: "int" }, { r: [802.8, 808.0, 412.4, 482.3], k: "int", door: true, dbl: true, swing: -1 }, { r: [802.8, 808.0, 482.3, 487.9], k: "int" },
-    { r: [802.8, 808.0, 487.9, 557.8], k: "int", door: true, dbl: true, swing: -1 }, { r: [802.8, 808.0, 557.8, 559.6], k: "int" },
-    { r: [808.0, 835.7, 483.0, 488.0], k: "int" }
+    // ---- the east side, from PR-00 of 2026-10-11. The west side is left as it was: the
+    //      owner has asked for that part of the sheet to be reissued. Through the opening east
+    //      of the stair foot, a hall runs north to a shorter mudroom and turns east along the
+    //      front as a corridor; a closet under the mudroom, the powder room off the corridor,
+    //      two closets on the front wall. The basement laundry is gone -- it is upstairs now. ----
+    { r: [733.9, 756.7, 516.7, 521.8], k: "int" }, { r: [756.7, 817.5, 516.7, 521.8], k: "int", door: true, dbl: true, swing: -1 }, { r: [817.5, 835.7, 516.7, 521.8], k: "int" },   // mudroom | closet, double doors
+    { r: [733.9, 739.0, 516.7, 613.1], k: "int" },                                                                          // the hall's east wall
+    { r: [739.0, 835.7, 556.7, 561.8], k: "int" },                                                                          // closet | powder room
+    { r: [739.0, 772.4, 608.0, 613.1], k: "int" }, { r: [772.4, 808.5, 608.0, 613.1], k: "int", door: true, leaf: false }, { r: [808.5, 835.7, 608.0, 613.1], k: "int" },   // powder room, off the corridor
+    { r: [686.5, 692.2, 652.4, 657.6], k: "int" }, { r: [692.2, 753.1, 652.4, 657.6], k: "int", door: true, dbl: true, swing: -1 }, { r: [753.1, 764.6, 652.4, 657.6], k: "int" },
+    { r: [764.6, 825.4, 652.4, 657.6], k: "int", door: true, dbl: true, swing: -1 }, { r: [825.4, 835.7, 652.4, 657.6], k: "int" },   // the two front closets, 4'-6" double doors each
+    { r: [756.1, 761.1, 657.6, 684.6], k: "int" }                                                                           // between them
   ].map(function (w) { w.r = b0(w.r); return w; });
   var ROOMS0 = [
     { n: "Rec room", r: [474.6, 667.8, 165.2, 403.4], label: "14'-4\" x 18'-4\" with the added 2'; 16'-4\" on the sheet", paint: "sunbleached" },
     { n: "Gym", r: [672.8, 832.3, 165.2, 327.6], label: "10' x 14' with the added 2'; 12' on the sheet", paint: "fog" },
     { n: "Side entry", r: [672.8, 832.3, 332.8, 400.3], label: "at grade, off the driveway", paint: "mushroom" },
     { n: "Vestibule", r: [574.6, 671.4, 414.7, 485.6], paint: "mushroom" },
-    { n: "Mudroom", r: [686.5, 802.8, 411.6, 559.6], label: "11' x 8'-7\" on the sheet", paint: "beachcomber" },
-    { n: "Closet", r: [808.0, 835.7, 411.6, 483.0] }, { n: "Closet", r: [808.0, 835.7, 488.0, 557.8] },
+    { n: "Mudroom", r: [686.5, 835.7, 411.6, 516.7], label: "11' x 7'-7\" on the sheet", paint: "beachcomber" },
+    { n: "Closet", r: [739.0, 835.7, 521.8, 556.7], label: "under the mudroom, double doors" },
+    { n: "Hall", r: [686.5, 733.9, 516.7, 613.1], paint: "mushroom" }, { n: "Hall", r: [686.5, 835.7, 613.1, 652.4], label: "along the front, to the closets", paint: "mushroom" },
+    { n: "Closet", r: [686.5, 756.1, 657.6, 684.6] }, { n: "Closet", r: [761.1, 835.7, 657.6, 684.6] },
     { n: "Mechanical", r: [460.0, 569.5, 414.7, 677.9], label: "existing, kept as it is" },
     { n: "Existing hall", r: [574.6, 623.4, 490.7, 588.6], label: "kept as it is, joists exposed", paint: "seasalt" },
     { n: "Foot of the stair", r: [574.6, 671.4, 588.6, 677.9], label: "existing, joists exposed", paint: "seasalt" },
-    { n: "Laundry", r: [686.5, 757.0, 564.6, 684.6], label: "stacked washer and dryer", paint: "seasalt" },
-    { n: "Powder room", r: [762.0, 835.7, 564.6, 684.6], label: "moved here from the west side, with the window", paint: "acacia" }
+    { n: "Powder room", r: [739.0, 835.7, 561.8, 608.0], label: "off the corridor, with the window", paint: "acacia" }
   ].map(function (r) { r.r = b0(r.r); return r; });
   var STUFF0 = [
-    { n: "toilet", r: b0([770.0, 790.0, 656.0, 684.0]), toilet: true, face: "n" },
-    { n: "vanity", r: b0([798.0, 833.0, 656.0, 684.0]), h: 2.8, m: "cab" },
+    { n: "toilet", r: b0([741.0, 761.0, 561.8, 589.8]), toilet: true, face: "s" },   // tank on the north wall, as the sheet's symbol has it
+    { n: "vanity", r: b0([814.0, 835.7, 566.0, 594.0]), h: 2.8, m: "cab" },        // under the window
     { n: "couch", r: b0([476.0, 516.0, 258.0, 352.0]), recCouch: true },
     { n: "console", r: b0([645.0, 661.0, 229.0, 360.0]), h: 1.8, m: "cab" },
     { n: "gym kit", r: b0([672.8, 832.3, 165.2, 327.6]), gymKit: true },
-    { n: "bench", r: b0([690.0, 713.0, 474.0, 520.0]), h: 1.5, m: "cab" },   // short of the powder-room door
-    { n: "laundry", r: b0([686.5, 757.0, 564.6, 684.6]), laundryStack: true },
+    { n: "bench", r: b0([690.0, 713.0, 474.0, 514.0]), h: 1.5, m: "cab" },   // short of the closet wall
     { n: "bench", r: b0([730.0, 830.0, 334.0, 350.0]), h: 1.5, m: "wood" },
     { n: "mechanical", r: b0([460.0, 569.5, 414.7, 677.9]), mechanical: true },
   ];

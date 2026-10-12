@@ -78,9 +78,19 @@ after the change and are identical.
 | PR-02 | a **laundry closet** out of the primary closet's corner, off the vestibule |
 | PR-00 | the west hallway and powder room absorbed into storage -- **not applied** |
 
-The basement is left exactly as it was. The owner has asked for that sheet to
-be reissued with the hallway beside the utility room and the door to the back
-room kept, so `PLAN_LINES0` still comes from the 2026-09-27 set.
+The basement's **west side** is left exactly as it was: the owner has asked for
+that part of the sheet to be reissued with the hallway beside the utility room
+and the door to the back room kept, so `PLAN_LINES0` still comes from the
+2026-09-27 set and the vestibule's door into the mudroom stays open.
+
+The **east side** follows the new sheet. A 2'-11" opening is cut in the
+existing wall east of the stair foot; through it a 3'-6" hall runs north to a
+mudroom now 11'-0" x 7'-7", and turns east along the front as an 11'-0" x
+2'-11" corridor. A 7'-2" x 2'-7" closet sits under the mudroom on double
+doors; the powder room, 7'-2" x 3'-5", opens off the corridor with its sink
+under the window; two 2'-0"-deep closets on the front wall take 4'-6" double
+doors each. The mudroom's two east closets are gone, and so is the basement
+laundry, which is upstairs now.
 
 ### The columns
 
