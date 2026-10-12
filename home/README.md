@@ -45,67 +45,53 @@ Read back from the model, against the sheet's labels:
 The entry reads 8'-1" rather than 8'-6" because the model takes the stair's
 bottom riser as the room's edge; the sheet's 8'-6" runs under the stair.
 
-## Two more feet on the addition
+## The set of 2026-10-11
 
-The owner asked the architect on 2026-10-05 for two more feet of depth on the
-addition, and this branch is that change ahead of a new drawing set. One
-constant carries it:
+The architect reissued all three sheets. Two traps in reading them: **the page
+order changed** (PR-01 / PR-00 / PR-02 became PR-01 / PR-02 / PR-00), and each
+plan sits somewhere different on its sheet, so the vectors have to be
+registered before anything can be compared. PR-01 lands in the model's frame
+at (+0.9, -0.6) and PR-02 at (-119.2, -88.8), both found by voting on segment
+lengths and then checked against known wall lines -- the west and east
+exteriors, the front face and both faces of the seam all land on the model's
+own numbers.
 
-```js
-var GROW = 2.0;        // feet added to the addition's depth
-var GP = GROW / PT;    // the same in the sheet's points, 27
-```
+### The two feet are drawn now
 
-Every coordinate that moves is written as the sheet's own number minus `GP`,
-so it still shows what PR-01 drew and one line moves the whole thing when the
-architect comes back with a different number.
+He took the owner's two extra feet of depth and put them **exactly where the
+model had them**: the addition's rear wall lands at 139.9 on the sheet against
+the model's 140.0, a tenth of a point apart. The kitchen reads 27' x 18', the
+primary bed 12'6" x 18', the rec room 14'-4" x 18'-4", the gym 12' x 12'.
 
-What moves and what stretches:
+So the `GROW`/`GP` constant that carried those feet is gone and they live in
+the coordinates, where every number can be checked against the sheet again.
+All 3489 rect literals and 305 `fx`/`fz` arguments were evaluated before and
+after the change and are identical.
 
-- The rear wall of the addition moves north bodily on all three levels, with
-  its windows and the slider.
-- The side walls, the floor, the ceiling, the roof and every room in the
-  addition only reach that line at one end, so they stretch.
-- The deck and the screened porch move north bodily and keep their full
-  9'-5", along with the deck stair, the rail, the screen door, the dining
-  set, the string lights and the porch roof.
-- The pantry at the rear wall moves bodily rather than stretching: it is a
-  24" cabinet, not a room. That left exactly 2'-0" of bare wall between it
-  and the head of the counter run, so the pantry takes the whole run instead
-  and is one 3'-9" unit on a pair of doors, 2'-0" deep and 7'-0" tall. The
-  east wall is continuous from the rear wall to the corner base.
-- The shower in the primary bath stands against the rear wall, so it moves
-  with it and stays 5'-0" deep; the two feet show up as floor in the bath.
-- The deck's furniture moves with the deck. Left behind, the string-light
-  posts and the striped rug ended up two feet inside the kitchen, standing
-  up through the floor at the rear wall -- which is how they were spotted.
-- The lawn stops at the house, so its north edge follows the wall. The ground
-  itself is the surveyor's 170 spot elevations and does not move: the terrain
-  does not care how big the house is.
-- `PLAN_LINES` is the sheet's own vectors and is **not** touched, so the plan
-  view now draws the model two feet proud of the drawing underneath. That is
-  the point: the overlay shows the delta against the drawn set.
+### What else changed
 
-Depths before and after:
+| | change |
+|---|---|
+| PR-01 | the coffee bar alcove is **out**, and **two 8" columns** stand in the opening |
+| PR-01 | the **shower is out**; that corner is a **closet off the hall**, bathroom 5'-8" x 6' |
+| PR-01 | the deck is **10'-0" deep**, seven inches more, its north edge that much further out |
+| PR-02 | a **laundry closet** out of the primary closet's corner, off the vestibule |
+| PR-00 | the west hallway and powder room absorbed into storage -- **not applied** |
 
-| room | on the sheet | with the 2' |
-|---|---|---|
-| Kitchen / Dining | 15'-11" | 17'-11" |
-| Primary bedroom | 15'-11" | 17'-11" |
-| Primary bath | 8'-7" | 10'-7" |
-| Rec room | 15'-8" | 17'-8" |
-| Gym | 10'-0" | 12'-0" |
+The basement is left exactly as it was. The owner has asked for that sheet to
+be reissued with the hallway beside the utility room and the door to the back
+room kept, so `PLAN_LINES0` still comes from the 2026-09-27 set.
 
-### What this costs in approvals
+### The columns
 
-The deck keeps its depth, so the whole footprint moves two feet toward the
-rear lot line. Rear setback and lot coverage both change, and the lot is
-already undersized for S-15 at 7,919 sf against 15,000, which is why the
-addition needs a ZBA special permit under 7.3.2 in the first place. The two
-feet have to be in that package, not added after it. The other version -- the
-addition eating into the deck, so the footprint does not move at all -- is
-`GROW` applied to the rear wall but not the deck, and worth pricing against
-the setback answer before the drawings are redone.
+Each caps the head of a wall below -- one on the living/hall line at
+583.0..592.0, one on the stair/hall line at 634.0..642.3, both 389.3..398.3
+and 8" square. They leave three spans of **9'-3", 3'-1" and 3'-9"**, which is
+lopsided enough to be worth asking about before anyone sizes a beam.
+
+The seam's four versions are now **drawn** (those two columns, and the
+default), **open**, **beam**, and **in** -- the coffee bar alcove, kept as an
+option at the owner's request rather than as the drawing. **C** cycles them.
 
 ## The second floor
 
