@@ -26,9 +26,9 @@
   #room .ahead { font-size: 12px; margin-top: 8px; color: var(--accent); font-variant-numeric: tabular-nums; }
   /* the note that stands in for the alcove while it is switched off */
   #bearing { display: none; top: 180px; left: 22px; width: 250px; padding: 10px 12px; background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent); font-size: 10px; line-height: 1.55; color: var(--dim); }
-  #bearing.open, #bearing.beam, #bearing.column { display: block; }
+  #bearing.open, #bearing.beam, #bearing.in { display: block; }
   #bearing p { margin: 0; display: none; }
-  #bearing.open p.open, #bearing.beam p.beam, #bearing.column p.column { display: block; }
+  #bearing.open p.open, #bearing.beam p.beam, #bearing.in p.in { display: block; }
   #bearing .k { display: block; margin-top: 6px; color: var(--ink); opacity: .75; }
   #bearing b { display: block; margin-bottom: 5px; font-family: var(--label); font-weight: 700; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
   #bearing i { font-style: normal; font-weight: 500; color: var(--ink); }
@@ -73,7 +73,7 @@
   body.mobile.menu-open #scale button { padding: 8px 0; font-size: 16px; }
   body.mobile.menu-open #mini { display: block; left: 12px; bottom: max(14px, env(safe-area-inset-bottom)); width: 44vw; max-width: 220px; height: 60vw; max-height: 330px; }
   body.mobile.menu-open #room { display: block; top: auto; bottom: max(14px, env(safe-area-inset-bottom)); left: auto; right: 12px; width: calc(100vw - 44vw - 36px); max-width: 300px; }
-  body.mobile #bearing.open, body.mobile #bearing.beam, body.mobile #bearing.column { top: max(70px, calc(env(safe-area-inset-top) + 60px)); left: 12px; right: 74px; width: auto; }
+  body.mobile #bearing.open, body.mobile #bearing.beam, body.mobile #bearing.in { top: max(70px, calc(env(safe-area-inset-top) + 60px)); left: 12px; right: 74px; width: auto; }
   body.mobile.menu-open #bearing { display: none; }
   body.mobile #dpad { display: grid; position: fixed; left: 14px; bottom: max(14px, env(safe-area-inset-bottom)); grid-template-columns: repeat(3, 62px); grid-template-rows: repeat(3, 62px); gap: 6px; }
   body.mobile.menu-open #dpad { display: none; }
@@ -96,17 +96,16 @@
 
 <div class="hud" id="bearing">
   <b id="bearingT">Alcove out</b>
-  <p class="open">The kitchen runs through to the living room with nothing in the
-  opening. The alcove's back wall sat on the old rear wall line and the second
-  floor's rear wall stands on that line, so this is the look, not the
-  structure.</p>
+  <p class="open">The opening with nothing in it at all -- no columns, no beam
+  drawn. The second floor's rear wall stands on this line, so this is the look
+  and not the structure.</p>
   <p class="beam">The same opening with the beam it would take: 17'-4" clear,
   drawn 14" deep and painted like the trim, bearing buried in the wall at each
   end so nothing stands in the room. Depth is the engineer's to set.</p>
-  <p class="column">Propped at mid-span, so the beam only spans half as far and
-  comes down to 9-1/4" -- barely a header. The post is the price, and it stands
-  where you were trying to see through. Cheaper, and it may save a footing.</p>
-  <span class="k"><i>C</i> cycles: alcove, out, beam, beam + column.</span>
+  <p class="in">The coffee bar alcove PR-01 drew until 2026-09-27. The current
+  sheet has it out and two columns in the opening instead, so this is kept as an
+  option rather than as the drawing.</p>
+  <span class="k"><i>C</i> cycles: two columns, nothing, one beam, coffee bar.</span>
 </div>
 
 <div class="hud" id="mini"><canvas id="miniCv"></canvas></div>
@@ -190,19 +189,19 @@
   // two returns, the cabinets and the television -- is tagged `coffee`, and
   // and the seam section builds three versions of that corner, each into its
   // own group:
-  //   "in"    the alcove as the sheet draws it
-  //   "open"  the alcove gone, nothing in the opening
-  //   "beam"  the alcove gone, one beam over the whole 17'-4", no column
-  //   "column" the alcove gone, a column at mid-span and a shallower beam
+  //   "drawn"  the two columns PR-01 of 2026-10-11 puts in the opening
+  //   "open"   nothing in the opening at all
+  //   "beam"   one beam over the whole 17'-4", no column
+  //   "in"     the coffee bar alcove the older sheet drew, kept as an option
   // Switching is a visibility flip and a swap of two collider lists, never a
   // rebuild: rebuilding all three floors to move one alcove was what made the
   // toggle crawl. The main build loops always skip the tagged pieces, since
   // the seam section builds them itself.
-  var SEAMS = ["in", "open", "beam", "column"];
-  var seam = "open";                                   // out is the default the owner asked for
+  var SEAMS = ["drawn", "open", "beam", "in"];
+  var seam = "drawn";                                  // what the current sheet draws
   try { var sv = localStorage.getItem("ts_seam"); if (SEAMS.indexOf(sv) >= 0) seam = sv; } catch (e) {}
   function notSeam(o) { return !o.coffee; }            // for the build loops
-  function seamDrawn(o) { return !o.coffee || seam === "in"; }   // for the plan view
+  function seamShown(o) { return !o.coffee || seam === "in"; }   // for the plan view
 
   // Wall rectangles in points [x1, x2, y1, y2], with the openings cut out of them.
   // "kind": ext (existing exterior, 6"), add (addition exterior, 9"), int (partition).
@@ -260,13 +259,13 @@
     { r: [634.9, 640.4, 361.9, 397.4], k: "int", coffee: true },
     // ---- the deck: screened porch on the west half, where the slider opens, and
     //      open deck on the east half, split at the sheet's middle post ----
-    { r: [427.6, 632.8, 12.7, 16.7], k: "screen" },                      // porch, north
-    { r: [427.6, 431.6, 16.7, 140], k: "screen" },                     // porch, west
-    { r: [630.8, 634.8, 12.7, 65], k: "screen" },                      // partition to the deck
+    { r: [427.6, 632.8, 4.8, 8.8], k: "screen" },                      // porch, north
+    { r: [427.6, 431.6, 8.8, 140], k: "screen" },                     // porch, west
+    { r: [630.8, 634.8, 4.8, 65], k: "screen" },                      // partition to the deck
     { r: [630.8, 634.8, 65, 105.5], k: "screen", door: true, screenDoor: true },   // screen door, 3'-0"
     { r: [630.8, 634.8, 105.5, 140], k: "screen" },
-    { r: [634.8, 801.6, 12.7, 16.7], k: "rail" },                        // deck rail, north
-    { r: [797.6, 801.6, 16.7, 86], k: "rail" }                        // deck rail, east; open at its south end onto the stair landing
+    { r: [634.8, 801.6, 4.8, 8.8], k: "rail" },                        // deck rail, north
+    { r: [797.6, 801.6, 8.8, 86], k: "rail" }                        // deck rail, east; open at its south end onto the stair landing
   ];
 
   // Rooms as rectangles, for the readout and the labels. Sizes are the clear
@@ -280,8 +279,8 @@
     { n: "Vestibule", r: [692.9, 815.2, 484.1, 531.4], paint: "illusion" },
     { n: "Closet", r: [692.9, 758.9, 536.4, 563.5] },
     { n: "Study", r: [692.9, 815.2, 536.4, 685.1], label: "9' x 8'-6\" on the sheet", dimsR: [692.9, 815.2, 568.6, 685.1] },
-    { n: "Screened porch", r: [427.6, 632.8, 12.7, 140], outside: true, label: "roofed and screened" },
-    { n: "Deck", r: [632.8, 801.6, 12.7, 140], outside: true, label: "open deck" },
+    { n: "Screened porch", r: [427.6, 632.8, 4.8, 140], outside: true, label: "roofed and screened" },
+    { n: "Deck", r: [632.8, 801.6, 4.8, 140], outside: true, label: "open deck" },
     { n: "Front stoop", r: [570.0, 658.0, 691.8, 760.0], outside: true }
   ];
 
@@ -317,14 +316,14 @@
     { n: "console", r: [640.7, 684.0, 666.0, 681.0], console: true },
     { n: "study", r: [692.9, 815.2, 568.6, 685.1], study: true },
     { n: "bath", r: [692.9, 815.2, 399.5, 478.9], bath: true },
-    { n: "porch", r: [431.6, 630.8, 16.7, 140], porch: true },
+    { n: "porch", r: [431.6, 630.8, 8.8, 140], porch: true },
     // the sheet's deck sofa sat just east of the split, which now puts it behind
     // the screen door, so it moves to the east rail
-    { n: "deck dining", r: [634.8, 797.6, 16.7, 140], deckDining: true }
+    { n: "deck dining", r: [634.8, 797.6, 8.8, 140], deckDining: true }
   ];
   var STAIR = { r: [593.2, 634.1, 457.4, 576.0], risers: 16 };   // 16 risers to the second floor over the sheet's run: steep, and noted
   var FIREPLACE = { chimney: [400.1, 412.7, 508.6, 574.7], surround: [419.5, 425.2, 504.8, 580.6] };
-  var DECK = { r: [427.6, 801.6, 12.7, 140], posts: [[428.8, 438.8], [627.8, 637.9], [791.4, 801.6]] };
+  var DECK = { r: [427.6, 801.6, 4.8, 140], posts: [[428.8, 438.8], [627.8, 637.9], [791.4, 801.6]] };
   var STOOP = { r: [570.0, 658.0, 691.8, 745.0] };
   var GRADE = -2.5;                                    // ground at the front: a few steps below the floor, assumed
   var BASE = -7.83;                                    // basement floor: 7'-10" below the first floor, from the existing-conditions set
@@ -1300,8 +1299,8 @@
     post(fx(431.6) - 0.3, zS - 0.35, PORCH_H + 0.5); post(split, zS - 0.35, PORCH_H + 0.5);
     post(fx(796.5), zN + 0.35, 3.4);
     // the porch roof, and a ceiling under it
-    ceilings.push(slab([427.6, 634.8, 12.7, 140], PORCH_H + 0.6, floorMat("porchCeil", (634.8 - 427.6) * PT, (167 - 39.7) * PT, MAT.roof), 0.1));
-    ceilings.push(slab([427.6, 634.8, 12.7, 140], PORCH_H + 1.1, MAT.roof, 0.5, { shadow: true }));
+    ceilings.push(slab([427.6, 634.8, 4.8, 140], PORCH_H + 0.6, floorMat("porchCeil", (634.8 - 427.6) * PT, (140 - 4.8) * PT, MAT.roof), 0.1));
+    ceilings.push(slab([427.6, 634.8, 4.8, 140], PORCH_H + 1.1, MAT.roof, 0.5, { shadow: true }));
   })();
 
   // ---- fireplace ----
@@ -1330,7 +1329,7 @@
     var railL = new T.Mesh(new T.BoxGeometry(0.2, 0.2, Math.hypot(zBot - zTop, FLOOR2)), MAT.frame); railL.position.set(x1 + 0.15, 3.2 + FLOOR2 / 2, (zTop + zBot) / 2); railL.rotation.x = Math.atan2(FLOOR2, zBot - zTop); scene.add(railL);
     for (var b = 0; b < STAIR.risers; b += 2) { var bz = zBot - run * (b + 0.5), bh = rise * (b + 1); var bl = new T.Mesh(new T.BoxGeometry(0.1, 3.0, 0.1), MAT.frame); bl.position.set(x1 + 0.15, bh + 1.5, bz); scene.add(bl); }
   })();
-  // ---- the kitchen seam, in three versions ----
+  // ---- the kitchen seam, in four versions ----
   // Each goes into its own group with its own colliders and its own boxes for
   // the range finder, so `applySeam` can show one and hide the others without
   // touching anything else. `version` redirects the three collectors the
@@ -1364,16 +1363,19 @@
       box(r, CEIL - dep, CEIL, MAT.trim, { solid: false });
       fixLabel('Beam, 14" deep', (fx(r[0]) + fx(r[1])) / 2, CEIL - dep - 0.55, fz((r[2] + r[3]) / 2));
     });
-    // The same opening propped at mid-span. Halving the span is what buys the
-    // depth back: 9-1/4" here against 14" over the clear span, so the drop is
-    // barely a header. Mid-span is 575.7 on the sheet; where a column can
-    // actually land is a basement question, and the model puts the mechanical
-    // room's walls near this line but not under this point.
-    version("column", function () {
-      var r = [458.5, 692.9, 392.2, 399.5], dep = 9.25 / 12, mid = (r[0] + r[1]) / 2;
+    // What PR-01 of 2026-10-11 actually draws: the alcove gone and two 8"
+    // columns standing in the opening, each capping the head of a wall below --
+    // one on the living/hall line, one on the stair/hall line. That leaves three
+    // spans of 9'-3", 3'-1" and 3'-9", lopsided enough to be worth asking about,
+    // but it is the drawing. The beam over them is 9-1/4", the depth two props
+    // buy against 14" over the clear span.
+    version("drawn", function () {
+      var r = [458.5, 692.9, 392.2, 399.5], dep = 9.25 / 12;
       box(r, CEIL - dep, CEIL, MAT.trim, { solid: false });
-      box([mid - 3.4, mid + 3.4, r[2], r[3]], 0, CEIL - dep, MAT.trim);     // 6" square, and solid: you cannot walk through a column
-      fixLabel("Beam + column", fx(mid), CEIL - dep - 0.55, fz((r[2] + r[3]) / 2));
+      [[583.0, 592.0], [634.0, 642.3]].forEach(function (c) {
+        box([c[0], c[1], 389.3, 398.3], 0, CEIL - dep, MAT.trim);           // solid: you cannot walk through a column
+      });
+      fixLabel("Two columns, as drawn", fx(612.6), CEIL - dep - 0.5, fz(395.8));
     });
   })();
   }   // end of the first-floor-only pieces
@@ -2709,13 +2711,13 @@
     var front = curFloor === 0 ? 691.8 : 706.7;
     var inHouse = x >= fx(412.7) && x <= fx(822) && z >= fz(392.2) && z <= fz(front);
     var inAdd = x >= fx(422.4) && x <= fx(812) && z >= fz(140) && z <= fz(392.2);
-    var inDeck = curFloor === 0 && x >= fx(427.6) && x <= fx(801.6) && z >= fz(12.7) && z <= fz(140);
+    var inDeck = curFloor === 0 && x >= fx(427.6) && x <= fx(801.6) && z >= fz(4.8) && z <= fz(140);
     return inHouse || inAdd || inDeck;
   }
   function inBaseFootprint(x, z) {
     return (x >= fx(412.7) && x <= fx(822) && z >= fz(392.2) && z <= fz(691.8)) || (x >= fx(422.4) && x <= fx(812) && z >= fz(140) && z <= fz(392.2));
   }
-  function inDeckRegion(x, z) { return x >= fx(427.6) && x <= fx(801.6) && z >= fz(12.7) && z <= fz(140); }
+  function inDeckRegion(x, z) { return x >= fx(427.6) && x <= fx(801.6) && z >= fz(4.8) && z <= fz(140); }
   // The stair is a ramp for the feet: height follows how far up the run you
   // are, and halfway up you are on the other floor, for rooms and collisions.
   // Two runs share the box: up from the entry (south end) to the second floor,
@@ -2818,10 +2820,10 @@
   // the coffee bar alcove, in or out. Out rebuilds the floor without it, which
   // is what also clears its colliders so you can walk through the opening.
   var bSeam = document.getElementById("bSeam"), bearing = document.getElementById("bearing");
-  var SEAM_LABEL = { "in": "Coffee bar in", open: "Alcove out", beam: "Beam only", column: "Beam + column" };
+  var SEAM_LABEL = { drawn: "Two columns", open: "Nothing", beam: "One beam", "in": "Coffee bar" };
   function showSeam() {
     bSeam.textContent = SEAM_LABEL[seam];
-    bSeam.classList.toggle("on", seam !== "in");
+    bSeam.classList.toggle("on", seam !== "drawn");
     bearing.className = "hud " + seam;
     document.getElementById("bearingT").textContent = SEAM_LABEL[seam];
   }
@@ -2900,7 +2902,7 @@
     var st = curFloor === 1 ? STAIRWELL : STAIR.r; ctx.fillRect(px(st[0]), py(st[2]), (st[1] - st[0]) * s, (st[3] - st[2]) * s);
     // walls
     ctx.fillStyle = opts.draw ? "rgba(29,27,23,0.45)" : "#1d1b17";
-    fl.walls.filter(seamDrawn).forEach(function (w) { var r = w.r; if (w.win || w.slider || w.door) { ctx.fillStyle = opts.draw ? "rgba(70,110,150,0.45)" : "#6f93b5"; } else if (w.k === "screen" || w.k === "rail") { ctx.fillStyle = "rgba(29,27,23,0.35)"; } ctx.fillRect(px(r[0]), py(r[2]), (r[1] - r[0]) * s, (r[3] - r[2]) * s); ctx.fillStyle = opts.draw ? "rgba(29,27,23,0.45)" : "#1d1b17"; });
+    fl.walls.filter(seamShown).forEach(function (w) { var r = w.r; if (w.win || w.slider || w.door) { ctx.fillStyle = opts.draw ? "rgba(70,110,150,0.45)" : "#6f93b5"; } else if (w.k === "screen" || w.k === "rail") { ctx.fillStyle = "rgba(29,27,23,0.35)"; } ctx.fillRect(px(r[0]), py(r[2]), (r[1] - r[0]) * s, (r[3] - r[2]) * s); ctx.fillStyle = opts.draw ? "rgba(29,27,23,0.45)" : "#1d1b17"; });
     if (curFloor === 0) { var fp = FIREPLACE.chimney; ctx.fillRect(px(fp[0]), py(fp[2]), (fp[1] - fp[0]) * s, (fp[3] - fp[2]) * s); }
     // labels
     if (opts.labels) {
@@ -2921,7 +2923,7 @@
   var mRoomName = document.getElementById("mRoomName"), mRoomDims = document.getElementById("mRoomDims");
   var hudName = document.getElementById("roomName"), hudDims = document.getElementById("roomDims"), hudSub = document.getElementById("roomSub"), hudAhead = document.getElementById("roomAhead");
   var clock = new T.Clock(), moved = false, bobT = 0, camY = EYE, lastRoom = null, frameNo = 0;
-  var UNDER_DECK = { n: "Under the deck", dims: ft(fx(801.6) - fx(427.6)) + " \u00d7 " + ft(fz(140) - fz(12.7)), label: "covered outdoor lounge, at basement grade", outside: true };
+  var UNDER_DECK = { n: "Under the deck", dims: ft(fx(801.6) - fx(427.6)) + " \u00d7 " + ft(fz(140) - fz(4.8)), label: "covered outdoor lounge, at basement grade", outside: true };
   function resize() {
     var w = window.innerWidth, h = window.innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; applyLens();
     var pw = (PB.x2 - PB.x1) * PT, ph = (PB.y2 - PB.y1) * PT, ar = w / h; var hw = Math.max(pw / 2, ph / 2 * ar) * 1.04, hh = hw / ar;
