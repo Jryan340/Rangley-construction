@@ -388,7 +388,13 @@
     { r: [634.2, 716.7, 699.8, 706.7], k: "ext" }, { r: [716.7, 750.4, 699.8, 706.7], k: "ext", win: WIN },
     { r: [750.4, 821.9, 699.8, 706.7], k: "ext" },
     // ---- the old rear wall, with the vestibule's door to the hall ----
-    { r: [412.7, 648.4, 392.2, 399.5], k: "ext" }, { r: [648.4, 682.2, 392.2, 399.5], k: "ext", door: true, leaf: false },   // into the suite's lobby
+    // The top of the stairs opens straight into the suite's lobby. PR-02 of
+    // 2026-10-11 draws no wall at all between 593.1 and the lobby's east wall --
+    // the older sheet had one from 593.1 to 638.8 with a door beside it -- just
+    // a 2'-6" door hung at the east end of a 6'-7" opening. Drawn as a cased
+    // opening on a header next to that door.
+    { r: [412.7, 593.1, 392.2, 399.5], k: "ext" }, { r: [593.1, 648.4, 392.2, 399.5], k: "ext", door: true, leaf: false },
+    { r: [648.4, 682.2, 392.2, 399.5], k: "ext", door: true, leaf: false },
     { r: [682.2, 821.9, 392.2, 399.5], k: "ext" },
     // ---- addition: west, three windows over the bed ----
     { r: [422.4, 432.7, 139.6, 200.9], k: "add" }, { r: [422.4, 432.7, 200.9, 234.7], k: "add", win: AWIN },
@@ -2653,7 +2659,6 @@
     hangArt(fx(687.8), 5.2, fz(555), "w", 1.6, 2.0, TEX.mono, MAT.ironBlk);
     hangArt(fx(815.2), 5.2, fz(507.75), "w", 2.0, 1.5, TEX.frameArt, MAT.ironBlk);                     // the vestibule's east wall
   } else if (fi === 1) {
-    hangArt(fx(616), 5.4, fz(399.5), "s", 2.6, 3.2, TEX.art, MAT.ironBlk);                              // facing you at the top of the stairs
     hangArt(fx(450.7), 5.2, fz(588.0), "e", 1.4, 1.8, TEX.botanical, MAT.seatWood);                     // hall, on the NW bedroom's wall
     hangArt(fx(479.5) - 1.0, 6.0, fz(399.5), "s", 1.6, 2.0, TEX.botanical, MAT.seatWood);              // NW bedroom, a pair over the bed
     hangArt(fx(479.5) + 1.0, 6.0, fz(399.5), "s", 1.6, 2.0, TEX.botanical, MAT.seatWood);
