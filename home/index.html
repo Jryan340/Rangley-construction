@@ -388,8 +388,8 @@
     { r: [634.2, 716.7, 699.8, 706.7], k: "ext" }, { r: [716.7, 750.4, 699.8, 706.7], k: "ext", win: WIN },
     { r: [750.4, 821.9, 699.8, 706.7], k: "ext" },
     // ---- the old rear wall, with the vestibule's door to the hall ----
-    { r: [412.7, 638.8, 392.2, 399.5], k: "ext" }, { r: [638.8, 677.2, 392.2, 399.5], k: "ext", door: true, leaf: false },
-    { r: [677.2, 821.9, 392.2, 399.5], k: "ext" },
+    { r: [412.7, 648.4, 392.2, 399.5], k: "ext" }, { r: [648.4, 682.2, 392.2, 399.5], k: "ext", door: true, leaf: false },   // into the suite's lobby
+    { r: [682.2, 821.9, 392.2, 399.5], k: "ext" },
     // ---- addition: west, three windows over the bed ----
     { r: [422.4, 432.7, 139.6, 200.9], k: "add" }, { r: [422.4, 432.7, 200.9, 234.7], k: "add", win: AWIN },
     { r: [422.4, 432.7, 234.7, 322.8], k: "add" },                       // the sheet's middle window is dropped: the television goes here
@@ -406,14 +406,23 @@
     { r: [684.5, 721.6, 139.6, 149.9], k: "add" }, { r: [721.6, 755.4, 139.6, 149.9], k: "add", win: AWIN },
     { r: [755.4, 812.1, 139.6, 149.9], k: "add" },
     // ---- primary suite partitions ----
-    { r: [601.8, 609.1, 149.9, 347.9], k: "int" }, { r: [601.8, 609.1, 347.9, 392.2], k: "int", door: true, leaf: false },   // bed | vest
+    { r: [601.8, 609.1, 149.9, 309.8], k: "int" }, { r: [601.8, 609.1, 309.8, 351.0], k: "int", door: true, leaf: false },   // bed | vest
+    { r: [601.8, 609.1, 351.0, 352.8], k: "int" },
     { r: [609.1, 638.8, 292.7, 297.7], k: "int" }, { r: [638.8, 677.2, 292.7, 297.7], k: "int", door: true, leaf: false },   // bath | vest
     { r: [677.2, 801.6, 292.7, 297.7], k: "int" },                                                                         // bath | closet
-    { r: [682.2, 689.5, 297.7, 326.2], k: "int" }, { r: [682.2, 689.5, 326.2, 352.8], k: "int", door: true, leaf: false },   // vest | closet
-    { r: [682.2, 689.5, 352.8, 357.8], k: "int" },
-    { r: [682.2, 689.5, 357.8, 392.2], k: "int", door: true, leaf: false },   // vest | laundry
-    { r: [689.5, 726.2, 352.8, 357.8], k: "int" },                            // the laundry closet, out of the primary closet's corner
-    { r: [721.0, 726.2, 357.8, 392.2], k: "int" },
+    // The suite's entry, from PR-02 of 2026-10-11. A cross wall at 352.8 cuts
+    // the old 5' x 7' vestibule in two: the vestibule proper north of it, and
+    // south of it a lobby notched into the bedroom's south-east corner, which is
+    // what gives the laundry a door. The closet door and the bedroom door both
+    // move north to clear the cross wall.
+    { r: [682.2, 689.5, 297.7, 307.0], k: "int" }, { r: [682.2, 689.5, 307.0, 345.8], k: "int", door: true, leaf: false },   // vest | closet
+    { r: [682.2, 689.5, 345.8, 360.2], k: "int" },
+    { r: [682.2, 689.5, 360.2, 392.2], k: "int", door: true, leaf: false },   // lobby | laundry
+    { r: [588.1, 638.8, 352.8, 357.8], k: "int" }, { r: [638.8, 677.1, 352.8, 357.8], k: "int", door: true, leaf: false },   // the cross wall and its doorway
+    { r: [677.1, 726.2, 352.8, 357.8], k: "int" },                            // ... continuing as the laundry's north wall
+    { r: [588.1, 593.1, 357.8, 392.2], k: "int" },                            // the lobby's west wall, in the bedroom's old corner
+    { r: [721.0, 726.2, 357.8, 392.2], k: "int" },                            // the laundry's east wall
+    { r: [726.2, 801.6, 378.4, 392.2], k: "int" },                            // the closet's south wall: a wet wall, the kids' bath's fixtures are on its other side
     { r: [714.0, 719.1, 217.4, 256.7], k: "int" }, { r: [714.0, 719.1, 256.7, 292.7], k: "int", door: true, leaf: false },   // water closet
     { r: [719.1, 801.6, 244.2, 249.4], k: "int" },                                                                         // shower | water closet
     // ---- existing floor partitions ----
@@ -437,11 +446,13 @@
     { r: [732.5, 793.3, 500.9, 506.0], k: "int", door: true, dbl: true, swing: 1 }, { r: [793.3, 815.2, 500.9, 506.0], k: "int" }
   ];
   var ROOMS2 = [
-    { n: "Primary bedroom", r: [432.7, 601.8, 149.9, 392.2], label: "12'6\" x 18' with the added 2'; 16' on the sheet" },
+    // the lobby first: it overlaps the bedroom's rectangle in the notch, and the readout takes the first fit
+    { n: "Lobby", r: [593.1, 682.2, 357.8, 392.2], label: "between the stair hall and the suite; the laundry opens off it", paint: "illusion" },
+    { n: "Primary bedroom", r: [432.7, 601.8, 149.9, 392.2], label: "12'6\" x 18' on the sheet" },
     { n: "Primary bath", r: [609.1, 801.6, 149.9, 292.7], label: "8'6\" x 16' with the added 2'; 14' on the sheet", paint: "sunbleached" },
-    { n: "Vestibule", r: [609.1, 682.2, 297.7, 392.2], label: "5' x 7' on the sheet", paint: "illusion" },
+    { n: "Vestibule", r: [609.1, 682.2, 297.7, 352.8], label: "5' x 7' on the sheet, before the lobby was cut off it", paint: "illusion" },
     { n: "Laundry", r: [689.5, 721.0, 357.8, 392.2], label: "stacked washer and dryer" },
-    { n: "Primary closet", r: [689.5, 801.6, 297.7, 393.8], label: "8'6\" x 7' on the sheet" },
+    { n: "Primary closet", r: [689.5, 801.6, 297.7, 378.4], label: "8'6\" x 7' on the sheet" },
     { n: "Bedroom", r: [419.4, 588.0, 399.5, 532.6], label: "north-west", paint: "fog" },
     { n: "Bedroom", r: [419.4, 682.2, 570.2, 699.8], label: "south-west, over the living room", paint: "beachcomber" },
     { n: "Bedroom", r: [687.3, 815.2, 506.0, 699.8], label: "south-east, over the study", paint: "acacia" },
@@ -2092,15 +2103,16 @@
     var northWins = [[fx(479.5), fx(513.4)], [fx(514.8), fx(548.7)], [fx(550.3), fx(584.2)]];
     wallWithWindows(W, false, N, S, "e", westWins, AWIN.sill, AWIN.head);
     wallWithWindows(N, true, W, E, "s", northWins, AWIN.sill, AWIN.head);
-    paint(W, E, S, S, "n", 0, CEIL);
-    paint(E, E, N, fz(347.9), "w", 0, CEIL); paint(E, E, fz(347.9), S, "w", DOOR_H, CEIL);
+    paint(W, fx(588.1), S, S, "n", 0, CEIL);                                       // the south wall stops at the lobby's corner
+    paint(E, E, N, fz(309.8), "w", 0, CEIL); paint(E, E, fz(309.8), fz(351.0), "w", DOOR_H, CEIL); paint(E, E, fz(351.0), fz(352.8), "w", 0, CEIL);
+    paint(fx(588.1), E, fz(352.8), fz(352.8), "n", 0, CEIL); paint(fx(588.1), fx(588.1), fz(352.8), S, "w", 0, CEIL);   // the two faces of the notch
     // panel moulding on the bed wall and the south wall, a cove light at the ceiling, crown
     function panel(x, z, along, len, n) { var horiz = n === "n" || n === "s"; var y0 = 1.2, y1 = 7.4, t = 0.08; [[y0, y1]].forEach(function () {}); 
       var rails = [[0, y0], [0, y1]]; rails.forEach(function (rr) { var m = new T.Mesh(new T.BoxGeometry(horiz ? len : t, t, horiz ? t : len), MAT.greigeTrim); m.position.set(horiz ? x + len / 2 : x, rr[1], horiz ? z : z + len / 2); scene.add(m); });
       [0, len].forEach(function (o) { var m = new T.Mesh(new T.BoxGeometry(horiz ? t : t, y1 - y0, horiz ? t : t), MAT.greigeTrim); m.position.set(horiz ? x + o : x, (y0 + y1) / 2, horiz ? z : z + o); scene.add(m); }); }
-    var bays = 3, bayL = (fz(347.9) - N) / bays; for (var b = 0; b < bays; b++) panel(E - 0.05, N + bayL * b + 0.3, true, bayL - 0.6, "w");
-    var sb = 2, sbL = (E - W) / sb; for (var b2 = 0; b2 < sb; b2++) panel(W + sbL * b2 + 0.3, S - 0.05, true, sbL - 0.6, "n");
-    [[W, E, N, N], [W, E, S, S], [W, W, N, S], [E, E, N, S]].forEach(function (c) { var horiz = c[2] === c[3]; var m = new T.Mesh(new T.BoxGeometry(horiz ? c[1] - c[0] : 0.35, 0.35, horiz ? 0.35 : c[3] - c[2]), MAT.trim); m.position.set((c[0] + c[1]) / 2 + (horiz ? 0 : (c[0] === W ? 0.175 : -0.175)), CEIL - 0.175, (c[2] + c[3]) / 2 + (horiz ? (c[2] === N ? 0.175 : -0.175) : 0)); scene.add(m);
+    var bays = 3, bayL = (fz(309.8) - N) / bays; for (var b = 0; b < bays; b++) panel(E - 0.05, N + bayL * b + 0.3, true, bayL - 0.6, "w");
+    var sb = 2, sbL = (fx(588.1) - W) / sb; for (var b2 = 0; b2 < sb; b2++) panel(W + sbL * b2 + 0.3, S - 0.05, true, sbL - 0.6, "n");
+    [[W, E, N, N], [W, fx(588.1), S, S], [W, W, N, S], [E, E, N, fz(352.8)], [fx(588.1), E, fz(352.8), fz(352.8)], [fx(588.1), fx(588.1), fz(352.8), S]].forEach(function (c) { var horiz = c[2] === c[3]; var m = new T.Mesh(new T.BoxGeometry(horiz ? c[1] - c[0] : 0.35, 0.35, horiz ? 0.35 : c[3] - c[2]), MAT.trim); m.position.set((c[0] + c[1]) / 2 + (horiz ? 0 : (c[0] === W ? 0.175 : -0.175)), CEIL - 0.175, (c[2] + c[3]) / 2 + (horiz ? (c[2] === N ? 0.175 : -0.175) : 0)); scene.add(m);
       var cove = new T.Mesh(new T.BoxGeometry(horiz ? c[1] - c[0] - 0.7 : 0.08, 0.06, horiz ? 0.08 : c[3] - c[2] - 0.7), MAT.bulb); cove.position.set((c[0] + c[1]) / 2 + (horiz ? 0 : (c[0] === W ? 0.4 : -0.4)), CEIL - 0.4, (c[2] + c[3]) / 2 + (horiz ? (c[2] === N ? 0.4 : -0.4) : 0)); scene.add(cove); });
     var coveL = new T.PointLight(0xffe2c0, 0.5, 22, 1.4); coveL.position.set(cx, CEIL - 0.8, cz); scene.add(coveL);
     // the bed, from the sheet: head against the east wall
