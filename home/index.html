@@ -2329,22 +2329,24 @@
   function buildPrimaryCloset(r) {
     var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]), DEP = 2.0, BX = E - 1.6, TOP = 8.6;
     var len = BX - W, cx = (W + BX) / 2, nb = 3, bw = len / nb;
-    // a run of built-ins along one long wall, from px0 (sheet points) east to the window seat.
-    // The run's own W, len, cx, nb and bw shadow the closet's for the lines below.
-    function side(zWall, n, px0) {
-      px0 = px0 || r[0]; var W = fx(px0), len = BX - W, cx = (W + BX) / 2, nb = len > 7 ? 3 : 2, bw = len / nb;
-      var dir = n === "s" ? 1 : -1, zIn = zWall + dir * DEP, zc = (zWall + zIn) / 2, zf = zIn;
-      box([px0, px0 + len / PT, n === "s" ? r[2] : r[3] - DEP / PT, n === "s" ? r[2] + DEP / PT : r[3]], 0, 2.8, MAT.shaker);   // the drawer base
-      plank(len, 0.08, DEP + 0.04, cx, 2.84, zc + dir * 0.02, MAT.white);                       // its top
+    // A run of built-ins along one long wall, from px0 to px1 in sheet points (px1 defaults to the
+    // window seat's edge), dep feet deep (defaults to D). `only` makes every bay shelves, for a
+    // run too shallow to hang clothes in. The run's own W, len, cx, nb and bw shadow the closet's.
+    function side(zWall, n, px0, px1, dep, only) {
+      px0 = px0 || r[0]; var W = fx(px0), X1 = px1 ? fx(px1) : BX, D = dep || D;
+      var len = X1 - W, cx = (W + X1) / 2, nb = len > 7 ? 3 : 2, bw = len / nb;
+      var dir = n === "s" ? 1 : -1, zIn = zWall + dir * D, zc = (zWall + zIn) / 2, zf = zIn;
+      box([px0, px0 + len / PT, n === "s" ? r[2] : r[3] - D / PT, n === "s" ? r[2] + D / PT : r[3]], 0, 2.8, MAT.shaker);   // the drawer base
+      plank(len, 0.08, D + 0.04, cx, 2.84, zc + dir * 0.02, MAT.white);                       // its top
       for (var b = 0; b < nb; b++) {
         var bx = W + bw * (b + 0.5);
         shakerDoor(bx, 0.95, zf, bw - 0.12, 1.0, n, MAT.shaker, MAT.shakerIn, { vert: false, y: 1.15, mat: MAT.pull });
         shakerDoor(bx, 2.1, zf, bw - 0.12, 1.1, n, MAT.shaker, MAT.shakerIn, { vert: false, y: 2.3, mat: MAT.pull });
-        plank(0.08, TOP - 2.8, DEP - 0.2, W + bw * b + 0.04, 2.8 + (TOP - 2.8) / 2, zc, MAT.shaker);   // upright at the bay's west edge
-        if (b === 1) {
+        plank(0.08, TOP - 2.8, D - 0.2, W + bw * b + 0.04, 2.8 + (TOP - 2.8) / 2, zc, MAT.shaker);   // upright at the bay's west edge
+        if (only || b === 1) {
           // the middle bay: shelves with folded stacks
-          for (var sh = 0; sh < 4; sh++) { var sy = 3.7 + sh * 1.15; plank(bw - 0.1, 0.07, DEP - 0.3, bx, sy, zc, MAT.shaker);
-            for (var st = 0; st < 2; st++) for (var k = 0; k < 3; k++) plank(0.85, 0.16, 1.0, bx - 0.5 + st * 1.0, sy + 0.12 + k * 0.17, zc, [MAT.linen, MAT.pillowBlue, MAT.taupe, MAT.greige, MAT.cushionBeige][(sh + st + k) % 5]); }
+          for (var sh = 0; sh < 4; sh++) { var sy = 3.7 + sh * 1.15; plank(bw - 0.1, 0.07, D - 0.3, bx, sy, zc, MAT.shaker);
+            for (var st = 0; st < 2; st++) for (var k = 0; k < 3; k++) plank(0.85, 0.16, Math.min(1.0, D - 0.25), bx - 0.5 + st * 1.0, sy + 0.12 + k * 0.17, zc, [MAT.linen, MAT.pillowBlue, MAT.taupe, MAT.greige, MAT.cushionBeige][(sh + st + k) % 5]); }
         } else {
           // the end bays: a rod with hanging clothes
           var rod = new T.Mesh(new T.CylinderGeometry(0.03, 0.03, bw - 0.1, 8), MAT.pull); rod.rotation.z = Math.PI / 2; rod.position.set(bx, 6.9, zc); scene.add(rod);
@@ -2352,16 +2354,21 @@
           for (var g = 0; g < 9; g++) { var gx = bx - (bw - 0.6) / 2 + (bw - 0.6) * g / 8, gh = 2.6 + (g * 7 % 5) * 0.25; plank(0.14, gh, 1.3, gx, 6.85 - gh / 2, zc + dir * 0.05, new T.MeshStandardMaterial({ color: cols[(g + b * 3) % cols.length], roughness: 0.95 })); var hk = new T.Mesh(new T.TorusGeometry(0.06, 0.012, 6, 10), MAT.pull); hk.position.set(gx, 6.95, zc); scene.add(hk); }
         }
       }
-      plank(len, 0.08, DEP - 0.2, cx, TOP - 0.9, zc, MAT.shaker);                                // the top shelf
-      for (var bn = 0; bn < 3; bn++) plank(1.2, 0.6, 1.2, W + bw * (bn + 0.5), TOP - 0.55, zc, MAT.wicker);   // baskets on it
-      plank(0.08, TOP - 2.8, DEP - 0.2, BX - 0.04, 2.8 + (TOP - 2.8) / 2, zc, MAT.shaker);        // the end upright
+      plank(len, 0.08, D - 0.2, cx, TOP - 0.9, zc, MAT.shaker);                                // the top shelf
+      for (var bn = 0; bn < 3; bn++) plank(1.2, 0.6, Math.min(1.2, D - 0.1), W + bw * (bn + 0.5), TOP - 0.55, zc, MAT.wicker);   // baskets on it
+      plank(0.08, TOP - 2.8, D - 0.2, X1 - 0.04, 2.8 + (TOP - 2.8) / 2, zc, MAT.shaker);        // the end upright
       plank(len, TOP - 2.8, 0.04, cx, 2.8 + (TOP - 2.8) / 2, zWall + dir * 0.03, MAT.shaker);   // back panel
-      plank(len, 0.5, DEP + 0.1, cx, TOP + 0.2, zc + dir * 0.03, MAT.white);                    // crown
+      plank(len, 0.5, D + 0.1, cx, TOP + 0.2, zc + dir * 0.03, MAT.white);                    // crown
     }
-    side(N, "s"); side(S, "n", 726.2);                                                     // the laundry sits in the corner west of 726.2
+    // The sheet draws one fixture in here: 726.2-801.7 by 352.8-378.4, a 23" unit along the south wall
+    // from the laundry's east wall to the window wall, its face flush with the laundry's north wall so
+    // the whole south side is one line. That is the hanging run. The north wall gets 10" of open
+    // shelving, which keeps the end panel out of the doorway and leaves a 3'-3" aisle in a 6'-0" room.
+    side(S, "n", 726.2, 801.6, (378.4 - 352.8) * PT, false);
+    side(N, "s", 689.5, null, 0.85, true);
     // the window seat under the east window
-    var bzN = N + DEP, bzS = S - DEP, bcz = (bzN + bzS) / 2, bw2 = bzS - bzN, bcx = (BX + E) / 2;
-    box([r[1] - 1.6 / PT, r[1], r[2] + DEP / PT, r[3] - DEP / PT], 0, 1.5, MAT.shaker);
+    var bzN = N + 0.85, bzS = fz(352.8), bcz = (bzN + bzS) / 2, bw2 = bzS - bzN, bcx = (BX + E) / 2;   // between the shelving and the hanging run
+    box([r[1] - 1.6 / PT, r[1], r[2] + 0.85 / PT, 352.8], 0, 1.5, MAT.shaker);
     [bzN + bw2 / 4, bzS - bw2 / 4].forEach(function (dz) { shakerDoor(BX, 0.85, dz, bw2 / 2 - 0.12, 1.0, "w", MAT.shaker, MAT.shakerIn, { vert: false, y: 1.0, mat: MAT.pull }); });
     plank(1.5, 0.3, bw2 - 0.1, bcx, 1.65, bcz, MAT.cushionBeige);
     [bzN + 0.7, bzS - 0.7].forEach(function (pz) { var pw = plank(0.35, 1.2, 1.3, E - 0.35, 2.4, pz, MAT.linen); pw.rotation.z = 0.25; });
