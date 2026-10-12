@@ -243,14 +243,18 @@
     // box leaves open there. White like the trim, kept shut, and with no collider:
     // the stair down is behind it and has to stay walkable.
     { r: [593.2, 634.1, 457.4, 462.5], k: "int", door: true, closed: true, white: true, thru: true },
-    { r: [687.8, 692.9, 361.9, 484.1], k: "int" },                       // hall | bath, runs up as the pantry end wall
+    // hall | closet and bath. PR-01 of 2026-10-11 takes the shower out and makes
+    // that corner a closet off the hall, on a 5'-0" pair of doors.
+    { r: [687.8, 692.9, 361.9, 399.5], k: "int" },
+    { r: [687.8, 692.9, 399.5, 467.0], k: "int", door: true, dbl: true, swing: -1 },
+    { r: [687.8, 692.9, 467.0, 484.1], k: "int" },
     { r: [687.8, 692.9, 531.4, 685.1], k: "int" },                       // hall | closet and study
     { r: [692.9, 770.2, 478.9, 484.1], k: "int" }, { r: [770.2, 815.2, 478.9, 484.1], k: "int", door: true, hinge: "e", swing: -1, leaf: false },
     { r: [755.5, 770.2, 531.4, 536.4], k: "int" }, { r: [770.2, 815.2, 531.4, 536.4], k: "int", door: true, hinge: "e", swing: 1, leaf: false },
     { r: [692.9, 755.5, 531.4, 536.4], k: "int", door: true, dbl: true, swing: -1 },     // closet double doors
     { r: [692.9, 758.9, 563.5, 568.6], k: "int" },                       // closet | study
     { r: [758.9, 763.9, 536.4, 568.6], k: "int" },                       // closet east side
-    { r: [732.6, 737.6, 399.5, 440.5], k: "int" },                       // shower | toilet
+    { r: [732.3, 737.5, 399.5, 478.9], k: "int" },                       // closet | bathroom, the old shower partition run full depth
     // the coffee bar alcove at the kitchen seam: a back wall on the old wall
     // line and two short returns, drawn on the sheet at wall weight. Tagged
     // `coffee` so the "Coffee bar out" button can take the whole alcove away.
@@ -275,7 +279,8 @@
     { n: "Living", r: [419.5, 587.5, 399.5, 685.1], label: "21' x 12'-6\" on the sheet", paint: "acacia" },
     { n: "Hall", r: [593.2, 687.8, 399.5, 576.0], paint: "illusion" },
     { n: "Entry", r: [593.2, 687.8, 576.0, 685.1], label: "7' x 8'-6\" on the sheet", paint: "illusion" },
-    { n: "Bathroom", r: [692.9, 815.2, 399.5, 478.9], label: "9' x 6' on the sheet" },
+    { n: "Closet", r: [692.9, 732.3, 399.5, 478.9], label: "off the hall, where the shower was" },
+    { n: "Bathroom", r: [737.5, 815.2, 399.5, 478.9], label: "5'-8\" x 6' on the sheet" },
     { n: "Vestibule", r: [692.9, 815.2, 484.1, 531.4], paint: "illusion" },
     { n: "Closet", r: [692.9, 758.9, 536.4, 563.5] },
     { n: "Study", r: [692.9, 815.2, 536.4, 685.1], label: "9' x 8'-6\" on the sheet", dimsR: [692.9, 815.2, 568.6, 685.1] },
@@ -315,7 +320,7 @@
 
     { n: "console", r: [640.7, 684.0, 666.0, 681.0], console: true },
     { n: "study", r: [692.9, 815.2, 568.6, 685.1], study: true },
-    { n: "bath", r: [692.9, 815.2, 399.5, 478.9], bath: true },
+    { n: "bath", r: [737.5, 815.2, 399.5, 478.9], bath: true },
     { n: "porch", r: [431.6, 630.8, 8.8, 140], porch: true },
     // the sheet's deck sofa sat just east of the split, which now puts it behind
     // the screen door, so it moves to the east rail
@@ -404,8 +409,11 @@
     { r: [601.8, 609.1, 149.9, 347.9], k: "int" }, { r: [601.8, 609.1, 347.9, 392.2], k: "int", door: true, leaf: false },   // bed | vest
     { r: [609.1, 638.8, 292.7, 297.7], k: "int" }, { r: [638.8, 677.2, 292.7, 297.7], k: "int", door: true, leaf: false },   // bath | vest
     { r: [677.2, 801.6, 292.7, 297.7], k: "int" },                                                                         // bath | closet
-    { r: [682.2, 689.5, 297.7, 326.2], k: "int" }, { r: [682.2, 689.5, 326.2, 365.0], k: "int", door: true, leaf: false },   // vest | closet
-    { r: [682.2, 689.5, 365.0, 392.2], k: "int" },
+    { r: [682.2, 689.5, 297.7, 326.2], k: "int" }, { r: [682.2, 689.5, 326.2, 352.8], k: "int", door: true, leaf: false },   // vest | closet
+    { r: [682.2, 689.5, 352.8, 357.8], k: "int" },
+    { r: [682.2, 689.5, 357.8, 392.2], k: "int", door: true, leaf: false },   // vest | laundry
+    { r: [689.5, 726.2, 352.8, 357.8], k: "int" },                            // the laundry closet, out of the primary closet's corner
+    { r: [721.0, 726.2, 357.8, 392.2], k: "int" },
     { r: [714.0, 719.1, 217.4, 256.7], k: "int" }, { r: [714.0, 719.1, 256.7, 292.7], k: "int", door: true, leaf: false },   // water closet
     { r: [719.1, 801.6, 244.2, 249.4], k: "int" },                                                                         // shower | water closet
     // ---- existing floor partitions ----
@@ -432,6 +440,7 @@
     { n: "Primary bedroom", r: [432.7, 601.8, 149.9, 392.2], label: "12'6\" x 18' with the added 2'; 16' on the sheet" },
     { n: "Primary bath", r: [609.1, 801.6, 149.9, 292.7], label: "8'6\" x 16' with the added 2'; 14' on the sheet", paint: "sunbleached" },
     { n: "Vestibule", r: [609.1, 682.2, 297.7, 392.2], label: "5' x 7' on the sheet", paint: "illusion" },
+    { n: "Laundry", r: [689.5, 721.0, 357.8, 392.2], label: "stacked washer and dryer" },
     { n: "Primary closet", r: [689.5, 801.6, 297.7, 393.8], label: "8'6\" x 7' on the sheet" },
     { n: "Bedroom", r: [419.4, 588.0, 399.5, 532.6], label: "north-west", paint: "fog" },
     { n: "Bedroom", r: [419.4, 682.2, 570.2, 699.8], label: "south-west, over the living room", paint: "beachcomber" },
@@ -446,7 +455,9 @@
     { n: "primary bedroom", r: [432.7, 601.8, 149.9, 392.2], masterBed: true },
     { n: "master bath", r: [609.1, 801.6, 149.9, 292.7], masterBath: true },
     { n: "toilet", r: [742.0, 764.0, 252.0, 284.0], toilet: true, face: "s" },
-    { n: "primary closet", r: [689.5, 801.6, 297.7, 393.8], primaryCloset: true },
+    // the closet's built-ins stop at the laundry's wall now
+    { n: "primary closet", r: [689.5, 801.6, 297.7, 352.8], primaryCloset: true },
+    { n: "laundry", r: [689.5, 721.0, 357.8, 392.2], laundry2: true },
     { n: "bed", r: [440.0, 519.0, 402.0, 497.0], bed: true, head: "n" },
     { n: "nightstand", r: [421.0, 437.0, 403.0, 423.0], h: 2.0, m: "wood" }, { n: "nightstand", r: [522.0, 538.0, 403.0, 423.0], h: 2.0, m: "wood" },
     // the south-west bedroom is two girls' room: two twin beds against the north wall with a nightstand between, and the dresser
@@ -1017,14 +1028,23 @@
     // An open doorway gets nothing but its opening: no jambs, no leaf. Only the
     // closets' double doors are drawn.
     if (w.leaf === false) return;
-    [x1 + 0.1, x2 - 0.1].forEach(function (jx) { var j = new T.Mesh(new T.BoxGeometry(0.2, DOOR_H, t + 0.15), MAT.frame); j.position.set(jx, DOOR_H / 2, cz); scene.add(j); });
+    // Jambs stand at the two ends of the opening, whichever way the wall runs.
+    // Written for an east-west wall only, they came out in a north-south one as
+    // two slabs filling the doorway.
+    var alongZ = t > wide;
+    if (alongZ) [z1 + 0.1, z2 - 0.1].forEach(function (jz) { var j = new T.Mesh(new T.BoxGeometry(wide + 0.15, DOOR_H, 0.2), MAT.frame); j.position.set((x1 + x2) / 2, DOOR_H / 2, jz); scene.add(j); });
+    else [x1 + 0.1, x2 - 0.1].forEach(function (jx) { var j = new T.Mesh(new T.BoxGeometry(0.2, DOOR_H, t + 0.15), MAT.frame); j.position.set(jx, DOOR_H / 2, cz); scene.add(j); });
     if (w.dbl) {
       // The closet's pair of doors, drawn closed. Open, the west leaf would stand
       // in the hall opening, which is exactly where the closet's west jamb sits.
-      [[x1 + 0.2, x1 + wide / 2 - 0.03], [x1 + wide / 2 + 0.03, x2 - 0.2]].forEach(function (p) {
-        var leaf = new T.Mesh(new T.BoxGeometry(p[1] - p[0], DOOR_H - 0.1, 0.15), MAT.door);
-        leaf.position.set((p[0] + p[1]) / 2, DOOR_H / 2, cz); scene.add(leaf);
-        var knob = new T.Mesh(new T.SphereGeometry(0.07, 10, 8), MAT.steel); knob.position.set(p[0] < x1 + wide / 2 ? p[1] - 0.3 : p[0] + 0.3, 3.1, cz + 0.12); scene.add(knob);
+      var u1 = alongZ ? z1 : x1, span2 = alongZ ? t : wide, mid = u1 + span2 / 2;
+      [[u1 + 0.2, mid - 0.03], [mid + 0.03, u1 + span2 - 0.2]].forEach(function (p) {
+        var L = p[1] - p[0], uc = (p[0] + p[1]) / 2;
+        var leaf = new T.Mesh(new T.BoxGeometry(alongZ ? 0.15 : L, DOOR_H - 0.1, alongZ ? L : 0.15), MAT.door);
+        leaf.position.set(alongZ ? (x1 + x2) / 2 : uc, DOOR_H / 2, alongZ ? uc : cz); scene.add(leaf);
+        var kn = p[0] < mid ? p[1] - 0.3 : p[0] + 0.3;
+        var knob = new T.Mesh(new T.SphereGeometry(0.07, 10, 8), MAT.steel);
+        knob.position.set(alongZ ? (x1 + x2) / 2 + 0.12 : kn, 3.1, alongZ ? kn : cz + 0.12); scene.add(knob);
       });
       colliders.push([x1, x2, Math.min(z1, z2), Math.max(z1, z2)]);
       return;
@@ -1110,7 +1130,7 @@
   } else if (fi === 0) {
     aroundWell([412.7, 822.0, 392.2, 691.8], STAIR.r).forEach(function (p) { texSlab(p, 0, "plank", 0.6); });   // existing house floor, open over the basement stair
     texSlab([422.4, 812.0, 140, 392.2], 0, "plank", 0.6);          // addition floor
-    texSlab([692.9, 815.2, 399.5, 478.9], 0.02, "tile", 0.02);       // bathroom tile
+    texSlab([737.5, 815.2, 399.5, 478.9], 0.02, "tile", 0.02);       // bathroom tile; the closet keeps the oak
     texSlab(DECK.r, 0, "deck", 0.6);                                  // deck at floor level
     aroundWell([412.7, 822.0, 392.2, 691.8]).forEach(function (p) { ceilings.push(slab(p, CEIL + 0.5, MAT.ceil, 0.5)); });
     ceilings.push(slab([422.4, 812.0, 140, 392.2], CEIL + 0.5, MAT.ceil, 0.5));
@@ -1747,27 +1767,15 @@
   // shiplap on the other walls, an open rustic vanity, round mirror, lanterns.
   function buildBath(r) {
     var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]);       // clear faces of the room
-    var partE = fx(737.6), partS = fz(440.5);                           // the shower partition
     var winN = fz(428.4), winS = fz(473.4);                             // the east window
-    // the shower stays: tiled floor, glass on its open side, tile on its walls
-    box([692.9, 732.6, 399.5, 440.5], 0, 0.3, MAT.tile, { solid: false });
-    // The partition closes the shower's east side; it opens south into the room.
-    // A fixed glass panel at the west end of that edge, and the opening beside it.
-    var glassLen = 1.0, gz = partS;
-    var gl = new T.Mesh(new T.BoxGeometry(glassLen, 7, 0.06), MAT.glass); gl.position.set(W + glassLen / 2, 3.5, gz); scene.add(gl);
-    var glTop = new T.Mesh(new T.BoxGeometry(glassLen, 0.1, 0.1), MAT.bronze); glTop.position.set(W + glassLen / 2, 7.0, gz); scene.add(glTop);
-    colliders.push([W, W + glassLen, gz - 0.05, gz + 0.05]);
-    var showerTile = function (x1, x2, z1, z2, n) { var t = TEX.subway.clone(); t.needsUpdate = true; var horiz = n === "n" || n === "s", len = horiz ? x2 - x1 : z2 - z1; t.repeat.set(len, 7); var m = new T.Mesh(new T.BoxGeometry(horiz ? len : 0.03, 7, horiz ? 0.03 : len), new T.MeshStandardMaterial({ map: t, roughness: 0.3 })); var dx = n === "w" ? -0.015 : n === "e" ? 0.015 : 0, dz = n === "n" ? -0.015 : n === "s" ? 0.015 : 0; m.position.set((x1 + x2) / 2 + dx, 3.5, (z1 + z2) / 2 + dz); scene.add(m); };
-    showerTile(W, fx(732.6), N, N, "s"); showerTile(W, W, N, partS, "e"); showerTile(fx(732.6), fx(732.6), N, partS, "w");
-    var head = new T.Mesh(new T.CylinderGeometry(0.3, 0.3, 0.05, 16), MAT.bronze); head.position.set(W + 1.5, 6.6, N + 0.5); scene.add(head);
-    var arm = new T.Mesh(new T.CylinderGeometry(0.04, 0.04, 0.6, 8), MAT.bronze); arm.rotation.x = Math.PI / 2; arm.position.set(W + 1.5, 6.6, N + 0.25); scene.add(arm);
+    // No shower: PR-01 of 2026-10-11 takes it out and the corner it stood in is
+    // a closet off the hall, behind this room's west wall.
     // walls: black shiplap on the vanity wall, white on the rest, crown at the ceiling
-    clad(TEX.lapBlack, partE, E, N, N, 0, CEIL, "s");
+    clad(TEX.lapBlack, W, E, N, N, 0, CEIL, "s");
     clad(TEX.lapWhite, E, E, N, winN, 0, CEIL, "w"); clad(TEX.lapWhite, E, E, winS, S, 0, CEIL, "w");
     clad(TEX.lapWhite, E, E, winN, winS, 0, WIN.sill, "w"); clad(TEX.lapWhite, E, E, winN, winS, WIN.head, CEIL, "w");
     clad(TEX.lapWhite, W, fx(770.2), S, S, 0, CEIL, "n"); clad(TEX.lapWhite, fx(770.2), E, S, S, DOOR_H, CEIL, "n");   // stops at the doorway
-    clad(TEX.lapWhite, W, W, partS, S, 0, CEIL, "e");
-    clad(TEX.lapWhite, partE, partE, N, partS, 0, CEIL, "e"); clad(TEX.lapWhite, fx(732.6), partE, partS, partS, 0, CEIL, "s");
+    clad(TEX.lapWhite, W, W, N, S, 0, CEIL, "e");                        // the wall the closet is behind
     [[W, E, N, N], [W, E, S, S], [W, W, N, S], [E, E, N, S]].forEach(function (c) { var horiz = c[2] === c[3]; var m = new T.Mesh(new T.BoxGeometry(horiz ? c[1] - c[0] : 0.3, 0.3, horiz ? 0.3 : c[3] - c[2]), MAT.trim); m.position.set((c[0] + c[1]) / 2 + (horiz ? 0 : (c[0] === W ? 0.15 : -0.15)), CEIL - 0.15, (c[2] + c[3]) / 2 + (horiz ? (c[2] === N ? 0.15 : -0.15) : 0)); scene.add(m); });
     // toilet: tank, bowl, seat
     var tx = (fx(743) + fx(764)) / 2;
@@ -1817,7 +1825,7 @@
     plank(0.08, 1.8, 1.1, E - 0.17, 3.4, vz2 + 0.7, MAT.white);
     // patterned rug on marble tile in front of the vanity
     var rugM = new T.Mesh(new T.BoxGeometry(2.0, 0.03, 3.0), new T.MeshStandardMaterial({ map: TEX.rug, roughness: 1 })); rugM.rotation.y = Math.PI / 2; rugM.position.set(vcx - 0.2, 0.05, vz2 + 1.2); scene.add(rugM);
-    fixLabel("Bath", (partE + E) / 2, 7.9, (N + S) / 2);
+    fixLabel("Bath", (W + E) / 2, CEIL - 0.5, (N + S) / 2);
   }
 
   // The study, after the reference: charcoal built-ins with lit shelves and a
@@ -2284,6 +2292,19 @@
     // no planters at the east end: the way to the stair landing stays clear
   }
 
+  // The laundry closet PR-02 of 2026-10-11 takes out of the primary closet's
+  // corner: a stacked washer and dryer with a shelf over them, 2'-4" by 2'-8".
+  function buildLaundry2(r) {
+    var W = fx(r[0]), E = fx(r[1]), N = fz(r[2]), S = fz(r[3]), cx = (W + E) / 2, cz = (N + S) / 2;
+    box([r[0], r[1], r[2], r[3]], 0, 5.6, MAT.white);
+    [1.4, 4.1].forEach(function (y) {                                    // the two doors, facing the vestibule
+      plank(0.05, 2.5, E - W - 0.2, W + 0.03, y, cz, MAT.steel);
+      var rim = new T.Mesh(new T.TorusGeometry(0.62, 0.05, 8, 24), MAT.frame);
+      rim.rotation.y = Math.PI / 2; rim.position.set(W + 0.07, y, cz); scene.add(rim);
+    });
+    plank(E - W, 0.1, S - N, cx, 6.0, cz, MAT.shaker);                   // a shelf over them
+    fixLabel("Laundry", cx, CEIL - 0.5, cz);
+  }
   // The primary closet, after its reference: cream built-ins down both long
   // walls with drawers below and hanging and shelves above, a window seat with
   // drawers under the east window, a patterned runner down the middle. The
@@ -2505,6 +2526,7 @@
     if (s.console) { buildConsole(s.r); return; }
     if (s.laundry) { buildLaundry(s.r); return; }
     if (s.primaryCloset) { buildPrimaryCloset(s.r); return; }
+    if (s.laundry2) { buildLaundry2(s.r); return; }
     if (s.deckDining) { buildDeckDining(s.r); return; }
     if (s.living) { buildLiving(s.r); return; }
     if (s.kidsBath) { buildKidsBath(s.r); return; }
